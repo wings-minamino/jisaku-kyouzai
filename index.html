@@ -1,0 +1,143 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0}</style></head><body>
+<title>自作教材の本棚</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Kaku+Gothic+Antique:wght@500;900&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f3f6fa; --paper:#ffffff; --ink:#18212e; --sub:#5b6778; --line:#d9e1ec;
+  --accent:#1f4e8c; --accent-soft:#e3ecf8;
+  --eng:#6a4bb3; --math:#1f6fc4; --jpn:#c0463a; --sci:#2b8a5e; --soc:#c27a1c;
+  --empty:#9aa6b6;
+  --f-disp:"Zen Kaku Gothic Antique","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --f-body:"BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0f1520; --paper:#172030; --ink:#e6ecf5; --sub:#9aa8bb; --line:#27344a;
+    --accent:#7fb0f0; --accent-soft:#1d2d47;
+    --eng:#a891e8; --math:#6eaaf0; --jpn:#ec8a7e; --sci:#6cc79b; --soc:#e6aa5a; --empty:#627088;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0f1520; --paper:#172030; --ink:#e6ecf5; --sub:#9aa8bb; --line:#27344a;
+  --accent:#7fb0f0; --accent-soft:#1d2d47;
+  --eng:#a891e8; --math:#6eaaf0; --jpn:#ec8a7e; --sci:#6cc79b; --soc:#e6aa5a; --empty:#627088;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);line-height:1.7;padding:0 16px;}
+.wrap{max-width:1040px;margin:0 auto;padding-block:40px 64px;display:flex;flex-direction:column;gap:28px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 24px;border-bottom:2px solid var(--ink);padding-bottom:18px}
+h1{font-family:var(--f-disp);font-weight:900;font-size:clamp(28px,5vw,40px);line-height:1.2;margin:0;letter-spacing:.02em;text-wrap:balance}
+.lead{margin:6px 0 0;color:var(--sub);font-size:14px}
+.count{font-family:var(--f-mono);font-size:13px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
+.count b{font-size:22px;color:var(--ink)}
+
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{font:inherit;font-family:var(--f-disp);font-weight:900;font-size:17px;padding:10px 22px;border-radius:999px;border:2px solid var(--line);background:var(--paper);color:var(--sub);cursor:pointer;display:flex;gap:10px;align-items:center}
+.tab .n{font-family:var(--f-mono);font-weight:500;font-size:12px;background:var(--bg);border-radius:999px;padding:1px 8px;color:var(--sub)}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.tab[aria-selected="true"] .n{background:rgba(255,255,255,.2);color:var(--paper)}
+.tab:focus-visible,.site:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
+.subject{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px;border-top:5px solid var(--c)}
+.subject.wide{grid-column:1/-1}
+.shead{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.shead h2{margin:0;font-family:var(--f-disp);font-weight:900;font-size:22px;color:var(--c);letter-spacing:.06em}
+.shead .num{font-family:var(--f-mono);font-size:12px;color:var(--sub)}
+.subs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.subblock{display:flex;flex-direction:column;gap:8px;border-left:2px solid var(--line);padding-left:12px}
+.subblock h3{margin:0;font-family:var(--f-disp);font-weight:500;font-size:15px;letter-spacing:.08em;color:var(--ink)}
+ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.site{display:flex;flex-direction:column;gap:2px;text-decoration:none;color:inherit;padding:10px 12px;border-radius:8px;background:var(--bg);border:1px solid transparent;transition:border-color .15s,transform .15s}
+.site:hover{border-color:var(--c);transform:translateY(-1px)}
+.site .t{font-weight:700;font-size:15px;display:flex;justify-content:space-between;gap:8px}
+.site .t::after{content:"→";color:var(--c);font-weight:400}
+.site .d{font-size:13px;color:var(--sub);line-height:1.55}
+.site .meta{font-family:var(--f-mono);font-size:11px;color:var(--sub)}
+.none{font-size:13px;color:var(--empty);padding:10px 12px;border:1px dashed var(--line);border-radius:8px}
+footer{font-size:12px;color:var(--sub)}
+@media (prefers-reduced-motion:reduce){.site{transition:none}.site:hover{transform:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>自作教材の本棚</h1>
+      <p class="lead">これまで作った勉強用サイトを、学校段階と教科ごとに並べています。</p>
+    </div>
+    <div class="count" id="count"></div>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="学校段階">
+    <button class="tab" role="tab" id="tab-chugaku" data-level="chugaku" aria-controls="panel">中学 <span class="n"></span></button>
+    <button class="tab" role="tab" id="tab-koukou" data-level="koukou" aria-controls="panel">高校 <span class="n"></span></button>
+  </div>
+
+  <main id="panel" role="tabpanel" class="grid"></main>
+
+  <footer>新しいサイトができたら、このページに追加していきます。</footer>
+</div>
+
+<script>
+// 教材データ：level（chugaku / koukou）、subject、理科は sub（生物・化学・物理）
+const SITES = [
+  {level:"chugaku", subject:"数学", title:"中学数学 作図ノート", desc:"作図の手順を図で確認できるノート。", url:"sakuzu-note.html", date:"2026-09-27"},
+  {level:"chugaku", subject:"数学", title:"動く点Pと三角形の面積", desc:"点Pの移動にあわせて三角形の面積がどう変わるかを見る教材。", url:"ugoku-ten-p.html", date:"2026-09-27"},
+  {level:"koukou", subject:"数学", title:"二次関数ラボ", desc:"数学Ⅰ「2次関数」。スライダーで動くグラフで、平行移動・平方完成・最大最小・判別式・2次不等式と解き方のポイントを学ぶ。", url:"nijikansuu-lab.html", date:"2026-09-28"},
+  {level:"koukou", subject:"理科", sub:"化学", title:"図でわかるモル", desc:"物質量（mol）の考え方を図で整理。", url:"zu-de-wakaru-mol.html", date:"2026-09-27"},
+  {level:"koukou", subject:"理科", sub:"化学", title:"molドリル", desc:"molの計算を練習するドリル。", url:"mol-drill.html", date:"2026-09-27"},
+];
+
+const SUBJECTS = [
+  {name:"英語", c:"--eng"},
+  {name:"数学", c:"--math"},
+  {name:"国語", c:"--jpn"},
+  {name:"社会", c:"--soc"},
+  {name:"理科", c:"--sci", subs:["生物","化学","物理"]},
+];
+const LEVEL_LABEL = {chugaku:"中学", koukou:"高校"};
+
+const esc = s => String(s).replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+
+function list(items){
+  if(!items.length) return `<div class="none">まだありません</div>`;
+  return `<ul>${items.map(s=>`<li><a class="site" href="${esc(s.url)}">
+    <span class="t">${esc(s.title)}</span>
+    <span class="d">${esc(s.desc)}</span>
+    <span class="meta">${esc(s.date)}</span></a></li>`).join("")}</ul>`;
+}
+
+function render(level){
+  document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected", t.dataset.level===level));
+  document.getElementById("panel").setAttribute("aria-labelledby","tab-"+level);
+  const lv = SITES.filter(s=>s.level===level);
+  document.getElementById("panel").innerHTML = SUBJECTS.map(sj=>{
+    const items = lv.filter(s=>s.subject===sj.name);
+    const body = sj.subs
+      ? `<div class="subs">${sj.subs.map(sb=>`<div class="subblock"><h3>${sb}</h3>${list(items.filter(s=>s.sub===sb))}</div>`).join("")}</div>`
+      : list(items);
+    return `<section class="subject${sj.subs?" wide":""}" style="--c:var(${sj.c})">
+      <div class="shead"><h2>${sj.name}</h2><span class="num">${items.length} 件</span></div>${body}</section>`;
+  }).join("");
+  try{ localStorage.setItem("shelf-level", level); }catch(e){}
+}
+
+document.querySelectorAll(".tab").forEach(t=>{
+  t.querySelector(".n").textContent = SITES.filter(s=>s.level===t.dataset.level).length;
+  t.addEventListener("click", ()=>render(t.dataset.level));
+});
+document.getElementById("count").innerHTML = `全 <b>${SITES.length}</b> サイト`;
+
+let start = "chugaku";
+const h = location.hash.slice(1);
+if (h==="chugaku"||h==="koukou") start = h;
+else { try{ const v = localStorage.getItem("shelf-level"); if(v==="chugaku"||v==="koukou") start = v; }catch(e){} }
+render(start);
+</script>
+
+</body></html>
