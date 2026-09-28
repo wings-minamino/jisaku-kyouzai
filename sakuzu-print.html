@@ -1,0 +1,326 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>作図プリントメーカー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Shippori+Mincho:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#E9EDF1; --panel:#FFFFFF; --ink:#1B2837; --muted:#5A6878; --rule:#D3DBE4;
+  --accent:#C7372A; --blue:#2A63A8; --blue-soft:#E3EDF8; --chip:#F3F6F9;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){color-scheme:dark;
+    --bg:#0F151C; --panel:#18212B; --ink:#E4EBF2; --muted:#9AA8B8; --rule:#2C3947;
+    --accent:#FF7B5E; --blue:#79ABE8; --blue-soft:#1C2B3D; --chip:#121A22;}
+}
+:root[data-theme="dark"]{color-scheme:dark;
+  --bg:#0F151C; --panel:#18212B; --ink:#E4EBF2; --muted:#9AA8B8; --rule:#2C3947;
+  --accent:#FF7B5E; --blue:#79ABE8; --blue-soft:#1C2B3D; --chip:#121A22;}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;font-size:15px;line-height:1.6;padding-inline:16px;padding-block:22px 60px}
+.tool{max-width:900px;margin:0 auto 22px;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:18px 20px;display:grid;gap:14px}
+.tool h1{margin:0;font-size:24px;font-weight:900;text-wrap:balance}
+.tool .lead{margin:-6px 0 0;color:var(--muted);font-size:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.lbl{font-size:12.5px;font-weight:700;letter-spacing:.08em;color:var(--muted);min-width:5em}
+.types{display:flex;flex-wrap:wrap;gap:6px}
+.types label{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;background:var(--chip);border:1px solid var(--rule);border-radius:999px;padding:4px 12px 4px 8px;cursor:pointer;user-select:none}
+.types input{accent-color:var(--blue)}
+.types label:has(input:checked){border-color:var(--blue);background:var(--blue-soft);color:var(--blue);font-weight:700}
+select,input[type=number]{font:inherit;font-size:14px;padding:5px 8px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink)}
+input[type=number]{width:7.5em}
+.btn{font:inherit;font-weight:700;font-size:14px;border-radius:8px;padding:8px 16px;cursor:pointer;border:1px solid var(--blue);background:var(--blue);color:#fff}
+.btn.sub{background:transparent;color:var(--blue)}
+.btn:disabled{opacity:.55;cursor:wait}
+.btn:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chk{display:inline-flex;gap:6px;align-items:center;font-size:14px;cursor:pointer}
+.note{font-size:13px;color:var(--muted)}
+.sheets{display:flex;flex-direction:column;align-items:center;gap:22px}
+.zoomer{zoom:var(--z,1)}
+
+/* ===== 用紙 ===== */
+.sheet{width:210mm;height:297mm;background:#fff;color:#111;box-shadow:0 2px 14px rgba(0,0,0,.18);padding:12mm 13mm 10mm 15mm;position:relative;display:flex;flex-direction:column;overflow:hidden;
+  font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif}
+.hd{display:grid;grid-template-columns:44mm 1fr 78mm;border:1.6px solid #333;border-radius:3.5mm;height:13mm;margin-bottom:4mm;overflow:hidden;font-family:"Zen Kaku Gothic New",sans-serif}
+.hd>div{display:flex;align-items:center;justify-content:center}
+.hd .l{font-size:10pt;position:relative}
+.hd .l::after{content:"";position:absolute;right:0;top:2.5mm;bottom:2.5mm;border-right:1px solid #999}
+.hd .m{font-size:15pt;font-weight:900;letter-spacing:.1em}
+.hd .r{background:#BDBDBD;gap:1.2mm;font-size:8pt;border-left:1.6px solid #333}
+.hd .r i{display:inline-block;background:#fff;border:1px solid #555}
+.hd .r i.s{width:3.2mm;height:3.2mm}
+.hd .r i.b{width:6.5mm;height:7mm}
+.hd .r .sl{font-size:16pt;font-weight:300;margin:0 1.2mm;font-style:normal}
+.probs{flex:1;display:grid;grid-template-rows:repeat(5,1fr)}
+.pb{display:grid;grid-template-columns:1fr 60mm;gap:4mm;align-items:start;padding-top:2mm}
+.boxes{display:flex;gap:.8mm;margin:0 0 .6mm 1mm}
+.boxes i{width:3.6mm;height:3.6mm;border:1px solid #333;display:block}
+.q{font-size:10.5pt;line-height:1.95;display:flex}
+.q .no{flex:none;white-space:nowrap;padding-right:1.2mm;letter-spacing:-.02em}
+.q .tx p{margin:0;text-indent:1em}
+.q .tx p:first-child{text-indent:0}
+.ov{position:relative;display:inline-block}
+.ov::before{content:"";position:absolute;left:8%;right:8%;top:-.05em;height:.45em;border:1px solid #111;border-bottom:none;border-radius:50% 50% 0 0/100% 100% 0 0}
+.pb svg{width:60mm;height:auto;display:block;margin-top:1mm}
+.pgno{position:absolute;bottom:6mm;left:0;right:0;text-align:center;font-size:9pt;font-family:"Zen Kaku Gothic New",sans-serif;color:#444}
+/* 解答 */
+.ansgrid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:3mm 6mm}
+.ac{border-top:1px solid #bbb;padding-top:2mm;display:flex;flex-direction:column;gap:1mm}
+.ac .no{font-size:10.5pt;font-weight:700}
+.ac svg{width:72mm;height:auto;align-self:center}
+.ac .ex{font-size:8.8pt;line-height:1.6;font-family:"Zen Kaku Gothic New",sans-serif;color:#333}
+/* 図 */
+svg .g{stroke:#111;stroke-width:1.3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+svg .k{stroke:#D0342C;stroke-width:.85;fill:none}
+svg .ans{stroke:#D0342C;stroke-width:1.9;fill:none;stroke-linecap:round}
+svg .hint{stroke:#8a8a8a;stroke-width:.8;fill:none;stroke-dasharray:3 3}
+svg .d{fill:#111} svg .dr{fill:#D0342C}
+svg text{font-family:"Times New Roman","Shippori Mincho",serif;font-size:13px;fill:#111}
+svg text.r{fill:#D0342C;font-weight:700}
+svg text.it{font-style:italic;font-size:15px}
+.print-only{display:none}
+@page{size:A4;margin:0}
+@media print{
+  body{background:#fff;padding:0}
+  .tool{display:none}
+  .zoomer{zoom:1!important}
+  .sheets{gap:0;display:block}
+  .sheet{box-shadow:none;break-after:page;page-break-after:always}
+  .sheet:last-child{break-after:auto;page-break-after:auto}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="tool" id="tool">
+  <h1>作図プリントメーカー</h1>
+  <p class="lead">都立入試・大問1の作図をイメージした練習問題を自動で作り、A4プリントにします。「新しい問題を作る」を押すたびに図の形が変わります。</p>
+  <div class="row"><span class="lbl">出題する型</span><div class="types" id="types"></div></div>
+  <div class="row">
+    <span class="lbl">設定</span>
+    <label class="chk">問題数 <select id="count"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></label>
+    <label class="chk"><input type="checkbox" id="withAns" checked> 解答ページをつける</label>
+    <label class="chk">プリント番号 <input type="number" id="seed" min="1" max="999999"></label>
+  </div>
+  <div class="row">
+    <button class="btn" id="regen" type="button">新しい問題を作る</button>
+    <button class="btn sub" id="pdf" type="button">PDFでダウンロード</button>
+    <button class="btn sub" id="print" type="button">印刷する</button>
+    <span class="note" id="printNote"></span>
+  </div>
+  <p class="note" style="margin:0">同じプリント番号を入れると、同じ問題をもう一度作れます（解き直し・別クラス用）。</p>
+</div>
+
+<div class="zoomer" id="zoomer"><div class="sheets" id="sheets"></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+const W=240,H=190;
+/* ---------- 乱数 ---------- */
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let R=Math.random;
+const rnd=(a,b)=>a+(b-a)*R(), pick=a=>a[Math.floor(R()*a.length)];
+/* ---------- 幾何 ---------- */
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1]],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],mul=(a,k)=>[a[0]*k,a[1]*k],
+dot=(a,b)=>a[0]*b[0]+a[1]*b[1],len=a=>Math.hypot(a[0],a[1]),nrm=a=>{const l=len(a)||1;return[a[0]/l,a[1]/l]},
+perp=a=>[-a[1],a[0]],dist=(a,b)=>len(sub(a,b)),dirv=d=>[Math.cos(d*Math.PI/180),Math.sin(d*Math.PI/180)],
+rotp=(p,deg)=>{const c=Math.cos(deg*Math.PI/180),s=Math.sin(deg*Math.PI/180);return[p[0]*c-p[1]*s,p[0]*s+p[1]*c]},
+mid=(a,b)=>mul(add(a,b),.5);
+function cc(c1,r1,c2,r2){const d=dist(c1,c2);const a=(r1*r1-r2*r2+d*d)/(2*d);const h2=r1*r1-a*a;if(h2<0)return null;const h=Math.sqrt(h2);const u=nrm(sub(c2,c1));const m=add(c1,mul(u,a));const p=perp(u);return[add(m,mul(p,h)),sub(m,mul(p,h))]}
+function lx(p1,p2,p3,p4){const d=(p1[0]-p2[0])*(p3[1]-p4[1])-(p1[1]-p2[1])*(p3[0]-p4[0]);if(Math.abs(d)<1e-9)return null;const t=((p1[0]-p3[0])*(p3[1]-p4[1])-(p1[1]-p3[1])*(p3[0]-p4[0]))/d;return[p1[0]+t*(p2[0]-p1[0]),p1[1]+t*(p2[1]-p1[1])]}
+function foot(P,A,B){const u=nrm(sub(B,A));return add(A,mul(u,dot(sub(P,A),u)))}
+function inTri(P,A,B,C){const s=(p,q,r)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]);const d1=s(A,B,P),d2=s(B,C,P),d3=s(C,A,P);return !((d1<0||d2<0||d3<0)&&(d1>0||d2>0||d3>0))}
+function angAt(V,A,B){return Math.acos(Math.max(-1,Math.min(1,dot(nrm(sub(A,V)),nrm(sub(B,V))))))*180/Math.PI}
+function isPt(v){return Array.isArray(v)&&v.length===2&&typeof v[0]==="number"}
+/* 図形を枠に収める（平行移動と拡大縮小） */
+function fit(g,keys,m=24,smax=1.3){const ps=keys.map(k=>g[k]);let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+  ps.forEach(p=>{x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1])});
+  const s=Math.min((W-2*m)/Math.max(x1-x0,1),(H-2*m)/Math.max(y1-y0,1),smax);const cx=(x0+x1)/2,cy=(y0+y1)/2;
+  for(const k in g){if(isPt(g[k]))g[k]=[(g[k][0]-cx)*s+W/2,(g[k][1]-cy)*s+H/2];else if(k[0]==="r"&&typeof g[k]==="number")g[k]*=s}
+  g._s=s;return s}
+/* ---------- SVG ---------- */
+const f1=n=>n.toFixed(1);
+class Fig{constructor(){this.e=[]}
+  seg(a,b,c="g"){this.e.push(`<line class="${c}" x1="${f1(a[0])}" y1="${f1(a[1])}" x2="${f1(b[0])}" y2="${f1(b[1])}"/>`)}
+  poly(ps,c="g"){this.e.push(`<polygon class="${c}" points="${ps.map(p=>f1(p[0])+","+f1(p[1])).join(" ")}"/>`)}
+  circ(c,r,cl="g"){this.e.push(`<circle class="${cl}" cx="${f1(c[0])}" cy="${f1(c[1])}" r="${f1(r)}"/>`)}
+  path(d,c="g"){this.e.push(`<path class="${c}" d="${d}"/>`)}
+  arc(c,t,sp=13,cl="k"){const r=dist(c,t),a=Math.atan2(t[1]-c[1],t[0]-c[0]),d=sp*Math.PI/180;
+    const p=[c[0]+r*Math.cos(a-d),c[1]+r*Math.sin(a-d)],q=[c[0]+r*Math.cos(a+d),c[1]+r*Math.sin(a+d)];
+    this.e.push(`<path class="${cl}" d="M${f1(p[0])} ${f1(p[1])}A${f1(r)} ${f1(r)} 0 0 1 ${f1(q[0])} ${f1(q[1])}"/>`)}
+  dot(p,c="d",r=2){this.e.push(`<circle class="${c}" cx="${f1(p[0])}" cy="${f1(p[1])}" r="${r}"/>`)}
+  text(p,s,c=""){this.e.push(`<text class="${c}" x="${f1(p[0])}" y="${f1(p[1])}" text-anchor="middle" dominant-baseline="central">${s}</text>`)}
+  lab(p,s,from,c="",d=11){let u=nrm(sub(p,from));if(!len(sub(p,from)))u=[0,-1];this.text(add(p,mul(u,d)),s,c)}
+  right(v,u1,u2,z=6,c="k"){u1=nrm(u1);u2=nrm(u2);const a=add(v,mul(u1,z)),b=add(a,mul(u2,z)),d=add(v,mul(u2,z));
+    this.e.push(`<polyline class="${c}" points="${f1(a[0])},${f1(a[1])} ${f1(b[0])},${f1(b[1])} ${f1(d[0])},${f1(d[1])}"/>`)}
+  svg(){return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${this.e.join("")}</svg>`}}
+function cen(ps){return mul(ps.reduce((a,b)=>add(a,b),[0,0]),1/ps.length)}
+/* ---------- 作図の部品 ---------- */
+function lineThru(f,p,q,incl=[],pad=12,c="k"){const u=nrm(sub(q,p));const ts=[0,dot(sub(q,p),u),...incl.map(x=>dot(sub(x,p),u))];
+  f.seg(add(p,mul(u,Math.min(...ts)-pad)),add(p,mul(u,Math.max(...ts)+pad)),c)}
+function angBis(f,O,A,B,incl=[]){const ua=nrm(sub(A,O)),ub=nrm(sub(B,O));let r1=Math.max(20,Math.min(42,.42*Math.min(dist(O,A),dist(O,B))));
+  const C=add(O,mul(ua,r1)),D=add(O,mul(ub,r1));const r2=Math.max(dist(C,D)*.78,r1*.8);const I=cc(C,r2,D,r2);
+  const E=dist(I[0],O)>dist(I[1],O)?I[0]:I[1];f.arc(O,C,14);f.arc(O,D,14);f.arc(C,E,15);f.arc(D,E,15);
+  const u=nrm(sub(E,O));const tm=Math.max(dist(O,E),...incl.map(x=>dot(sub(x,O),u)))+14;f.seg(O,add(O,mul(u,tm)),"k");return u}
+function perpBis(f,A,B,incl=[]){const r=.68*dist(A,B);const I=cc(A,r,B,r);I.forEach(p=>{f.arc(A,p,11);f.arc(B,p,11)});lineThru(f,I[0],I[1],incl,12)}
+function perpFrom(f,P,L1,L2,incl=[]){const Hh=foot(P,L1,L2);const d=dist(P,Hh);const u=nrm(sub(L2,L1));const w=Math.max(d*.85,26);
+  const X=sub(Hh,mul(u,w)),Y=add(Hh,mul(u,w));f.arc(P,X,8);f.arc(P,Y,8);const s=w*1.15;const I=cc(X,s,Y,s);
+  const Q=dist(I[0],P)>dist(I[1],P)?I[0]:I[1];f.arc(X,Q,13);f.arc(Y,Q,13);lineThru(f,P,Q,incl,10);return Hh}
+function perpAt(f,D,L1,L2,side,incl=[]){const u=nrm(sub(L2,L1));const r=22;const X=sub(D,mul(u,r)),Y=add(D,mul(u,r));f.arc(D,X,16);f.arc(D,Y,16);
+  const s=r*1.7;const I=cc(X,s,Y,s);const n=perp(u);const sg=Math.sign(dot(sub(side,D),n));
+  const Q=Math.sign(dot(sub(I[0],D),n))===sg?I[0]:I[1];f.arc(X,Q,13);f.arc(Y,Q,13);lineThru(f,D,Q,incl,12)}
+
+const TADASHI='<p>ただし，作図に用いた線は消さないでおくこと。</p>';
+const FW=s=>s.replace(/[A-Z]/g,c=>String.fromCharCode(c.charCodeAt(0)+0xFEE0)).replace(/[0-9]/g,c=>String.fromCharCode(c.charCodeAt(0)+0xFEE0));
+
+/* ---------- 問題の型 ---------- */
+const TYPES=[
+{id:"bis",name:"角の二等分線",
+ gen(){const ang=rnd(55,140),rt=rnd(-18,12);const O=[0,0],B=mul(dirv(rt),rnd(95,115)),A=mul(dirv(rt-ang),rnd(85,110));
+   const u=nrm(add(nrm(A),nrm(B)));const g={O,A,B,E:mul(u,95)};fit(g,["O","A","B","E"]);return g},
+ text:g=>`<p>右の図で，∠ＡＯＢの二等分線を，定規とコンパスを用いて作図によって求めよ。</p>`,
+ draw(f,g,a){f.seg(g.O,g.A);f.seg(g.O,g.B);const c=cen([g.O,g.A,g.B]);f.lab(g.O,"O",c);f.lab(g.A,"A",g.O);f.lab(g.B,"B",g.O);if(a)angBis(f,g.O,g.A,g.B,[g.E])},
+ ex:g=>"∠AOBの二等分線。Oを中心に円弧をかき，2辺との交点から同じ半径の円弧をかいて交点とOを結ぶ。"},
+{id:"semi",name:"半円と弧の中点",
+ gen(){const r=100,ph=rnd(45,135);const g={O:[0,0],A:[-r,0],B:[r,0],C:[r*Math.cos(ph*Math.PI/180),-r*Math.sin(ph*Math.PI/180)],T:[0,-r],r};
+   g.side=pick(["A","B"]);const m=g.side==="A"?(ph+180)/2:ph/2;g.P=[r*Math.cos(m*Math.PI/180),-r*Math.sin(m*Math.PI/180)];fit(g,["A","B","T"]);return g},
+ text:g=>{const s=g.side==="A"?"ＡＣ":"ＢＣ",x=g.side==="A"?"ＡＰ":"ＢＰ";return `<p>右の図のように，線分ＡＢを直径とする半円がある。</p><p><span class="ov">${s}</span>上にあり，<span class="ov">${x}</span>＝<span class="ov">ＣＰ</span>となる点Ｐを，定規とコンパスを用いて作図によって求め，点Ｐの位置を示す文字Ｐも書け。</p>`},
+ draw(f,g,a){f.path(`M${f1(g.A[0])} ${f1(g.A[1])}A${f1(g.r)} ${f1(g.r)} 0 0 1 ${f1(g.B[0])} ${f1(g.B[1])}Z`);f.dot(g.O);f.dot(g.C);
+   f.text(add(g.A,[0,13]),"A");f.text(add(g.B,[0,13]),"B");f.text(add(g.O,[0,13]),"O");f.lab(g.C,"C",g.O);
+   if(a){const S=g.side==="A"?g.A:g.B;angBis(f,g.O,g.C,S,[g.P]);f.dot(g.P,"dr",2.4);f.lab(g.P,"P",g.O,"r",12)}},
+ ex:g=>`∠${g.side}OCの二等分線と半円の交点がP。中心角が等しければ弧の長さも等しい。`},
+{id:"height",name:"高さ（垂線）",
+ gen(){for(let i=0;i<50;i++){const B=[0,0],C=[rnd(110,150),0],A=[rnd(-45,70),-rnd(70,105)];const rt=rnd(-12,12);
+   const g={A:rotp(A,rt),B:rotp(B,rt),C:rotp(C,rt)};g.P=foot(g.A,g.B,g.C);if(dist(g.P,g.B)<14||dist(g.P,g.C)<14)continue;g.Q=add(g.P,mul(nrm(sub(g.P,g.A)),30));fit(g,["A","B","C","P","Q"]);return g}},
+ text:g=>`<p>右の図のように，△ＡＢＣがある。</p><p>辺ＢＣを底辺とするとき，高さを示す線分ＡＰを，定規とコンパスを用いて作図によって求め，点Ｐの位置を示す文字Ｐも書け。</p>`,
+ draw(f,g,a){f.poly([g.A,g.B,g.C]);const c=cen([g.A,g.B,g.C]);f.lab(g.A,"A",c);f.lab(g.B,"B",c);f.lab(g.C,"C",c);
+   if(a){lineThru(f,g.B,g.C,[g.P],10);perpFrom(f,g.A,g.B,g.C,[g.P]);f.seg(g.A,g.P,"ans");f.right(g.P,sub(g.C,g.B),sub(g.A,g.P));f.dot(g.P,"dr",2.4);
+   const m=mid(g.B,g.C);const o=dist(g.P,m)>dist(g.B,m)?nrm(sub(g.P,m)):nrm(sub(g.P,g.A));f.text(add(add(g.P,mul(o,11)),mul(nrm(sub(g.P,g.A)),9)),"P","r")}},
+ ex:g=>"点Aから直線BCへの垂線。鈍角三角形で足が辺の外に出るときは，辺BCをのばしてから作図する。"},
+{id:"eq",name:"2点・2辺から等しい点",
+ gen(){for(let i=0;i<200;i++){const rt=rnd(0,360);const P0={A:[rnd(20,110),-rnd(80,125)],B:[0,0],C:[rnd(110,150),0]};const g={};for(const k in P0)g[k]=rotp(P0[k],rt);
+   const L=["A","B","C"];const X=pick(L);const Y=pick(L.filter(k=>k!==X));const Z=L.find(k=>k!==X&&k!==Y);
+   const u=nrm(add(nrm(sub(g[Y],g[X])),nrm(sub(g[Z],g[X]))));const m=mid(g[X],g[Y]);const n=perp(nrm(sub(g[Y],g[X])));
+   const P=lx(g[X],add(g[X],u),m,add(m,n));if(!P||!inTri(P,g.A,g.B,g.C))continue;if(angAt(g[X],g[Y],g[Z])<35)continue;
+   Object.assign(g,{P,X,Y,Z});fit(g,["A","B","C","P"]);return g}},
+ text:g=>{const s1=[g.X,g.Y].sort().join(""),s2=[g.X,g.Z].sort().join("");const p=[g.X,g.Y].sort();
+   return `<p>右の図のように，△ＡＢＣがある。</p><p>２点${FW(p[0])}，${FW(p[1])}から等しい距離にあり，２辺${FW([s1,s2].sort()[0])}，${FW([s1,s2].sort()[1])}からも等しい距離にある点Ｐを，定規とコンパスを用いて作図によって求め，点Ｐの位置を示す文字Ｐも書け。</p>`},
+ draw(f,g,a){f.poly([g.A,g.B,g.C]);const c=cen([g.A,g.B,g.C]);f.lab(g.A,"A",c);f.lab(g.B,"B",c);f.lab(g.C,"C",c);
+   if(a){perpBis(f,g[g.X],g[g.Y],[g.P]);angBis(f,g[g.X],g[g.Y],g[g.Z],[g.P]);f.dot(g.P,"dr",2.4);f.text(add(g.P,[9,-9]),"P","r")}},
+ ex:g=>`2点${[g.X,g.Y].sort().join("，")}から等しい → 線分${[g.X,g.Y].sort().join("")}の垂直二等分線。2辺から等しい → ∠${g.X}の二等分線。その交点がP。`},
+{id:"tancirc",name:"辺に接する円の中心",
+ gen(){for(let i=0;i<100;i++){const w=rnd(120,150);const B=[0,0],C=[w,0],A=[rnd(30,w-10),-rnd(80,115)],D=[w*rnd(.3,.7),0];const rt=rnd(-8,8);
+   const g={A:rotp(A,rt),B:rotp(B,rt),C:rotp(C,rt),D:rotp(D,rt)};const n0=perp(nrm(sub(g.C,g.B)));const n=dot(n0,sub(g.A,g.D))>0?n0:mul(n0,-1);
+   const s=dot(sub(g.D,g.A),sub(g.D,g.A))/(2*dot(n,sub(g.A,g.D)));if(s>130||Math.abs(dist(g.D,g.A)-0)<30)continue;g.O=add(g.D,mul(n,s));g.rr=s;
+   fit(g,["A","B","C","O"]);return g}},
+ text:g=>`<p>右の図のように，△ＡＢＣの辺ＢＣ上に点Ｄをとる。</p><p>点Ｄで辺ＢＣと接し，点Ａを通る円の中心Ｏを，定規とコンパスを用いて作図によって求め，中心Ｏの位置を示す文字Ｏも書け。</p>`,
+ draw(f,g,a){f.poly([g.A,g.B,g.C]);f.dot(g.D);const c=cen([g.A,g.B,g.C]);f.lab(g.A,"A",c);f.lab(g.B,"B",c);f.lab(g.C,"C",c);f.text(add(g.D,mul(nrm(sub(g.D,c)),12)),"D");
+   if(a){f.circ(g.O,dist(g.O,g.D),"hint");perpAt(f,g.D,g.B,g.C,g.A,[g.O]);perpBis(f,g.A,g.D,[g.O]);f.dot(g.O,"dr",2.4);f.text(add(g.O,[10,-8]),"O","r")}},
+ ex:g=>"接線は接点を通る半径に垂直 → Dを通る辺BCの垂線。OA＝OD → 線分ADの垂直二等分線。その交点がO。"},
+{id:"tanline",name:"接線上の点",
+ gen(){for(let i=0;i<200;i++){const r=62,al=rnd(0,360),de=pick([-1,1])*rnd(70,150);const O=[0,0],A=mul(dirv(al),r),B=mul(dirv(al+de),r);
+   const t=perp(nrm(A));const tb=dot(t,B);if(Math.abs(tb)<8)continue;const k=(r*r/2-dot(A,B))/tb;if(Math.abs(k)<25||Math.abs(k)>115)continue;
+   const g={O,A,B,P:add(A,mul(t,k)),rr:r,T1:[-r,-r],T2:[r,r]};fit(g,["T1","T2","P"]);return g}},
+ text:g=>`<p>右の図のように，円Ｏの周上に２点Ａ，Ｂがある。</p><p>点Ａを接点とする円Ｏの接線上にあり，ＯＰ＝ＢＰとなる点Ｐを，定規とコンパスを用いて作図によって求め，点Ｐの位置を示す文字Ｐも書け。</p>`,
+ draw(f,g,a){f.circ(g.O,g.rr);f.dot(g.O);f.dot(g.A);f.dot(g.B);f.text(add(g.O,[0,11]),"O");f.lab(g.A,"A",g.O);f.lab(g.B,"B",g.O);
+   if(a){const ua=nrm(sub(g.A,g.O));f.seg(g.O,add(g.A,mul(ua,30)),"k");perpAt(f,g.A,g.O,g.A,g.P,[g.P]);perpBis(f,g.O,g.B,[g.P]);f.dot(g.P,"dr",2.4);f.lab(g.P,"P",g.O,"r",12)}},
+ ex:g=>"接線は半径OAに垂直 → Aを通る直線OAの垂線。OP＝BP → 線分OBの垂直二等分線。その交点がP。"},
+{id:"circum",name:"外接円上の点",
+ gen(){for(let i=0;i<200;i++){const B=[0,0],C=[rnd(120,155),0],A=[rnd(15,95),-rnd(80,120)];const rt=rnd(-10,10);const P0={A:rotp(A,rt),B:rotp(B,rt),C:rotp(C,rt)};
+   const L=["A","B","C"];const V=pick(L);const [U,X]=L.filter(k=>k!==V);const g=Object.assign({},P0);
+   const u=nrm(add(nrm(sub(g[U],g[V])),nrm(sub(g[X],g[V]))));const m=mid(g[U],g[X]);const n=perp(nrm(sub(g[X],g[U])));const P=lx(g[V],add(g[V],u),m,add(m,n));if(!P)continue;
+   Object.assign(g,{P,V,U,X});const s=fit(g,["A","B","C","P"]);if(s<.75)continue;return g}},
+ text:g=>`<p>右の図のように，△ＡＢＣがある。頂点Ａ，Ｂ，Ｃを通る円の周上にあり，∠${FW(g.U+g.V)}Ｐ＝∠${FW(g.X+g.V)}Ｐとなる点Ｐを，定規とコンパスを用いて作図によって求め，点Ｐの位置を示す文字Ｐも書け。</p>`,
+ draw(f,g,a){f.poly([g.A,g.B,g.C]);const c=cen([g.A,g.B,g.C]);f.lab(g.A,"A",c);f.lab(g.B,"B",c);f.lab(g.C,"C",c);
+   if(a){angBis(f,g[g.V],g[g.U],g[g.X],[g.P]);perpBis(f,g[g.U],g[g.X],[g.P]);f.dot(g.P,"dr",2.4);f.lab(g.P,"P",c,"r",12)}},
+ ex:g=>`∠${g.V}の二等分線と，辺${[g.U,g.X].sort().join("")}の垂直二等分線の交点がP（弧${[g.U,g.X].sort().join("")}の中点）。`},
+{id:"short",name:"最短経路",
+ gen(){const A=[rnd(-100,-40),-rnd(35,95)],B=[rnd(30,100),-rnd(35,95)];const Ap=[A[0],-A[1]];const P=lx(Ap,B,[0,0],[1,0]);const rt=rnd(-10,10);
+   const g={A:rotp(A,rt),B:rotp(B,rt),Ap:rotp(Ap,rt),P:rotp(P,rt),L1:rotp([-125,0],rt),L2:rotp([125,0],rt),X:rotp([A[0]-40,0],rt),Y:rotp([A[0]+45,0],rt)};
+   fit(g,["A","B","Ap","L1","L2"],18);return g},
+ text:g=>`<p>右の図のように，直線ℓと，直線ℓについて同じ側にある２点Ａ，Ｂがある。</p><p>直線ℓ上にあり，ＡＰ＋ＰＢの長さが最も短くなる点Ｐを，定規とコンパスを用いて作図によって求め，点Ｐの位置を示す文字Ｐも書け。</p>`,
+ draw(f,g,a){f.seg(g.L1,g.L2);f.text(add(g.L2,[-2,-9]),"ℓ","it");f.dot(g.A);f.dot(g.B);f.lab(g.A,"A",g.P);f.lab(g.B,"B",g.P);
+   if(a){f.arc(g.X,g.Ap,12);f.arc(g.Y,g.Ap,12);f.arc(g.X,g.A,8);f.arc(g.Y,g.A,8);f.seg(g.A,g.Ap,"k");f.seg(g.Ap,g.P,"k");f.seg(g.A,g.P,"ans");f.seg(g.P,g.B,"ans");
+   f.dot(g.Ap,"dr");f.lab(g.Ap,"A′",g.P,"r",12);f.dot(g.P,"dr",2.4);f.lab(g.P,"P",mid(g.A,g.B),"r",12)}},
+ ex:g=>"直線ℓについてAと対称な点A′をとる（ℓ上の2点を中心にAを通る円弧）。A′とBを結んだ直線とℓの交点がP。"},
+{id:"deg",name:"30°・45°の角",
+ gen(){const d=rnd(90,125);const k=pick([30,45]);const g={A:[-d/2,0],B:[d/2,0],L1:[-d/2-40,0],L2:[d/2+40,0],k,M:[0,0]};
+   g.P=[0,-(k===30?d/2*Math.tan(Math.PI/6):d/2)];g.C=[0,-d*Math.sqrt(3)/2];g.Cd=[0,d*Math.sqrt(3)/2];fit(g,["L1","L2","C","Cd"],18);return g},
+ text:g=>`<p>右の図のように，直線ℓ上に２点Ａ，Ｂがある。</p><p>直線ℓの上側にあり，ＰＡ＝ＰＢ，∠ＰＡＢ＝${g.k}°となる点Ｐを，定規とコンパスを用いて作図によって求め，点Ｐの位置を示す文字Ｐも書け。</p>`,
+ draw(f,g,a){f.seg(g.L1,g.L2);f.text(add(g.L2,[-2,-9]),"ℓ","it");f.dot(g.A);f.dot(g.B);f.text(add(g.A,[0,12]),"A");f.text(add(g.B,[0,12]),"B");
+   if(a){if(g.k===30){[g.C,g.Cd].forEach(p=>{f.arc(g.A,p,10);f.arc(g.B,p,10)});lineThru(f,g.C,g.Cd,[],8);f.seg(g.A,g.C,"k");angBis(f,g.A,g.C,g.B,[g.P])}
+     else{const r=.68*dist(g.A,g.B);const I=cc(g.A,r,g.B,r);I.forEach(p=>{f.arc(g.A,p,11);f.arc(g.B,p,11)});lineThru(f,I[0],I[1],[g.P],12);f.arc(g.M,g.P,20)}
+     f.seg(g.A,g.P,"ans");f.seg(g.B,g.P,"ans");f.dot(g.P,"dr",2.4);f.text(add(g.P,[10,-8]),"P","r")}},
+ ex:g=>g.k===30?"半径ABの円弧で正三角形をつくり60°。それを二等分して30°。ABの垂直二等分線（正三角形の頂点を結ぶ線）との交点がP。":"ABの垂直二等分線をひき，ABの中点Mを中心に半径MAの円弧をかく。その交点がP（直角二等辺三角形）。"}
+];
+
+/* ---------- UI ---------- */
+const $=id=>document.getElementById(id);
+const typesEl=$("types");
+TYPES.forEach((t,i)=>{typesEl.insertAdjacentHTML("beforeend",`<label><input type="checkbox" id="t_${t.id}" value="${t.id}" checked>${t.name}</label>`)});
+function store(k,v){try{localStorage.setItem("skz_"+k,v)}catch(e){}}
+function load(k){try{return localStorage.getItem("skz_"+k)}catch(e){return null}}
+
+function build(seed){
+  R=mulberry(seed*9301+49297);
+  const sel=TYPES.filter(t=>$("t_"+t.id).checked);const list=sel.length?sel:TYPES;
+  const n=+$("count").value;const items=[];
+  // 型ができるだけ偏らないように並べる
+  let bag=[];for(let i=0;i<n;i++){if(!bag.length){bag=list.slice();for(let j=bag.length-1;j>0;j--){const k=Math.floor(R()*(j+1));[bag[j],bag[k]]=[bag[k],bag[j]]}}
+    const t=bag.pop();let g=null;for(let tr=0;tr<5&&!g;tr++)g=t.gen();if(!g)continue;items.push({t,g})}
+  const pages=[];const per=5;
+  for(let p=0;p*per<items.length;p++){pages.push(items.slice(p*per,p*per+per))}
+  let html="",pg=0;
+  const header=(m)=>`<div class="hd"><div class="l">大問１ 単元別対策</div><div class="m">${m}</div><div class="r"><i class="s"></i><i class="b"></i>月<i class="b"></i>日<span class="sl">/</span><i class="s"></i><i class="b"></i>月<i class="b"></i>日</div></div>`;
+  pages.forEach((ps,pi)=>{pg++;
+    html+=`<div class="sheet">${pi===0?header("作図"):""}<div class="probs">`+ps.map((it,j)=>{const no=pi*per+j+1;const f=new Fig();it.t.draw(f,it.g,false);
+      return `<div class="pb"><div><div class="boxes"><i></i><i></i></div><div class="q"><span class="no">〔問${FW(String(no))}〕</span><div class="tx">${it.t.text(it.g)}${TADASHI}</div></div></div>${f.svg()}</div>`}).join("")+
+      `</div><div class="pgno">${pg}</div></div>`});
+  if($("withAns").checked){const per2=6;
+    for(let p=0;p*per2<items.length;p++){pg++;const ps=items.slice(p*per2,p*per2+per2);
+      html+=`<div class="sheet">${p===0?header("作図　解答"):""}<div class="ansgrid">`+ps.map((it,j)=>{const no=p*per2+j+1;const f=new Fig();it.t.draw(f,it.g,true);
+        return `<div class="ac"><div class="no">〔問${FW(String(no))}〕 ${it.t.name}</div>${f.svg()}<div class="ex">${it.t.ex(it.g)}</div></div>`}).join("")+`</div><div class="pgno">${pg}</div></div>`}}
+  $("sheets").innerHTML=html;
+}
+function newSeed(){return Math.floor(Math.random()*899999)+100000}
+function run(seed){$("seed").value=seed;store("seed",seed);build(seed)}
+$("regen").addEventListener("click",()=>run(newSeed()));
+$("seed").addEventListener("change",()=>{const v=parseInt($("seed").value,10);if(v>0)run(v)});
+["count","withAns"].forEach(id=>$(id).addEventListener("change",()=>{store(id,id==="withAns"?$(id).checked:$(id).value);build(+$("seed").value)}));
+typesEl.addEventListener("change",()=>{store("types",TYPES.filter(t=>$("t_"+t.id).checked).map(t=>t.id).join(","));build(+$("seed").value)});
+// 印刷（Claude の画面内では印刷できないため、公開サイトで開いたときだけ使う）
+let top=true;try{top=window.self===window.top}catch(e){top=false}
+if(top){$("print").addEventListener("click",()=>window.print())}else{$("print").hidden=true;$("printNote").textContent="印刷は公開サイトで。PDFはここからも保存できます。"}
+// PDF ダウンロード（用紙を画像にして A4 の PDF にまとめる）
+let dlNS=null;try{if(window.claude&&window.claude.use)window.claude.use("downloads").then(d=>{dlNS=d}).catch(()=>{})}catch(e){}
+$("pdf").addEventListener("click",async()=>{
+  const b=$("pdf"),note=$("printNote"),old=b.textContent;
+  if(!window.html2canvas||!window.jspdf){note.textContent="PDFの準備に失敗しました。ページを再読み込みしてください。";return}
+  if(!top&&!dlNS){note.textContent="この画面ではダウンロードできません。公開サイトで開いてください。";return}
+  b.disabled=true;const z=$("zoomer");const zv=z.style.getPropertyValue("--z");z.style.setProperty("--z","1");
+  try{
+    try{await document.fonts.ready}catch(e){}
+    const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:"mm",format:"a4",compress:true});
+    const sh=[...document.querySelectorAll(".sheet")];
+    for(let i=0;i<sh.length;i++){b.textContent=`作成中… ${i+1}/${sh.length}`;
+      const cv=await html2canvas(sh[i],{scale:2.5,backgroundColor:"#ffffff",logging:false});
+      if(i)pdf.addPage();pdf.addImage(cv.toDataURL("image/jpeg",0.92),"JPEG",0,0,210,297)}
+    const blob=pdf.output("blob");const name=`作図プリント_No${$("seed").value}${$("withAns").checked?"_解答つき":""}.pdf`;
+    if(dlNS){try{await dlNS.save({filename:name,data:blob});note.textContent="PDFを保存しました。"}
+      catch(e){note.textContent=e&&e.code==="declined"?"ダウンロードをキャンセルしました。":"ダウンロードできませんでした。"}}
+    else{const u=URL.createObjectURL(blob);const a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);note.textContent="PDFをダウンロードしました。"}
+  }catch(e){note.textContent="PDFを作れませんでした。もう一度お試しください。"}
+  finally{z.style.setProperty("--z",zv||"1");zoom();b.disabled=false;b.textContent=old}
+});
+// 前回の設定
+const sc=load("count");if(sc)$("count").value=sc;const sa=load("withAns");if(sa!==null)$("withAns").checked=sa==="true";
+const st=load("types");if(st){const on=st.split(",");TYPES.forEach(t=>$("t_"+t.id).checked=on.includes(t.id))}
+const ss=parseInt(load("seed")||"",10);run(ss>0?ss:newSeed());
+// 画面幅に合わせて用紙を縮小表示
+function zoom(){const w=document.documentElement.clientWidth-32;$("zoomer").style.setProperty("--z",Math.min(1,w/800).toFixed(3))}
+addEventListener("resize",zoom);zoom();
+})();
+</script>
+
+<style>@media print{a[href="index.html"]{display:none!important}}</style><a href="index.html" style="position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:9999;font:700 13px sans-serif;padding:8px 14px;border-radius:999px;background:#1f4e8c;color:#fff;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.2)">← 本棚へ</a>
+</body></html>

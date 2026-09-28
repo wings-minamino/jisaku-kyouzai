@@ -1,0 +1,678 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>三角比ラボ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=JetBrains+Mono:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+:root{
+  --paper:#f4f7fb; --panel:#ffffff; --ink:#17223b; --muted:#5a6781; --line:#d6deea;
+  --grid:#e6ebf3; --axis:#8a96ad;
+  --accent:#2458c6; --accent-soft:rgba(36,88,198,.12);
+  --warm:#d9560f; --warm-soft:rgba(217,86,15,.14);
+  --teal:#0a8a78; --teal-soft:rgba(10,138,120,.14);
+  --chip:#eaf0fa;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --disp:"Dela Gothic One","Hiragino Sans","Yu Gothic",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#0e1422; --panel:#151d2f; --ink:#e6ebf5; --muted:#9ba7bf; --line:#27324a;
+    --grid:#1f2940; --axis:#5e6b88;
+    --accent:#76a0ff; --accent-soft:rgba(118,160,255,.16);
+    --warm:#ff9152; --warm-soft:rgba(255,145,82,.16);
+    --teal:#3fcbb6; --teal-soft:rgba(63,203,182,.16);
+    --chip:#1d2740;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#0e1422; --panel:#151d2f; --ink:#e6ebf5; --muted:#9ba7bf; --line:#27324a;
+  --grid:#1f2940; --axis:#5e6b88;
+  --accent:#76a0ff; --accent-soft:rgba(118,160,255,.16);
+  --warm:#ff9152; --warm-soft:rgba(255,145,82,.16);
+  --teal:#3fcbb6; --teal-soft:rgba(63,203,182,.16);
+  --chip:#1d2740;
+}
+*{box-sizing:border-box}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;
+  color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.8;
+}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:20px;padding-block:40px 96px}
+h1,h2,h3{text-wrap:balance;line-height:1.35;margin:0}
+p{margin:0}
+.top{display:grid;gap:14px;margin-bottom:28px}
+.eyebrow{font-size:.8rem;letter-spacing:.14em;color:var(--muted);font-weight:700}
+h1{font-family:var(--disp);font-weight:400;font-size:clamp(2.2rem,6vw,3.6rem);letter-spacing:.02em}
+h1 .th{color:var(--accent);font-family:Georgia,serif;font-style:italic}
+.lead{max-width:42em;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-weight:700;font-size:.92rem}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:22px;height:4px;border-radius:2px;display:inline-block}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+nav.toc a{font-size:.85rem;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);padding:4px 12px;border-radius:999px}
+nav.toc a:hover{border-color:var(--accent);color:var(--accent)}
+nav.toc b{font-family:var(--mono);color:var(--accent);margin-right:6px;font-weight:600}
+
+.ks{color:var(--warm)} .kc{color:var(--accent)} .kt{color:var(--teal)}
+section.lab{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;margin-top:28px;display:grid;gap:20px}
+.lab-h{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:baseline}
+.no{font-family:var(--mono);font-weight:600;color:var(--accent);grid-row:span 2}
+h2{font-family:var(--disp);font-weight:400;font-size:1.55rem}
+.gist{color:var(--muted);grid-column:2}
+.lab-body{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:780px){.lab-body{grid-template-columns:1fr}}
+.stage{margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.stage canvas{display:block;width:100%;aspect-ratio:4/3;max-width:100%}
+.stage canvas.drag{touch-action:none;cursor:grab}
+.stage figcaption{font-size:.8rem;color:var(--muted);padding:6px 12px;border-top:1px solid var(--line)}
+.side{display:grid;gap:16px}
+.eq{font-family:var(--mono);font-size:1.15rem;font-weight:600;padding:12px 14px;border-radius:10px;background:var(--chip);overflow-x:auto;display:grid;gap:6px}
+.eq .r{white-space:nowrap}
+.ctl{display:grid;gap:2px}
+.ctl .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label{font-weight:700}
+.ctl output{font-family:var(--mono);font-weight:600;color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:.88rem;font-weight:700;cursor:pointer;border-radius:8px;padding:6px 14px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+button.primary:hover{filter:brightness(1.08);color:var(--panel)}
+button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+button.s[aria-pressed="true"],button.s.primary{background:var(--warm);border-color:var(--warm)}
+button.t[aria-pressed="true"],button.t.primary{background:var(--teal);border-color:var(--teal)}
+button.s:not([aria-pressed="true"]):not(.primary){color:var(--warm)}
+button.c:not([aria-pressed="true"]):not(.primary){color:var(--accent)}
+button.t:not([aria-pressed="true"]):not(.primary){color:var(--teal)}
+button:disabled{opacity:.45;cursor:default;pointer-events:none}
+:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:.95rem;margin:0}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0;font-weight:700}
+.m{font-family:var(--mono)}
+.tip{border-left:4px solid var(--warm);padding:8px 0 8px 14px;font-size:.95rem}
+.tip b.k{display:block;font-size:.75rem;letter-spacing:.12em;color:var(--warm)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{font-size:.82rem;padding:3px 10px;border-radius:999px;background:var(--chip);color:var(--muted);transition:all .2s}
+.chips span.on{color:var(--panel);background:var(--accent)}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.8em;line-height:1.15;margin:0 .12em}
+.fr span:first-child{border-bottom:1.5px solid currentColor;padding:0 .15em}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.steps li{display:grid;gap:2px;padding:8px 12px;border-radius:8px;border:1px solid var(--line)}
+.steps li .f{font-family:var(--mono);font-weight:600;overflow-x:auto;white-space:nowrap}
+.steps li .n{font-size:.83rem;color:var(--muted)}
+.steps li.last{border-color:var(--accent);background:var(--accent-soft)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:center;white-space:nowrap}
+th{color:var(--muted);font-weight:700;font-size:.82rem}
+td{font-family:var(--mono);font-weight:600}
+td.h,th.h{text-align:left}
+col.on{background:var(--accent-soft)}
+.neg{color:var(--warm)}
+.flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;counter-reset:f}
+.flow li{counter-increment:f;padding:12px 14px;border-radius:10px;background:var(--chip);font-weight:700;display:grid;gap:2px}
+.flow li::before{content:"STEP " counter(f);font-family:var(--mono);font-size:.75rem;color:var(--accent);letter-spacing:.08em}
+.flow li small{font-weight:400;color:var(--muted);font-size:.85rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:8px;align-content:start}
+.card h3{font-size:1.05rem}
+.card ul{margin:0;padding-left:1.2em;display:grid;gap:4px;font-size:.95rem}
+.card .ng{font-size:.88rem;color:var(--warm);font-weight:700}
+.refs{font-size:.9rem;display:grid;gap:4px;margin:0;padding-left:1.2em}
+.refs a{color:var(--accent)}
+footer{margin-top:28px;color:var(--muted);font-size:.85rem}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow">数学Ⅰ ／ 第4章 図形と計量</p>
+    <h1>三角比ラボ <span class="th">θ</span></h1>
+    <p class="lead">角度を動かすと、図と値がその場で変わります。三角比は「直角三角形の辺の比」から始まり、「単位円上の点の座標」へと広がります。その流れを、動く図で確かめましょう。</p>
+    <div class="legend" aria-label="色の意味"><span class="ks"><i style="background:var(--warm)"></i>sin（高さ・y 座標）</span><span class="kc"><i style="background:var(--accent)"></i>cos（底辺・x 座標）</span><span class="kt"><i style="background:var(--teal)"></i>tan（傾き）</span></div>
+    <nav class="toc" aria-label="目次">
+      <a href="#s1"><b>1</b>三角比の定義</a>
+      <a href="#s2"><b>2</b>単位円で拡張</a>
+      <a href="#s3"><b>3</b>180°−θ・90°−θ</a>
+      <a href="#s4"><b>4</b>値から角を求める</a>
+      <a href="#s5"><b>5</b>相互関係</a>
+      <a href="#s6"><b>6</b>正弦・余弦定理と面積</a>
+      <a href="#s7"><b>7</b>解き方のポイント</a>
+    </nav>
+  </header>
+
+  <!-- 1 -->
+  <section class="lab" id="s1">
+    <div class="lab-h"><span class="no">01</span><h2>直角三角形で三角比を定義する</h2><p class="gist">角 θ が決まれば、三角形の大きさに関係なく辺の比が決まる。その比が sin・cos・tan。</p></div>
+    <div class="lab-body">
+      <figure class="stage"><canvas id="c1" aria-label="直角三角形と三角比"></canvas></figure>
+      <div class="side">
+        <div class="ctl"><div class="row"><label for="th1">角 θ</label><output id="o-th1"></output></div>
+          <input type="range" id="th1" min="5" max="85" step="1" value="30"></div>
+        <div class="btns" id="q1"><button data-v="30">30°</button><button data-v="45">45°</button><button data-v="60">60°</button></div>
+        <div class="ctl"><div class="row"><label for="r1">三角形の大きさ（斜辺）</label><output id="o-r1"></output></div>
+          <input type="range" id="r1" min="1" max="3" step="0.1" value="2.6"></div>
+        <div class="eq" id="eq1"></div>
+        <div>
+          <p style="font-size:.85rem;font-weight:700;color:var(--muted);margin-bottom:6px">筆記体の書き順で覚える（① が分母、② が分子）</p>
+          <div class="btns"><button class="s" id="w-s">sin の書き順</button><button class="c" id="w-c">cos の書き順</button><button class="t" id="w-t">tan の書き順</button></div>
+        </div>
+        <p class="tip"><b class="k">ここがポイント</b>大きさのスライダーを動かしても、右の値は変わりません。三角比は「長さ」ではなく「形（角度）」だけで決まる量です。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="lab" id="s2">
+    <div class="lab-h"><span class="no">02</span><h2>単位円で 0° 〜 180° に広げる</h2><p class="gist">半径 1 の円周上の点 P の座標が (cos θ, sin θ)。直角三角形が作れない鈍角でも定義できる。</p></div>
+    <div class="lab-body">
+      <figure class="stage"><canvas id="c2" class="drag" aria-label="単位円と三角比"></canvas><figcaption>図の点 P をドラッグしても動かせます</figcaption></figure>
+      <div class="side">
+        <div class="ctl"><div class="row"><label for="th2">角 θ</label><output id="o-th2"></output></div>
+          <input type="range" id="th2" min="0" max="180" step="1" value="120"></div>
+        <div class="btns"><button class="primary" id="play2">0° → 180° 回す ▶</button></div>
+        <div class="eq" id="eq2"></div>
+        <div class="chips" id="sign2"></div>
+        <p class="tip"><b class="k">ここがポイント</b>鈍角（90° より大きい）では P が y 軸の左側に来るので <b class="kc">cos θ &lt; 0</b>、<b class="kt">tan θ &lt; 0</b>。<b class="ks">sin θ</b> は高さなので 0 〜 1 のまま。tan 90° は直線 OP が x = 1 と交わらないので <b>存在しない</b>。</p>
+      </div>
+    </div>
+    <div class="tbl"><table id="tbl2">
+      <colgroup><col><col><col><col><col><col><col><col><col><col></colgroup>
+      <thead><tr><th class="h">θ</th><th>0°</th><th>30°</th><th>45°</th><th>60°</th><th>90°</th><th>120°</th><th>135°</th><th>150°</th><th>180°</th></tr></thead>
+      <tbody id="tb2"></tbody>
+    </table></div>
+  </section>
+
+  <!-- 3 -->
+  <section class="lab" id="s3">
+    <div class="lab-h"><span class="no">03</span><h2>180° − θ と 90° − θ の公式</h2><p class="gist">公式は暗記しなくても、単位円で「点をどこに折り返すか」を見れば読める。</p></div>
+    <div class="lab-body">
+      <figure class="stage"><canvas id="c3" aria-label="対称な点"></canvas></figure>
+      <div class="side">
+        <div class="btns" role="group" aria-label="公式の種類"><button id="m3a" aria-pressed="true">180° − θ</button><button id="m3b" aria-pressed="false">90° − θ</button></div>
+        <div class="ctl"><div class="row"><label for="th3">角 θ</label><output id="o-th3"></output></div>
+          <input type="range" id="th3" min="0" max="90" step="1" value="35"></div>
+        <div class="eq" id="eq3"></div>
+        <p class="tip" id="tip3"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="lab" id="s4">
+    <div class="lab-h"><span class="no">04</span><h2>三角比の値から角 θ を求める</h2><p class="gist">sin θ = k は「高さ k の横線」、cos θ = k は「x = k の縦線」と単位円の交点を探す。</p></div>
+    <div class="lab-body">
+      <figure class="stage"><canvas id="c4" aria-label="三角比の方程式"></canvas></figure>
+      <div class="side">
+        <div class="btns" role="group" aria-label="種類"><button class="s" id="m4s" aria-pressed="true">sin θ = k</button><button class="c" id="m4c" aria-pressed="false">cos θ = k</button><button class="t" id="m4t" aria-pressed="false">tan θ = k</button></div>
+        <div class="ctl"><div class="row"><label for="k4">k</label><output id="o-k4"></output></div>
+          <input type="range" id="k4" min="0" max="1" step="0.01" value="0.5"></div>
+        <div class="btns" id="q4"></div>
+        <div class="eq" id="eq4"></div>
+        <p class="tip"><b class="k">ここがポイント</b>0° ≦ θ ≦ 180° では、<b class="ks">sin θ = k</b>（0 &lt; k &lt; 1）の答えは <b>2 つ</b>（θ と 180° − θ）。片方だけ答えるミスがとても多いので、必ず図の横線で確かめよう。cos と tan は 1 つに決まる。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="lab" id="s5">
+    <div class="lab-h"><span class="no">05</span><h2>相互関係：1 つ分かれば残りが分かる</h2><p class="gist">単位円の直角三角形に三平方の定理を使うと sin²θ + cos²θ = 1。</p></div>
+    <div class="lab-body">
+      <figure class="stage"><canvas id="c5" aria-label="相互関係"></canvas></figure>
+      <div class="side">
+        <div class="eq"><span class="r"><span class="ks">sin</span>²θ + <span class="kc">cos</span>²θ = 1</span><span class="r"><span class="kt">tan</span> θ = <span class="fr"><span class="ks">sin θ</span><span class="kc">cos θ</span></span></span><span class="r">1 + <span class="kt">tan</span>²θ = <span class="fr"><span>1</span><span class="kc">cos²θ</span></span></span></div>
+        <div class="btns" role="group" aria-label="分かっているもの"><button class="s" id="m5s" aria-pressed="true">sin θ が分かっている</button><button class="c" id="m5c" aria-pressed="false">cos θ が分かっている</button></div>
+        <div class="btns" id="v5"></div>
+        <div class="btns" role="group" id="g5"></div>
+      </div>
+    </div>
+    <ol class="steps" id="steps5"></ol>
+  </section>
+
+  <!-- 6 -->
+  <section class="lab" id="s6">
+    <div class="lab-h"><span class="no">06</span><h2>正弦定理・余弦定理・三角形の面積</h2><p class="gist">三角形の「分かっているもの」で、使う公式が決まる。</p></div>
+    <div class="lab-body">
+      <figure class="stage"><canvas id="c6" aria-label="三角形と公式"></canvas></figure>
+      <div class="side">
+        <div class="btns" role="group" aria-label="公式"><button id="m6a" aria-pressed="true">余弦定理</button><button id="m6b" aria-pressed="false">正弦定理</button><button id="m6c" aria-pressed="false">面積</button></div>
+        <div class="ctl"><div class="row"><label for="b6">辺 b（CA）</label><output id="o-b6"></output></div>
+          <input type="range" id="b6" min="1" max="6" step="0.5" value="3"></div>
+        <div class="ctl"><div class="row"><label for="c6s">辺 c（AB）</label><output id="o-c6"></output></div>
+          <input type="range" id="c6s" min="1" max="6" step="0.5" value="5"></div>
+        <div class="ctl"><div class="row"><label for="A6">角 A</label><output id="o-A6"></output></div>
+          <input type="range" id="A6" min="20" max="160" step="1" value="60"></div>
+        <div class="eq" id="eq6"></div>
+        <p class="tip" id="tip6"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="lab" id="s7">
+    <div class="lab-h"><span class="no">07</span><h2>問題を解くときのポイント</h2><p class="gist">迷ったら「単位円を描く」「三角形の図に分かっている量を書き込む」。</p></div>
+    <ol class="flow">
+      <li>図を描く<small>単位円 or 三角形</small></li>
+      <li>分かっている量を書き込む<small>辺・角・外接円</small></li>
+      <li>公式を選ぶ<small>下の表で判断</small></li>
+      <li>範囲と符号を確認<small>0° ≦ θ ≦ 180°、鈍角の cos は負</small></li>
+    </ol>
+    <div class="card"><h3>どの公式を使う？</h3>
+      <div class="tbl"><table>
+        <thead><tr><th class="h">分かっているもの</th><th class="h">求めたいもの</th><th class="h">使う公式</th></tr></thead>
+        <tbody>
+          <tr><td class="h" style="font-family:var(--sans);font-weight:500">2 辺とその間の角</td><td class="h" style="font-family:var(--sans);font-weight:500">残りの辺</td><td class="h">余弦定理 a² = b² + c² − 2bc cos A</td></tr>
+          <tr><td class="h" style="font-family:var(--sans);font-weight:500">3 辺</td><td class="h" style="font-family:var(--sans);font-weight:500">角</td><td class="h">余弦定理 cos A = (b² + c² − a²) / 2bc</td></tr>
+          <tr><td class="h" style="font-family:var(--sans);font-weight:500">1 辺と 2 角</td><td class="h" style="font-family:var(--sans);font-weight:500">他の辺</td><td class="h">正弦定理 a / sin A = b / sin B</td></tr>
+          <tr><td class="h" style="font-family:var(--sans);font-weight:500">外接円の半径 R が関係</td><td class="h" style="font-family:var(--sans);font-weight:500">R や辺</td><td class="h">正弦定理 a / sin A = 2R</td></tr>
+          <tr><td class="h" style="font-family:var(--sans);font-weight:500">2 辺とその間の角</td><td class="h" style="font-family:var(--sans);font-weight:500">面積</td><td class="h">S = ½ bc sin A</td></tr>
+        </tbody></table></div></div>
+    <div class="cards">
+      <div class="card"><h3>定義と有名角</h3>
+        <ul><li>sin = 高さ／斜辺、cos = 底辺／斜辺、tan = 高さ／底辺</li><li>30°・60° は 1 : √3 : 2、45° は 1 : 1 : √2 の三角形を描いて読む</li><li>単位円では P(cos θ, sin θ)、tan は直線 x = 1 との交点の y 座標</li></ul></div>
+      <div class="card"><h3>鈍角の三角比</h3>
+        <ul><li>90° &lt; θ &lt; 180° では cos θ &lt; 0、tan θ &lt; 0</li><li>sin(180° − θ) = sin θ、cos(180° − θ) = −cos θ</li><li>tan 90° は存在しない（0 ではない）</li></ul>
+        <p class="ng">ミス注意：鈍角なのに cos を正のまま答える</p></div>
+      <div class="card"><h3>値から角を求める</h3>
+        <ul><li>sin θ = k は横線 y = k と単位円の交点 → 答えは 2 つ（k = 1 なら 90° だけ）</li><li>cos θ = k は縦線 x = k → 答えは 1 つ</li><li>tan θ = k は点 (1, k) と原点を結ぶ直線 → 1 つ</li></ul>
+        <p class="ng">ミス注意：sin θ = ½ で 30° だけ答え、150° を落とす</p></div>
+      <div class="card"><h3>相互関係の使い方</h3>
+        <ul><li>sin²θ + cos²θ = 1 で 2 乗を求めてから √ をとる</li><li>符号は θ の範囲で決める（鋭角なら +、鈍角の cos・tan は −）</li><li>tan から求めるときは 1 + tan²θ = 1／cos²θ</li></ul>
+        <p class="ng">ミス注意：√ をとったときの ± を考えない</p></div>
+      <div class="card"><h3>正弦定理・余弦定理</h3>
+        <ul><li>余弦定理の「−2bc cos A」は、A が鈍角なら cos A &lt; 0 なので実質プラス（辺が長くなる）</li><li>正弦定理は「向かい合う辺と角」のペアで使う</li><li>2 つの角が分かれば、残りの角は 180° から引いて求める</li></ul></div>
+      <div class="card"><h3>面積</h3>
+        <ul><li>S = ½ × 2 辺 × その<b>間の角</b>の sin</li><li>高さ = b sin A。鈍角でも sin A &gt; 0 なので同じ式でよい</li><li>3 辺だけ分かるときは、余弦定理で cos → 相互関係で sin → 面積</li></ul></div>
+    </div>
+    <div class="card"><h3>参考にしたサイト・動画</h3>
+      <ul class="refs">
+        <li><a href="https://www.himawari-math.com/note/triangular/triangular3-note/" target="_blank" rel="noopener">ひまわり数学教室「三角比の拡張」</a>（単位円とアニメーションでの拡張）</li>
+        <li><a href="https://www.ozl.jp/unit/sankaku_hi/1200.html" target="_blank" rel="noopener">おおぞらラボ「三角比を単位円で表す」</a></li>
+        <li><a href="http://www.ftext.org/text/section/76" target="_blank" rel="noopener">FTEXT「三角比の拡張」</a></li>
+        <li><a href="https://note.com/mei_math/n/n535e6f8fbe27" target="_blank" rel="noopener">mei「三角比の導入から拡張まで」</a>（なぜ単位円を使うか）</li>
+        <li><a href="https://www.koubunkan-n.jp/news/trigonometric-ratio/" target="_blank" rel="noopener">好文館「三角比をわかりやすく解説」</a>（筆記体の覚え方・公式の整理）</li>
+        <li><a href="https://www.youtube.com/watch?v=V9JXxHH1INg" target="_blank" rel="noopener">YouTube：秀英iD予備校「単位円を使いこなせ！」</a></li>
+        <li><a href="https://www.youtube.com/watch?v=MRMyuQojRXE" target="_blank" rel="noopener">YouTube：「鈍角の三角比 演習④」</a>（不適な解・2 つの解の見落とし）</li>
+        <li><a href="https://www.youtube.com/@toaruotoko" target="_blank" rel="noopener">YouTube：とある男が授業をしてみた</a>（三角比の授業シリーズ）</li>
+      </ul></div>
+  </section>
+
+  <footer>三角比ラボ ／ 数学Ⅰ 図形と計量の学習用</footer>
+</div>
+
+<script>
+(()=>{
+const root=document.documentElement;
+const css=n=>getComputedStyle(root).getPropertyValue(n).trim();
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=id=>document.getElementById(id);
+const R=Math.PI/180;
+const fmt=(n,d=2)=>{let r=Math.round(n*10**d)/10**d;if(Object.is(r,-0))r=0;return String(r)};
+const sf=(n,d=2)=>(n<0?'−':'')+fmt(Math.abs(n),d);
+const f3=n=>{let v=(Math.round(n*1000)/1000);if(Object.is(v,-0))v=0;return (v<0?'−':'')+Math.abs(v).toFixed(3)};
+function tween(ms,step,done){
+  if(reduce){step(1);done&&done();return()=>{}}
+  let t0=null,id;const f=t=>{if(t0===null)t0=t;const k=Math.min(1,(t-t0)/ms);step(k);if(k<1)id=requestAnimationFrame(f);else done&&done()};
+  id=requestAnimationFrame(f);return()=>cancelAnimationFrame(id);
+}
+const FR=(n,d,neg)=>(neg?'−':'')+(d?`<span class="fr"><span>${n}</span><span>${d}</span></span>`:n);
+// exact values table
+const EX={0:['0','1','0'],30:[FR(1,2),FR('√3',2),FR(1,'√3')],45:[FR(1,'√2'),FR(1,'√2'),'1'],60:[FR('√3',2),FR(1,2),'√3'],90:['1','0','なし'],
+  120:[FR('√3',2),FR(1,2,1),'−√3'],135:[FR(1,'√2'),FR(1,'√2',1),'−1'],150:[FR(1,2),FR('√3',2,1),FR(1,'√3',1)],180:['0','−1','0']};
+
+class Plot{
+  constructor(cv,v){this.c=cv;this.ctx=cv.getContext('2d');this.v=v}
+  fit(){
+    const r=this.c.getBoundingClientRect(),d=window.devicePixelRatio||1;
+    this.w=r.width;this.h=r.height;const W=Math.round(r.width*d),H=Math.round(r.height*d);
+    if(this.c.width!==W||this.c.height!==H){this.c.width=W;this.c.height=H}
+    this.ctx.setTransform(d,0,0,d,0,0);this.ctx.clearRect(0,0,this.w,this.h);
+    this.col={grid:css('--grid'),axis:css('--axis'),muted:css('--muted'),ink:css('--ink'),panel:css('--panel'),line:css('--line'),
+      accent:css('--accent'),accentSoft:css('--accent-soft'),warm:css('--warm'),warmSoft:css('--warm-soft'),teal:css('--teal'),tealSoft:css('--teal-soft')};
+  }
+  X(x){const v=this.v;return(x-v.x0)/(v.x1-v.x0)*this.w}
+  Y(y){const v=this.v;return this.h-(y-v.y0)/(v.y1-v.y0)*this.h}
+  S(){return this.w/(this.v.x1-this.v.x0)}
+  wx(px){return this.v.x0+px/this.w*(this.v.x1-this.v.x0)}
+  wy(py){return this.v.y0+(this.h-py)/this.h*(this.v.y1-this.v.y0)}
+  grid(step){const{ctx,v}=this;ctx.lineWidth=1;ctx.strokeStyle=this.col.grid;ctx.beginPath();
+    for(let x=Math.ceil(v.x0/step)*step;x<=v.x1;x+=step){const p=Math.round(this.X(x))+.5;ctx.moveTo(p,0);ctx.lineTo(p,this.h)}
+    for(let y=Math.ceil(v.y0/step)*step;y<=v.y1;y+=step){const p=Math.round(this.Y(y))+.5;ctx.moveTo(0,p);ctx.lineTo(this.w,p)}
+    ctx.stroke()}
+  axes(){const{ctx}=this,ox=this.X(0),oy=this.Y(0);ctx.strokeStyle=this.col.axis;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(0,oy);ctx.lineTo(this.w,oy);ctx.moveTo(ox,0);ctx.lineTo(ox,this.h);ctx.stroke();
+    ctx.font='italic 14px Georgia, serif';ctx.fillStyle=this.col.ink;ctx.textAlign='right';ctx.textBaseline='bottom';ctx.fillText('x',this.w-6,oy-3);ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText('y',ox+6,4);
+    ctx.font='11px "JetBrains Mono", monospace';ctx.fillStyle=this.col.muted;ctx.textAlign='right';ctx.fillText('O',ox-4,oy+3)}
+  line(x1,y1,x2,y2,o={}){const c=this.ctx;c.save();c.strokeStyle=o.color||this.col.ink;c.lineWidth=o.width||2;c.setLineDash(o.dash||[]);c.lineCap='round';c.beginPath();c.moveTo(this.X(x1),this.Y(y1));c.lineTo(this.X(x2),this.Y(y2));c.stroke();c.restore()}
+  poly(pts,o={}){const c=this.ctx;c.save();c.beginPath();pts.forEach(([x,y],i)=>i?c.lineTo(this.X(x),this.Y(y)):c.moveTo(this.X(x),this.Y(y)));c.closePath();
+    if(o.fill){c.fillStyle=o.fill;c.fill()}if(o.stroke){c.strokeStyle=o.stroke;c.lineWidth=o.width||2;c.lineJoin='round';c.stroke()}c.restore()}
+  circle(cx,cy,r,o={}){const c=this.ctx;c.save();c.beginPath();c.arc(this.X(cx),this.Y(cy),r*this.S(),0,Math.PI*2);if(o.fill){c.fillStyle=o.fill;c.fill()}c.strokeStyle=o.color||this.col.ink;c.lineWidth=o.width||1.5;c.setLineDash(o.dash||[]);c.stroke();c.restore()}
+  arc(cx,cy,rp,a0,a1,o={}){ // rp in pixels, angles deg (world, CCW)
+    if(Math.abs(a1-a0)<.01)return;const c=this.ctx;c.save();c.beginPath();c.arc(this.X(cx),this.Y(cy),rp,-a1*R,-a0*R);c.strokeStyle=o.color||this.col.ink;c.lineWidth=o.width||2;c.stroke();c.restore()}
+  label(px,py,s,o={}){const c=this.ctx;c.save();c.font=o.font||'700 13px "Zen Kaku Gothic New", sans-serif';c.textAlign=o.align||'center';c.textBaseline=o.base||'middle';
+    c.lineWidth=4;c.lineJoin='round';c.strokeStyle=this.col.panel;c.strokeText(s,px,py);c.fillStyle=o.color||this.col.ink;c.fillText(s,px,py);c.restore()}
+  t(x,y,s,o={}){this.label(this.X(x)+(o.dx||0),this.Y(y)+(o.dy||0),s,o)}
+  dot(x,y,o={}){const c=this.ctx;c.save();c.beginPath();c.arc(this.X(x),this.Y(y),o.r||5,0,Math.PI*2);c.fillStyle=o.hollow?this.col.panel:(o.color||this.col.ink);c.fill();c.lineWidth=2;c.strokeStyle=o.color||this.col.ink;c.stroke();c.restore()}
+  rightMark(x,y,dx1,dy1,dx2,dy2){const s=12,c=this.ctx,px=this.X(x),py=this.Y(y);c.save();c.strokeStyle=this.col.muted;c.lineWidth=1.5;c.beginPath();
+    c.moveTo(px+dx1*s,py-dy1*s);c.lineTo(px+dx1*s+dx2*s,py-dy1*s-dy2*s);c.lineTo(px+dx2*s,py-dy2*s);c.stroke();c.restore()}
+}
+const renders=[];
+function lab(id,view,render){const p=new Plot($(id),view);const r=()=>{p.fit();render(p)};renders.push(r);new ResizeObserver(r).observe(p.c);return{p,r}}
+const renderAll=()=>renders.forEach(r=>r());
+const UV={x0:-1.5,x1:1.5,y0:-0.6,y1:1.65};
+function unitBase(p,full){
+  const c=p.col;p.grid(.5);p.axes();
+  p.circle(0,0,1,{color:c.line,width:1.2});
+  if(!full)p.arc(0,0,p.S(),0,180,{color:c.axis,width:2});
+  p.t(1,0,'1',{dx:8,dy:12,font:'11px "JetBrains Mono", monospace',color:c.muted});
+  p.t(-1,0,'−1',{dx:-12,dy:12,font:'11px "JetBrains Mono", monospace',color:c.muted});
+  p.t(0,1,'1',{dx:-10,dy:-8,font:'11px "JetBrains Mono", monospace',color:c.muted});
+}
+
+/* ---------- 1 ---------- */
+const wr={kind:null,t:0};let stopW=()=>{};
+const L1=lab('c1',{x0:-0.4,x1:4.4,y0:-0.5,y1:3.1},p=>{
+  const th=+$('th1').value,r=+$('r1').value,c=p.col;
+  const A=[0.2,0],B=[0.2+r*Math.cos(th*R),r*Math.sin(th*R)],C=[B[0],0];
+  p.grid(.5);
+  p.poly([A,B,C],{fill:c.accentSoft});
+  p.line(...A,...C,{color:c.accent,width:3});
+  p.line(...C,...B,{color:c.warm,width:3});
+  p.line(...A,...B,{color:c.ink,width:3});
+  p.rightMark(C[0],C[1],-1,0,0,1);
+  p.arc(A[0],A[1],30,0,th,{color:c.ink,width:1.5});
+  p.t(A[0],A[1],'θ',{dx:46*Math.cos(th/2*R),dy:-46*Math.sin(th/2*R),font:'italic 700 16px Georgia, serif'});
+  const H=r*Math.sin(th*R),W=r*Math.cos(th*R);
+  p.t((A[0]+C[0])/2,0,'底辺 '+fmt(W),{dy:16,color:c.accent});
+  p.t(C[0],H/2,'高さ '+fmt(H),{dx:12,align:'left',color:c.warm});
+  const mx=(A[0]+B[0])/2,my=H/2,nx=-Math.sin(th*R),ny=Math.cos(th*R);
+  p.t(mx,my,'斜辺 '+fmt(r),{dx:nx*22,dy:-ny*22});
+  // handwriting animation
+  if(wr.kind){
+    const segs={s:[[A,B],[B,C]],c:[[B,A],[A,C]],t:[[A,C],[C,B]]}[wr.kind];
+    const col={s:c.warm,c:c.accent,t:c.teal}[wr.kind];
+    segs.forEach((sg,i)=>{
+      const k=Math.max(0,Math.min(1,wr.t*2-i));if(k<=0)return;
+      const [[x1,y1],[x2,y2]]=sg,xe=x1+(x2-x1)*k,ye=y1+(y2-y1)*k;
+      p.ctx.save();p.ctx.globalAlpha=.55;p.line(x1,y1,xe,ye,{color:col,width:10});p.ctx.restore();
+      if(k>.95)p.t((x1+x2)/2,(y1+y2)/2,i?'② 分子':'① 分母',{color:col,font:'700 14px "Zen Kaku Gothic New", sans-serif',dx:i?(wr.kind==='c'?0:-40):(wr.kind==='t'?0:-40),dy:i?(wr.kind==='c'?-18:0):(wr.kind==='t'?-18:-6)});
+    });
+  }
+});
+function up1(){
+  const th=+$('th1').value,r=+$('r1').value,H=r*Math.sin(th*R),W=r*Math.cos(th*R);
+  $('o-th1').textContent=th+'°';$('o-r1').textContent=fmt(r,1);
+  const hl=k=>wr.kind===k&&wr.t>=1?' style="outline:2px solid currentColor;border-radius:6px;outline-offset:2px"':'';
+  let ratio='';
+  if(th===30)ratio='底辺 : 高さ : 斜辺 = √3 : 1 : 2';
+  if(th===45)ratio='底辺 : 高さ : 斜辺 = 1 : 1 : √2';
+  if(th===60)ratio='底辺 : 高さ : 斜辺 = 1 : √3 : 2';
+  const ex=EX[th];
+  $('eq1').innerHTML=
+   `<span class="r ks"${hl('s')}>sin ${th}° = ${FR('高さ','斜辺')} = ${FR(fmt(H),fmt(r))} ≒ ${f3(H/r)}${ex?' = '+ex[0]:''}</span>
+    <span class="r kc"${hl('c')}>cos ${th}° = ${FR('底辺','斜辺')} = ${FR(fmt(W),fmt(r))} ≒ ${f3(W/r)}${ex?' = '+ex[1]:''}</span>
+    <span class="r kt"${hl('t')}>tan ${th}° = ${FR('高さ','底辺')} = ${FR(fmt(H),fmt(W))} ≒ ${f3(H/W)}${ex?' = '+ex[2]:''}</span>`+
+    (ratio?`<span class="r" style="font-size:.85em;color:var(--muted)">${ratio}</span>`:'');
+  L1.r();
+}
+['th1','r1'].forEach(id=>$(id).addEventListener('input',up1));
+$('q1').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const from=+$('th1').value,to=+b.dataset.v;
+  tween(500,k=>{$('th1').value=Math.round(from+(to-from)*k);up1()})});
+[['w-s','s'],['w-c','c'],['w-t','t']].forEach(([id,k])=>$(id).addEventListener('click',()=>{stopW();wr.kind=k;wr.t=0;stopW=tween(1600,x=>{wr.t=x;up1()})}));
+
+/* ---------- 2 ---------- */
+const L2=lab('c2',UV,p=>{
+  const th=+$('th2').value,c=p.col,cs=Math.cos(th*R),sn=Math.sin(th*R);
+  unitBase(p);
+  // tan
+  p.line(1,-5,1,5,{color:c.teal,width:1.2,dash:[4,4]});
+  if(th!==90){
+    const tn=Math.tan(th*R);
+    if(th>90)p.line(0,0,1,tn,{color:c.teal,width:1.5,dash:[6,4]});
+    else p.line(cs,sn,1,tn,{color:c.teal,width:1.5,dash:[6,4]});
+    p.line(1,0,1,tn,{color:c.teal,width:4});
+    p.dot(1,tn,{color:c.teal,r:4});
+    const ty=Math.max(UV.y0+.1,Math.min(UV.y1-.1,tn));
+    p.t(1,ty,'tan '+f3(tn),{dx:8,align:'left',color:c.teal,dy:tn>0?-10:10});
+  }else p.t(1,1.45,'tan 90° は存在しない',{align:'right',dx:-6,color:c.teal});
+  // angle
+  p.arc(0,0,26,0,th,{color:c.ink,width:1.5});
+  p.t(0,0,'θ',{dx:40*Math.cos(th/2*R),dy:-40*Math.sin(th/2*R),font:'italic 700 15px Georgia, serif'});
+  p.line(0,0,cs,sn,{color:c.ink,width:2.5});
+  p.line(0,0,cs,0,{color:c.accent,width:5});
+  p.line(cs,0,cs,sn,{color:c.warm,width:5});
+  p.dot(cs,sn,{color:c.ink,r:6});
+  p.t(cs,sn,'P',{dx:cs>=0?12:-12,dy:-12,font:'italic 700 15px Georgia, serif'});
+  p.t(cs/2,0,'cos '+f3(cs),{dy:14,color:c.accent});
+  if(sn>.08)p.t(cs,sn/2,'sin '+f3(sn),{dx:cs>=0?-8:8,align:cs>=0?'right':'left',color:c.warm});
+});
+function up2(){
+  const th=+$('th2').value,cs=Math.cos(th*R),sn=Math.sin(th*R),ex=EX[th];
+  $('o-th2').textContent=th+'°';
+  const v=(i,n)=>ex?ex[i]:(n===null?'なし':f3(n));
+  $('eq2').innerHTML=`<span class="r">P( <span class="kc">cos θ</span>, <span class="ks">sin θ</span> ) = ( ${f3(cs)}, ${f3(sn)} )</span>
+    <span class="r ks">sin ${th}° = ${v(0,sn)}</span><span class="r kc">cos ${th}° = ${v(1,cs)}</span><span class="r kt">tan ${th}° = ${v(2,th===90?null:Math.tan(th*R))}</span>`;
+  const sg=n=>Math.abs(n)<1e-9?'0':n>0?'+':'−';
+  $('sign2').innerHTML=`<span class="${th<90?'on':''}">鋭角 0° &lt; θ &lt; 90°</span><span class="${th===90?'on':''}">θ = 90°</span><span class="${th>90&&th<180?'on':''}">鈍角 90° &lt; θ &lt; 180°</span>
+    <span>符号：sin ${sg(sn)} ／ cos ${sg(cs)} ／ tan ${th===90?'なし':sg(Math.tan(th*R))}</span>`;
+  [...document.querySelectorAll('#tbl2 col')].forEach((c,i)=>c.classList.toggle('on',i>0&&[0,30,45,60,90,120,135,150,180][i-1]===th));
+  L2.r();
+}
+$('tb2').innerHTML=[['sin θ',0,'ks'],['cos θ',1,'kc'],['tan θ',2,'kt']].map(([n,i,k])=>`<tr><th class="h ${k}">${n}</th>${[0,30,45,60,90,120,135,150,180].map(d=>`<td class="${EX[d][i].startsWith('−')?'neg':''}">${EX[d][i]}</td>`).join('')}</tr>`).join('');
+let stop2=()=>{};
+$('th2').addEventListener('input',()=>{stop2();up2()});
+$('play2').addEventListener('click',()=>{stop2();stop2=tween(6000,k=>{$('th2').value=Math.round(180*k);up2()})});
+(()=>{const cv=$('c2');let on=false;
+  const mv=e=>{const r=cv.getBoundingClientRect(),x=L2.p.wx(e.clientX-r.left),y=L2.p.wy(e.clientY-r.top);
+    let a=Math.atan2(y,x)/R;if(a<0)a=x>=0?0:180;$('th2').value=Math.round(a);stop2();up2()};
+  cv.addEventListener('pointerdown',e=>{on=true;cv.setPointerCapture(e.pointerId);mv(e)});
+  cv.addEventListener('pointermove',e=>{if(on)mv(e)});
+  cv.addEventListener('pointerup',()=>on=false);cv.addEventListener('pointercancel',()=>on=false);
+})();
+
+/* ---------- 3 ---------- */
+let mode3='a';
+const L3=lab('c3',UV,p=>{
+  const th=+$('th3').value,c=p.col,cs=Math.cos(th*R),sn=Math.sin(th*R);
+  unitBase(p);
+  const Q=mode3==='a'?[-cs,sn]:[sn,cs],qa=mode3==='a'?180-th:90-th;
+  if(mode3==='b')p.line(-0.6,-0.6,1.65,1.65,{color:c.muted,width:1,dash:[3,4]});
+  if(mode3==='b')p.t(1.3,1.3,'y = x',{dx:14,color:c.muted,font:'500 12px "Zen Kaku Gothic New", sans-serif'});
+  // P
+  p.line(0,0,cs,sn,{color:c.ink,width:2});p.line(0,0,cs,0,{color:c.accent,width:4});p.line(cs,0,cs,sn,{color:c.warm,width:4});
+  // Q
+  p.line(0,0,Q[0],Q[1],{color:c.ink,width:2,dash:[6,4]});p.line(0,0,Q[0],0,{color:c.accent,width:4});p.line(Q[0],0,Q[0],Q[1],{color:c.warm,width:4});
+  p.line(cs,sn,Q[0],Q[1],{color:c.muted,width:1,dash:[2,4]});
+  p.arc(0,0,24,0,th,{color:c.ink,width:1.5});
+  p.arc(0,0,40,0,qa,{color:c.teal,width:1.5});
+  p.dot(cs,sn,{r:6});p.dot(Q[0],Q[1],{r:6,color:c.teal});
+  p.t(cs,sn,`P (${th}°)`,{dx:12,dy:-12,align:'left'});
+  p.t(Q[0],Q[1],`Q (${qa}°)`,{dx:Q[0]<0?-12:12,dy:-12,align:Q[0]<0?'right':'left',color:c.teal});
+});
+function up3(){
+  const th=+$('th3').value;$('o-th3').textContent=th+'°';
+  if(mode3==='a'){
+    $('eq3').innerHTML=`<span class="r ks">sin(180° − θ) = sin θ</span><span class="r kc">cos(180° − θ) = −cos θ</span><span class="r kt">tan(180° − θ) = −tan θ</span>
+      <span class="r" style="font-size:.85em;color:var(--muted)">例：sin ${180-th}° = sin ${th}° ≒ ${f3(Math.sin(th*R))}、cos ${180-th}° = −cos ${th}° ≒ ${f3(-Math.cos(th*R))}</span>`;
+    $('tip3').innerHTML='<b class="k">ここがポイント</b>Q は P を <b>y 軸で折り返した点</b>。高さ（sin）は同じで、x 座標（cos）だけ符号が逆になります。鈍角の三角比は、この公式で鋭角に直して求めます。';
+  }else{
+    $('eq3').innerHTML=`<span class="r"><span class="ks">sin(90° − θ)</span> = <span class="kc">cos θ</span></span><span class="r"><span class="kc">cos(90° − θ)</span> = <span class="ks">sin θ</span></span><span class="r kt">tan(90° − θ) = ${FR(1,'tan θ')}</span>
+      <span class="r" style="font-size:.85em;color:var(--muted)">例：sin ${90-th}° = cos ${th}° ≒ ${f3(Math.cos(th*R))}</span>`;
+    $('tip3').innerHTML='<b class="k">ここがポイント</b>Q は P を <b>直線 y = x で折り返した点</b>。x 座標と y 座標が入れ替わるので、sin と cos が入れ替わります。直角三角形で見ると、もう一方の鋭角から見ているだけです。';
+  }
+  L3.r();
+}
+function setM3(m){mode3=m;$('m3a').setAttribute('aria-pressed',m==='a');$('m3b').setAttribute('aria-pressed',m==='b');up3()}
+$('m3a').addEventListener('click',()=>setM3('a'));$('m3b').addEventListener('click',()=>setM3('b'));
+$('th3').addEventListener('input',up3);
+
+/* ---------- 4 ---------- */
+let mode4='s',k4=.5;
+const Q4={s:[['0',0],['1/2',.5],['1/√2',Math.SQRT1_2],['√3/2',Math.sqrt(3)/2],['1',1]],
+  c:[['−1',-1],['−√3/2',-Math.sqrt(3)/2],['−1/√2',-Math.SQRT1_2],['−1/2',-.5],['0',0],['1/2',.5],['1/√2',Math.SQRT1_2],['√3/2',Math.sqrt(3)/2],['1',1]],
+  t:[['−√3',-Math.sqrt(3)],['−1',-1],['−1/√3',-1/Math.sqrt(3)],['0',0],['1/√3',1/Math.sqrt(3)],['1',1],['√3',Math.sqrt(3)]]};
+const RNG={s:[0,1],c:[-1,1],t:[-3,3]};
+function sol4(){
+  const k=k4;
+  if(mode4==='s'){const a=Math.asin(Math.min(1,Math.max(0,k)))/R;return Math.abs(a-90)<1e-6?[90]:[a,180-a]}
+  if(mode4==='c')return[Math.acos(Math.min(1,Math.max(-1,k)))/R];
+  if(Math.abs(k)<1e-9)return[0,180];
+  const a=Math.atan(k)/R;return[a<0?180+a:a];
+}
+const L4=lab('c4',UV,p=>{
+  const c=p.col,k=k4,sols=sol4();
+  unitBase(p);
+  if(mode4==='s'){p.line(-1.5,k,1.5,k,{color:c.warm,width:2,dash:[6,4]});p.t(-1.45,k,'y = '+fmt(k,3),{align:'left',dy:-11,color:c.warm})}
+  if(mode4==='c'){p.line(k,-0.6,k,1.65,{color:c.accent,width:2,dash:[6,4]});p.t(k,1.5,'x = '+fmt(k,3),{dx:6,align:'left',color:c.accent})}
+  if(mode4==='t'){p.line(1,-5,1,5,{color:c.teal,width:1.2,dash:[4,4]});p.dot(1,k,{color:c.teal,r:5});
+    p.line(-1.6,-1.6*k,1.6,1.6*k,{color:c.teal,width:2,dash:[6,4]});
+    const ty=Math.max(UV.y0+.1,Math.min(UV.y1-.1,k));p.t(1,ty,'(1, '+fmt(k,3)+')',{dx:8,align:'left',color:c.teal,dy:-10})}
+  const col={s:c.warm,c:c.accent,t:c.teal}[mode4];
+  sols.forEach((a,i)=>{const x=Math.cos(a*R),y=Math.sin(a*R);
+    p.line(0,0,x,y,{color:c.ink,width:2});p.arc(0,0,22+i*14,0,a,{color:col,width:2});
+    p.dot(x,y,{color:col,r:7});p.t(x,y,Math.round(a*10)/10+'°',{dx:x>=0?12:-12,dy:-14,align:x>=0?'left':'right',color:col,font:'700 14px "JetBrains Mono", monospace'})});
+});
+const nice=a=>{const r=Math.round(a);return Math.abs(a-r)<.05?r+'°':'約 '+(Math.round(a*10)/10)+'°'};
+function up4(){
+  const nm={s:'sin',c:'cos',t:'tan'}[mode4],sols=sol4();
+  $('o-k4').textContent=sf(k4,3);
+  const words={s:'横線 y = k',c:'縦線 x = k',t:'原点と点 (1, k) を結ぶ直線'}[mode4];
+  $('eq4').innerHTML=`<span class="r">${nm} θ = ${sf(k4,3)}（0° ≦ θ ≦ 180°）</span><span class="r">${words} と半円の交点 → <b>${sols.length} つ</b></span>
+    <span class="r" style="font-size:1.25em">θ = ${sols.map(nice).join(', ')}</span>`;
+  L4.r();
+}
+function setM4(m){mode4=m;['s','c','t'].forEach(x=>$('m4'+x).setAttribute('aria-pressed',x===m));
+  const s=$('k4');s.min=RNG[m][0];s.max=RNG[m][1];k4=m==='t'?1:.5;s.value=k4;
+  $('q4').innerHTML=Q4[m].map(([l,v])=>`<button class="${m}" data-v="${v}">${l}</button>`).join('');up4()}
+['s','c','t'].forEach(x=>$('m4'+x).addEventListener('click',()=>setM4(x)));
+$('k4').addEventListener('input',()=>{k4=+$('k4').value;up4()});
+$('q4').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const from=k4,to=+b.dataset.v;
+  tween(450,x=>{k4=from+(to-from)*x;$('k4').value=k4;up4()},()=>{k4=to;$('k4').value=to;up4()})});
+
+/* ---------- 5 ---------- */
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a||1};
+const simp=n=>{let a=1,r=n;for(let i=2;i*i<=r;i++){while(r%(i*i)===0){r/=i*i;a*=i}}return[a,r]};
+const rad=(a,r)=>r===1?String(a):(a===1?'':a)+'√'+r;
+function q(a,r,d,neg){ // (a√r)/d
+  const g=gcd(a,d);a/=g;d/=g;const n=rad(a,r);return d===1?(neg?'−':'')+n:FR(n,d,neg)}
+function tanFrom(p,a,r,neg){ // p/(a√r)
+  if(r===1){const g=gcd(p,a);return a/g===1?(neg?'−':'')+(p/g):FR(p/g,a/g,neg)}
+  const num=p,den=a*r,g=gcd(num,den),n2=num/g,d2=den/g;const nh=(n2===1?'':n2)+'√'+r;return d2===1?(neg?'−':'')+nh:FR(nh,d2,neg)}
+let mode5='s',val5=[1,3],opt5='acute';
+const V5={s:[[1,3],[2,3],[1,2],[3,5],[4,5],[1,4]],c:[[1,3],[2,3],[3,5],[4,5],[1,4]]};
+function th5(){const[p,qq]=val5;if(mode5==='s'){const a=Math.asin(p/qq)/R;return opt5==='acute'?a:180-a}return Math.acos((opt5==='neg'?-1:1)*p/qq)/R}
+const L5=lab('c5',UV,p=>{
+  const c=p.col,th=th5(),cs=Math.cos(th*R),sn=Math.sin(th*R);
+  unitBase(p);
+  p.poly([[0,0],[cs,0],[cs,sn]],{fill:c.accentSoft});
+  p.line(0,0,cs,sn,{color:c.ink,width:2.5});p.line(0,0,cs,0,{color:c.accent,width:5});p.line(cs,0,cs,sn,{color:c.warm,width:5});
+  p.rightMark(cs,0,cs>=0?-1:1,0,0,1);
+  p.dot(cs,sn,{r:6});
+  p.t(cs/2,sn/2,'1',{dx:cs>=0?-10:10,dy:-10,font:'700 14px "JetBrains Mono", monospace'});
+  p.t(cs/2,0,'|cos θ|',{dy:14,color:c.accent});
+  p.t(cs,sn/2,'sin θ',{dx:cs>=0?8:-8,align:cs>=0?'left':'right',color:c.warm});
+  p.arc(0,0,22,0,th,{color:c.ink,width:1.5});
+  p.t(0,1.45,'(cos θ)² + (sin θ)² = 1²',{font:'700 13px "JetBrains Mono", monospace',color:c.muted});
+  p.t(cs,sn,'θ ≒ '+Math.round(th*10)/10+'°',{dx:cs>=0?12:-12,dy:-14,align:cs>=0?'left':'right'});
+});
+function up5(){
+  $('m5s').setAttribute('aria-pressed',mode5==='s');$('m5c').setAttribute('aria-pressed',mode5==='c');
+  $('v5').innerHTML=V5[mode5].map(([a,b])=>`<button class="${mode5}" aria-pressed="${a===val5[0]&&b===val5[1]}" data-a="${a}" data-b="${b}">${mode5==='s'?'sin':'cos'} θ = ${(mode5==='c'&&opt5==='neg')?'−':''}${a}/${b}</button>`).join('');
+  $('g5').innerHTML=mode5==='s'?`<button data-o="acute" aria-pressed="${opt5==='acute'}">θ は鋭角</button><button data-o="obtuse" aria-pressed="${opt5==='obtuse'}">θ は鈍角</button>`
+    :`<button data-o="pos" aria-pressed="${opt5==='pos'}">cos θ は正（鋭角）</button><button data-o="neg" aria-pressed="${opt5==='neg'}">cos θ は負（鈍角）</button>`;
+  const[p,d]=val5,m=d*d-p*p,[a,r]=simp(m);let st;
+  if(mode5==='s'){
+    const neg=opt5==='obtuse';
+    st=[[`<span class="kc">cos²θ</span> = 1 − <span class="ks">sin²θ</span> = 1 − (${FR(p,d)})² = ${FR(m,d*d)}`,'sin²θ + cos²θ = 1 を使う'],
+      [`<span class="kc">cos θ</span> = ${neg?'−':'+'}${FR('√'+m,d)} = ${q(a,r,d,neg)}`,neg?'θ が鈍角なので cos θ < 0（マイナスを付ける）':'θ が鋭角なので cos θ > 0'],
+      [`<span class="kt">tan θ</span> = ${FR('sin θ','cos θ')} = ${FR(p,d)} ÷ (${q(a,r,d,neg)}) = ${tanFrom(p,a,r,neg)}`,'tan θ = sin θ ／ cos θ'+(r>1?'（分母を有理化）':'')]];
+  }else{
+    const neg=opt5==='neg';
+    st=[[`<span class="ks">sin²θ</span> = 1 − <span class="kc">cos²θ</span> = 1 − (${FR(p,d,neg)})² = ${FR(m,d*d)}`,'sin²θ + cos²θ = 1 を使う'],
+      [`<span class="ks">sin θ</span> = ${FR('√'+m,d)} = ${q(a,r,d,false)}`,'0° ≦ θ ≦ 180° では sin θ ≧ 0 なので、プラスだけ'],
+      [`<span class="kt">tan θ</span> = ${FR('sin θ','cos θ')} = ${(()=>{const g=gcd(a,p);const A=a/g,P=p/g;const n=rad(A,r);return P===1?(neg?'−':'')+n:FR(n,P,neg)})()}`,'tan θ = sin θ ／ cos θ（分母の d は約分で消える）']];
+  }
+  $('steps5').innerHTML=st.map((s,i)=>`<li class="${i===2?'last':''}"><span class="f">${s[0]}</span><span class="n">${i+1}. ${s[1]}</span></li>`).join('');
+  L5.r();
+}
+$('m5s').addEventListener('click',()=>{mode5='s';val5=[1,3];opt5='acute';up5()});
+$('m5c').addEventListener('click',()=>{mode5='c';val5=[1,3];opt5='pos';up5()});
+$('v5').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;val5=[+b.dataset.a,+b.dataset.b];up5()});
+$('g5').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;opt5=b.dataset.o;up5()});
+
+/* ---------- 6 ---------- */
+let mode6='a';
+function geo6(){
+  const b=+$('b6').value,c=+$('c6s').value,A=+$('A6').value;
+  const P={A:[0,0],B:[c,0],C:[b*Math.cos(A*R),b*Math.sin(A*R)]};
+  const a=Math.hypot(P.C[0]-c,P.C[1]);
+  const [Bx,By]=P.B,[Cx,Cy]=P.C,D=2*(Bx*Cy-By*Cx);
+  const U=[(Cy*(Bx*Bx+By*By)-By*(Cx*Cx+Cy*Cy))/D,(Bx*(Cx*Cx+Cy*Cy)-Cx*(Bx*Bx+By*By))/D];
+  const Rr=Math.hypot(...U);
+  const angB=Math.acos((a*a+c*c-b*b)/(2*a*c))/R;
+  return{a,b,c,A,P,U,Rr,angB,angC:180-A-angB,S:.5*b*c*Math.sin(A*R)};
+}
+const L6=lab('c6',{x0:0,x1:1,y0:0,y1:1},p=>{
+  const g=geo6(),c=p.col,{A:Pa,B:Pb,C:Pc}=g.P;
+  // fit view
+  let xs=[Pa[0],Pb[0],Pc[0]],ys=[Pa[1],Pb[1],Pc[1]];
+  if(mode6==='b'){xs.push(g.U[0]-g.Rr,g.U[0]+g.Rr);ys.push(g.U[1]-g.Rr,g.U[1]+g.Rr)}
+  let x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const pad=Math.max(x1-x0,y1-y0)*.14+.4;x0-=pad;x1+=pad;y0-=pad;y1+=pad;
+  let w=x1-x0,h=y1-y0;if(w/h<4/3){const nw=h*4/3;x0-=(nw-w)/2;x1=x0+nw}else{const nh=w*3/4;y0-=(nh-h)/2;y1=y0+nh}
+  p.v={x0,x1,y0,y1};
+  p.grid(1);
+  const tri=[Pa,Pb,Pc];
+  if(mode6==='c')p.poly(tri,{fill:c.tealSoft});
+  if(mode6==='b'){p.circle(g.U[0],g.U[1],g.Rr,{color:c.teal,width:2});p.dot(g.U[0],g.U[1],{r:4,color:c.teal});
+    p.line(g.U[0],g.U[1],Pb[0],Pb[1],{color:c.teal,width:1.5,dash:[5,4]});p.t((g.U[0]+Pb[0])/2,(g.U[1]+Pb[1])/2,'R = '+fmt(g.Rr),{color:c.teal,dx:10,align:'left'})}
+  const sideCol={a:c.ink,b:c.ink,c:c.ink};
+  if(mode6==='a'){sideCol.b=c.accent;sideCol.c=c.accent;sideCol.a=c.warm}
+  if(mode6==='b'){sideCol.a=c.warm}
+  if(mode6==='c'){sideCol.b=c.accent;sideCol.c=c.accent}
+  p.line(...Pa,...Pb,{color:sideCol.c,width:3.5});p.line(...Pa,...Pc,{color:sideCol.b,width:3.5});p.line(...Pb,...Pc,{color:sideCol.a,width:3.5});
+  if(mode6==='c'){const foot=[Pc[0],0];p.line(...Pc,...foot,{color:c.teal,width:2.5,dash:[6,4]});
+    if(Pc[0]<0)p.line(0,0,Pc[0],0,{color:c.muted,width:1.2,dash:[3,4]});
+    p.rightMark(foot[0],0,Pc[0]<0?1:(Pc[0]>Pb[0]?-1:1),0,0,1);
+    p.t(Pc[0],Pc[1]/2,'高さ b sin A = '+fmt(g.b*Math.sin(g.A*R)),{dx:8,align:'left',color:c.teal})}
+  p.arc(...Pa,28,0,g.A,{color:mode6==='c'||mode6==='a'?c.accent:c.warm,width:2.5});
+  p.t(...Pa,'A='+g.A+'°',{dx:48*Math.cos(g.A/2*R),dy:-48*Math.sin(g.A/2*R),font:'700 12px "JetBrains Mono", monospace',color:mode6==='b'?c.warm:c.accent});
+  // vertices
+  const cen=[(Pa[0]+Pb[0]+Pc[0])/3,(Pa[1]+Pb[1]+Pc[1])/3];
+  [['A',Pa],['B',Pb],['C',Pc]].forEach(([n,P])=>{const dx=P[0]-cen[0],dy=P[1]-cen[1],L=Math.hypot(dx,dy)||1;p.dot(...P,{r:4});p.t(...P,n,{dx:dx/L*18,dy:-dy/L*18,font:'italic 700 16px Georgia, serif'})});
+  const side=(P,Q,s,col)=>{const mx=(P[0]+Q[0])/2,my=(P[1]+Q[1])/2,dx=mx-cen[0],dy=my-cen[1],L=Math.hypot(dx,dy)||1;p.t(mx,my,s,{dx:dx/L*20,dy:-dy/L*20,color:col,font:'700 13px "JetBrains Mono", monospace'})};
+  side(Pa,Pb,'c = '+fmt(g.c),sideCol.c);side(Pa,Pc,'b = '+fmt(g.b),sideCol.b);side(Pb,Pc,mode6==='a'?'a = ?':'a = '+fmt(g.a),sideCol.a);
+});
+function up6(){
+  const g=geo6();$('o-b6').textContent=fmt(g.b,1);$('o-c6').textContent=fmt(g.c,1);$('o-A6').textContent=g.A+'°';
+  const cA=Math.cos(g.A*R),sA=Math.sin(g.A*R);
+  if(mode6==='a'){
+    $('eq6').innerHTML=`<span class="r">a² = b² + c² − 2bc cos A</span><span class="r">= ${fmt(g.b)}² + ${fmt(g.c)}² − 2·${fmt(g.b)}·${fmt(g.c)}·(${f3(cA)})</span><span class="r">= ${fmt(g.a*g.a)}</span><span class="r ks" style="font-size:1.2em">a ≒ ${fmt(g.a)}</span>`;
+    $('tip6').innerHTML=`<b class="k">ここがポイント</b>「2 辺とその<b>間の角</b>」から残りの辺を出すのが余弦定理。${g.A>90?'今は A が鈍角なので cos A &lt; 0。− 2bc cos A がプラスになり、a が長くなります。':g.A===90?'A = 90° だと cos A = 0 で、三平方の定理そのものになります。':'A を 90° より大きくすると、cos A が負になって a が一気に長くなる様子を見てみよう。'}`;
+  }else if(mode6==='b'){
+    $('eq6').innerHTML=`<span class="r">${FR('a','sin A')} = 2R</span><span class="r">${FR(fmt(g.a),'sin '+g.A+'°')} = ${FR(fmt(g.a),f3(sA))} ≒ ${fmt(g.a/sA)}</span><span class="r kt" style="font-size:1.2em">R ≒ ${fmt(g.Rr)}</span>
+      <span class="r" style="font-size:.85em;color:var(--muted)">B ≒ ${fmt(g.angB,1)}°、C ≒ ${fmt(g.angC,1)}°：b / sin B も c / sin C も同じ ${fmt(g.b/Math.sin(g.angB*R))}</span>`;
+    $('tip6').innerHTML='<b class="k">ここがポイント</b>正弦定理は「<b>向かい合う辺と角</b>」のペアの比がどれも 2R（外接円の直径）になる、という公式。外接円が出てきたら正弦定理を思い出そう。';
+  }else{
+    $('eq6').innerHTML=`<span class="r">S = ½ bc sin A</span><span class="r">= ½ · ${fmt(g.b)} · ${fmt(g.c)} · ${f3(sA)}</span><span class="r kt" style="font-size:1.2em">S ≒ ${fmt(g.S)}</span>`;
+    $('tip6').innerHTML=`<b class="k">ここがポイント</b>底辺 c、高さ b sin A の三角形なので S = ½ × c × b sin A。${g.A>90?'鈍角のときは高さが三角形の外に出ますが、sin A &gt; 0 なので式は同じです。':'A を鈍角にすると、高さが外に出る様子が見られます。'}`;
+  }
+  L6.r();
+}
+function setM6(m){mode6=m;['a','b','c'].forEach(x=>$('m6'+x).setAttribute('aria-pressed',x===m));up6()}
+['a','b','c'].forEach(x=>$('m6'+x).addEventListener('click',()=>setM6(x)));
+['b6','c6s','A6'].forEach(id=>$(id).addEventListener('input',up6));
+
+/* init */
+up1();up2();setM3('a');setM4('s');up5();setM6('a');
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(renderAll);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',renderAll);
+new MutationObserver(renderAll).observe(root,{attributes:true,attributeFilter:['data-theme']});
+})();
+</script>
+
+<a href="index.html" style="position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:9999;font:700 13px sans-serif;padding:8px 14px;border-radius:999px;background:#1f4e8c;color:#fff;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.2)">← 本棚へ</a></body></html>
