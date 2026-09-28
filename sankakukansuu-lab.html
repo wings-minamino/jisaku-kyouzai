@@ -175,7 +175,7 @@ footer{margin-top:28px;color:var(--muted);font-size:.85rem}
           <input type="range" id="th2" min="-360" max="720" step="15" value="210"></div>
         <div class="eq" id="eq2"></div>
         <div class="chips" id="quad2"></div>
-        <p class="tip"><b class="k">ここがポイント</b>符号は象限で決まります。第 1 象限はすべて正、第 2 象限は sin だけ正、第 3 象限は tan だけ正、第 4 象限は cos だけ正。「<b>全・s・t・c</b>（オール・シン・タン・コス）」と反時計回りに覚えます。</p>
+        <p class="tip"><b class="k">ここがポイント</b>符号は象限で決まります。第 1 象限はすべて正、第 2 象限は sin だけ正、第 3 象限は tan だけ正、第 4 象限は cos だけ正。第 1 象限から反時計回りに「<b>＋・サ・タ・コ</b>」と覚えます（＋ = 全部正、サ = sin、タ = tan、コ = cos だけ正）。図の各象限にも書いてあります。</p>
       </div>
     </div>
   </section>
@@ -313,6 +313,7 @@ footer{margin-top:28px;color:var(--muted);font-size:.85rem}
         <li><a href="https://rikeilabo.com/formulas-of-trigonometric-function" target="_blank" rel="noopener">理系ラボ「三角関数の公式まとめ（加法定理・変換・合成）」</a></li>
         <li><a href="https://lets-math.com/trigonometric_function_formula/" target="_blank" rel="noopener">学校よりわかりやすい高校数学「三角関数 公式一覧」</a></li>
         <li><a href="https://www.youtube.com/watch?v=Q7SnYM6QLEg" target="_blank" rel="noopener">YouTube：三角関数24 sinθのグラフ</a>、<a href="https://www.youtube.com/watch?v=DomJo4ThpsM" target="_blank" rel="noopener">三角関数26 sinの加法定理</a>、<a href="https://www.youtube.com/watch?v=p_ma4bYw7rA" target="_blank" rel="noopener">三角関数33 合成1</a></li>
+        <li>YouTuber かっつーさんの覚え方「＋サタコ」（象限ごとの符号）</li>
         <li><a href="https://www.youtube.com/watch?v=3B3rs1KyOqY" target="_blank" rel="noopener">YouTube：[数2][三角関数#14] 三角関数の合成（sin合成・cos合成）</a></li>
       </ul></div>
   </section>
@@ -466,7 +467,7 @@ const L2=lab('c2',CV,p=>{
   const a=((d%360)+360)%360;p.arc(0,0,24,0,a,{color:c.ink,width:1.5});
   p.line(0,0,cs,sn,{color:c.ink,width:2.5});p.line(0,0,cs,0,{color:c.accent,width:5});p.line(cs,0,cs,sn,{color:c.warm,width:5});
   p.dot(cs,sn,{r:6});p.t(cs,sn,'P',{dx:cs>=0?12:-12,dy:sn>=0?-12:12,font:'italic 700 15px Georgia, serif'});
-  [['Ⅰ',.8,.95],['Ⅱ',-.8,.95],['Ⅲ',-.8,-.95],['Ⅳ',.8,-.95]].forEach(([s,x,y])=>p.t(x,y,s,{color:c.muted,font:'700 13px "Zen Kaku Gothic New", sans-serif'}));
+  [['Ⅰ ＋',.8,.95],['Ⅱ サ',-.8,.95],['Ⅲ タ',-.8,-.95],['Ⅳ コ',.8,-.95]].forEach(([s,x,y])=>p.t(x,y,s,{color:c.muted,font:'700 13px "Zen Kaku Gothic New", sans-serif'}));
 });
 function up2(){
   const d=+$('th2').value,t=d*R,e=ex(d),cs=Math.cos(t),sn=Math.sin(t);
@@ -474,7 +475,7 @@ function up2(){
   const v=(i,x)=>e?e[i]:f3(x);
   $('eq2').innerHTML=`<span class="r">θ = ${d}° = ${piH(t)}</span><span class="r ks">sin θ = ${v(0,sn)}</span><span class="r kc">cos θ = ${v(1,cs)}</span><span class="r kt">tan θ = ${Math.abs(cs)<1e-9?'なし':v(2,sn/cs)}</span>`;
   const q=((d%360)+360)%360,k=q>0&&q<90?1:q>90&&q<180?2:q>180&&q<270?3:q>270?4:0;
-  const lab=['x 軸・y 軸上','第 1 象限：全部 +','第 2 象限：sin だけ +','第 3 象限：tan だけ +','第 4 象限：cos だけ +'];
+  const lab=['x 軸・y 軸上','第 1 象限「＋」：全部 +','第 2 象限「サ」：sin だけ +','第 3 象限「タ」：tan だけ +','第 4 象限「コ」：cos だけ +'];
   $('quad2').innerHTML=[1,2,3,4].map(i=>`<span class="${i===k?'on':''}">${lab[i]}</span>`).join('')+(k===0?'<span class="on">軸上（値が 0 や ±1）</span>':'');
   L2.r();
 }
