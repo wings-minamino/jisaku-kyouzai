@@ -33,8 +33,11 @@ body{background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New","Hi
 .wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 header h1{font-family:"Zen Maru Gothic",sans-serif;font-size:1.55rem;margin:0;text-wrap:balance}
 header p{margin:4px 0 0;color:var(--muted);max-width:70ch}
-.grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
-@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.grid.top:has(#gPanel[hidden]):has(#fPanel[hidden]){grid-template-columns:minmax(0,1fr)}
+.grid.one{grid-template-columns:minmax(0,1fr)}
+@media (max-width:700px){.grid{grid-template-columns:1fr}}
+.gside{display:flex;flex-direction:column;gap:12px}
 .panel{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px}
 .panel h2{font-family:"Zen Maru Gothic",sans-serif;font-size:1rem;margin:0;letter-spacing:.04em;color:var(--muted)}
 svg{display:block;width:100%;height:auto;touch-action:none}
@@ -88,7 +91,7 @@ svg text{font-family:"Zen Kaku Gothic New",sans-serif}
     </div>
   </header>
 
-  <div class="grid">
+  <div class="grid top">
     <section class="panel" aria-label="図形">
       <h2>図形</h2>
       <svg id="fig" viewBox="0 0 560 440" role="img" aria-label="図形と点P"></svg>
@@ -106,8 +109,23 @@ svg text{font-family:"Zen Kaku Gothic New",sans-serif}
       </div>
       <div class="explain" id="explain"></div>
     </section>
+    <div class="gside">
+      <section class="panel" id="gPanel" aria-label="グラフ">
+        <h2>グラフ</h2>
+        <svg id="graph" viewBox="0 0 540 320" role="img" aria-label="xとyのグラフ"></svg>
+        <p class="note">線の色は、点Pがいる辺の色と対応しています。</p>
+      </section>
+      <section class="panel" id="fPanel" aria-label="式">
+        <h2><span class="var">y</span> を <span class="var">x</span> の式で表す</h2>
+        <div class="formulas" id="formulas"></div>
+      </section>
+    </div>
 
-    <div style="display:flex;flex-direction:column;gap:16px">
+
+
+  </div>
+  <div class="grid one">
+
       <section class="panel" aria-label="設定">
         <h2>設定</h2>
         <div class="group">
@@ -159,18 +177,6 @@ svg text{font-family:"Zen Kaku Gothic New",sans-serif}
           <label><input type="checkbox" id="showH" checked> 底辺・高さを表示</label>
         </div>
       </section>
-
-      <section class="panel" id="fPanel" aria-label="式">
-        <h2><span class="var">y</span> を <span class="var">x</span> の式で表す</h2>
-        <div class="formulas" id="formulas"></div>
-      </section>
-
-      <section class="panel" id="gPanel" aria-label="グラフ">
-        <h2>グラフ</h2>
-        <svg id="graph" viewBox="0 0 540 320" role="img" aria-label="xとyのグラフ"></svg>
-        <p class="note">線の色は、点Pがいる辺の色と対応しています。</p>
-      </section>
-    </div>
   </div>
 </div>
 
