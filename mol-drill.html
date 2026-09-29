@@ -111,6 +111,8 @@ form.ans{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px
 .miss .a b{color:var(--ok)}
 @media (max-width:520px){.cbar{grid-template-columns:90px 1fr 48px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.help{font-size:13px;margin-left:8px;color:var(--mol,#2B5FD9);font-weight:700;text-decoration:none;white-space:nowrap}
+.help:hover{text-decoration:underline}
 </style>
 
 <div class="wrap">
@@ -345,6 +347,8 @@ function begin(){
   if(st.mode==="test"){var q=[];var cs=shuffle(st.cats);for(var i=0;i<10;i++)q.push(cs[i%cs.length]);st.queue=shuffle(q);}
   nextQ();
 }
+var HELP={num:["s9","9章 ×10²³ の計算"],mass:["s8","8章 モル質量の出し方"],vol:["s4","4章 22.4 L"],two:["s5","5章 mol の地図"],atom:["s7","7章 分子の中の原子"],rxn:["s10","10章 反応式と量"],conc:["s11","11章 モル濃度"]};
+function helpLink(c){var h=HELP[c];return h?' <a class="help" href="zu-de-wakaru-mol.html#'+h[0]+'" target="_blank" rel="noopener">解説：'+h[1]+' ↗</a>':'';}
 function catLabel(id){for(var i=0;i<CATS.length;i++)if(CATS[i].id===id)return CATS[i].label;}
 function nextQ(){
   var cat=st.mode==="test"?st.queue[st.idx]:pick(st.cats);
@@ -363,7 +367,7 @@ function render(){
   $("status").innerHTML=statusHTML();
   var q=st.q,sci=needSci(q.ans);
   var inp=sci?'<input id="mant" type="text" inputmode="decimal" autocomplete="off" aria-label="仮数"> × 10<sup><input id="expo" class="exp" type="text" inputmode="numeric" autocomplete="off" aria-label="指数"></sup>':'<input id="val" type="text" inputmode="decimal" autocomplete="off" aria-label="答え">';
-  $("main").innerHTML='<div class="card"><span class="tag">'+catLabel(q.cat)+'</span><div class="qtext">'+q.text+'</div>'+(q.vals?'<div class="vals">'+q.vals+'</div>':'')+
+  $("main").innerHTML='<div class="card"><span class="tag">'+catLabel(q.cat)+'</span>'+helpLink(q.cat)+'<div class="qtext">'+q.text+'</div>'+(q.vals?'<div class="vals">'+q.vals+'</div>':'')+
    '<form class="ans" id="af"><div class="inp">'+inp+'<span class="u">'+q.unit+'</span></div><button class="btn" type="submit" id="go">採点する</button><button class="btn sub" type="button" id="giveup">答えを見る</button></form><div id="fb"></div></div>';
   $("af").addEventListener("submit",function(e){e.preventDefault();if(st.answered){advance();}else grade(false);});
   $("giveup").addEventListener("click",function(){if(!st.answered)grade(true);});

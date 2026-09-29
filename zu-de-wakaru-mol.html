@@ -129,6 +129,34 @@ details .flow{margin-top:12px}
 footer{margin-top:56px;font-size:13px;color:var(--ink2)}
 footer ul{padding-left:1.2em;margin:6px 0 0}
 footer a{color:var(--mol)}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.toc a{font-size:13px;text-decoration:none;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+.toc a b{font-family:var(--mono);color:var(--mol);margin-right:4px}
+.toc a.new{border-color:var(--mol)}
+.toc a.drill{background:var(--mol);color:var(--onmol);border-color:var(--mol)}
+.awt{display:flex;flex-wrap:wrap;gap:6px 14px;font-family:var(--mono);font-size:14px;margin-top:6px}
+.awt span{display:inline-flex;align-items:center;gap:5px}.awt i{width:12px;height:12px;border-radius:50%;display:inline-block}
+.rules{display:grid;gap:8px}.rules>div{display:grid;grid-template-columns:7em 1fr;gap:10px;align-items:baseline;padding:8px 12px;border-radius:10px;background:var(--num-soft)}
+.rules b{font-family:var(--display);color:var(--num)}
+@media (max-width:520px){.rules>div{grid-template-columns:1fr}}
+.seg2{display:flex;gap:8px;flex-wrap:wrap}
+.seg2 .chip[aria-pressed="true"],#exVals .chip[aria-pressed="true"],#rxSel .chip[aria-pressed="true"]{background:var(--mol);border-color:var(--mol);color:var(--onmol)}
+.exsteps{margin:14px 0 0;padding-left:1.4em;display:grid;gap:8px;font-family:var(--mono);font-size:15px}
+.exsteps b{color:var(--num)}
+.mock{margin-top:12px;padding:10px 12px;border:1.5px dashed var(--line);border-radius:10px;font-size:15px}
+.mbox{display:inline-block;min-width:3em;text-align:center;border:1.5px solid var(--ink2);border-radius:6px;padding:0 6px;font-family:var(--mono);font-weight:600;background:var(--paper)}
+.mbox.sm{min-width:2em;font-size:.85em}
+#rxSel .chip{font-size:14px}
+.rxrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.rxc{display:grid;gap:4px;justify-items:center;padding:10px 14px;border:1.5px solid var(--line);border-radius:12px;min-width:110px}
+.rxc.base{border-color:var(--mol);background:var(--mol-soft)}
+.rxc .f{font-family:var(--display);font-weight:700;font-size:18px}
+.p-conc{background:var(--num-soft);color:var(--num)}
+table.guide{border-collapse:collapse;width:100%;min-width:480px;font-size:15px}
+.guide th,.guide td{border-bottom:1px solid var(--line);padding:10px;text-align:left}
+.guide th{font-size:13px;color:var(--ink2)}
+.guide a{color:var(--mol);font-weight:700;font-family:var(--mono)}
+.drill-btn{display:block;margin-top:16px;text-align:center;background:var(--mol);color:var(--onmol);text-decoration:none;font-family:var(--display);font-weight:700;font-size:18px;padding:14px;border-radius:14px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -137,6 +165,11 @@ footer a{color:var(--mol)}
   <div class="eyebrow">化学基礎・物質量</div>
   <h1>図でわかる <span class="m">mol</span></h1>
   <p class="lead">mol（モル）は「粒の数」を数えるための<b>まとめ単位</b>です。チョコ12粒を「1ダース」と呼ぶのと同じ考え方。図を順番に見ていけば、g・L・個数の計算まで一本の道でつながります。</p>
+  <nav class="toc" aria-label="目次">
+    <a href="#s1"><b>1</b>まとめて数える</a><a href="#s3"><b>3</b>1 mol の重さ</a><a href="#s4"><b>4</b>22.4 L</a><a href="#s5"><b>5</b>mol の地図</a><a href="#s7"><b>7</b>分子の中の原子</a>
+    <a class="new" href="#s8"><b>8</b>モル質量の出し方</a><a class="new" href="#s9"><b>9</b>×10²³ の計算</a><a class="new" href="#s10"><b>10</b>反応式と量</a><a class="new" href="#s11"><b>11</b>モル濃度</a><a class="new" href="#s12"><b>12</b>ドリル攻略ガイド</a>
+    <a class="drill" href="mol-drill.html" target="_blank" rel="noopener">molドリルへ →</a>
+  </nav>
 </header>
 
 <!-- 1 -->
@@ -343,6 +376,111 @@ footer a{color:var(--mol)}
   </div>
 </section>
 
+
+<!-- 8 -->
+<section id="s8">
+  <div class="sec-head"><span class="step">8</span><h2>化学式からモル質量を出す</h2></div>
+  <p class="note">モル質量は「原子量を、化学式に書いてある数だけ足したもの」。原子量は問題文に書いてあるので、覚えなくて大丈夫です。</p>
+  <div class="panel">
+    <div class="chips" id="mmSubs" role="group" aria-label="物質を選ぶ"></div>
+    <div class="blocks" id="mmBlocks" style="height:44px;margin-top:14px"></div>
+    <div class="eq" id="mmEq" style="font-size:16px;line-height:1.9"></div>
+    <p class="cap" style="text-align:left" id="mmNote"></p>
+    <div style="margin-top:14px;font-size:14px;color:var(--ink2)">ドリルで使う原子量</div>
+    <div class="awt" id="awt"></div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section id="s9">
+  <div class="sec-head"><span class="step">9</span><h2>「× 10²³」の計算のしかた</h2></div>
+  <p class="note">個数の問題は 6.0×10²³ のかけ算・わり算になります。<b>前の数どうし</b>と <b>10 の右上の数どうし</b>を別々に計算するのがコツ。</p>
+  <div class="panel">
+    <div class="rules">
+      <div><b>かけ算</b><span class="mono">(a×10<sup>m</sup>) × (b×10<sup>n</sup>) ＝ (a×b)×10<sup>m+n</sup></span></div>
+      <div><b>わり算</b><span class="mono">(a×10<sup>m</sup>) ÷ (b×10<sup>n</sup>) ＝ (a÷b)×10<sup>m−n</sup></span></div>
+      <div><b>形を整える</b><span class="mono">15×10<sup>23</sup> ＝ 1.5×10<sup>24</sup>　／　0.60×10<sup>23</sup> ＝ 6.0×10<sup>22</sup></span></div>
+    </div>
+    <div class="seg2" role="group" aria-label="向き" style="margin-top:14px"><button type="button" class="chip" id="exA" aria-pressed="true">mol → 個</button><button type="button" class="chip" id="exB" aria-pressed="false">個 → mol</button></div>
+    <div class="chips" id="exVals" style="margin-top:10px"></div>
+    <ol class="exsteps" id="exSteps"></ol>
+    <div class="mock" id="exMock"></div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section id="s10">
+  <div class="sec-head"><span class="step">10</span><h2>反応式の係数 ＝ mol の比</h2></div>
+  <p class="note">化学反応式の係数は「粒の数の比」。粒を 6.0×10²³ 個ずつまとめても比は変わらないので、<b>係数の比がそのまま mol の比</b>になります。</p>
+  <div class="panel">
+    <div class="chips" id="rxSel" role="group" aria-label="反応式を選ぶ"></div>
+    <svg class="fig" id="rxFig" viewBox="0 0 640 170" role="img" aria-label="反応式の粒の数"></svg>
+    <div class="row" style="margin-top:8px"><label for="rxBase">基準の物質を</label><select id="rxBase"></select><label for="rxK">にしたときの量</label><select id="rxK"><option value="0.5">0.50 mol</option><option value="1" selected>1 mol</option><option value="2">2 mol</option><option value="0.1">0.10 mol</option></select></div>
+    <div class="rxrow" id="rxRow"></div>
+  </div>
+  <details>
+    <summary><span class="q">例1</span>CH₄ + 2O₂ → CO₂ + 2H₂O で、メタン 8.0 g が燃えると CO₂ は標準状態で何 L？（C=12, H=1）</summary>
+    <div class="flow"><span class="pill p-mass">8.0 g</span><span class="op">÷16 →</span><span class="pill p-mol">0.50 mol（CH₄）</span><span class="op">×1/1 →</span><span class="pill p-mol">0.50 mol（CO₂）</span><span class="op">×22.4 →</span><span class="pill p-vol">11.2 L</span></div>
+  </details>
+  <details>
+    <summary><span class="q">例2</span>N₂ + 3H₂ → 2NH₃ で、水素 6.0 g が反応するとアンモニアは何 g？（N=14, H=1）</summary>
+    <div class="flow"><span class="pill p-mass">6.0 g</span><span class="op">÷2 →</span><span class="pill p-mol">3.0 mol（H₂）</span><span class="op">×2/3 →</span><span class="pill p-mol">2.0 mol（NH₃）</span><span class="op">×17 →</span><span class="pill p-mass">34 g</span></div>
+  </details>
+  <details>
+    <summary><span class="q">例3</span>Zn + 2HCl → ZnCl₂ + H₂ で、亜鉛 6.5 g が反応すると水素は標準状態で何 L？（Zn=65）</summary>
+    <div class="flow"><span class="pill p-mass">6.5 g</span><span class="op">÷65 →</span><span class="pill p-mol">0.10 mol（Zn）</span><span class="op">×1/1 →</span><span class="pill p-mol">0.10 mol（H₂）</span><span class="op">×22.4 →</span><span class="pill p-vol">2.24 L</span></div>
+  </details>
+  <div class="rule">g や L は、いったん mol に直す → 係数の比をかける → 目的の単位へ</div>
+</section>
+
+<!-- 11 -->
+<section id="s11">
+  <div class="sec-head"><span class="step">11</span><h2>モル濃度 ＝ 溶けている mol ÷ 水溶液の L</h2></div>
+  <p class="note">モル濃度（mol/L）は「水溶液 1 L あたりに、溶質が何 mol 溶けているか」。分母は<b>水ではなく水溶液全体</b>の体積です。</p>
+  <div class="panel">
+    <div class="scale-wrap" style="grid-template-columns:220px 1fr">
+      <svg class="fig" id="bk" viewBox="0 0 220 240" role="img" aria-label="ビーカーの水溶液"></svg>
+      <div>
+        <div class="row"><label for="cG">NaOH（式量 40）</label><select id="cG"><option>2.0</option><option selected>4.0</option><option>8.0</option><option>10</option></select><span class="op">g を溶かして</span></div>
+        <div class="row" style="margin-top:8px"><label for="cV">水溶液の体積</label><select id="cV"><option>100</option><option>200</option><option selected>250</option><option>500</option></select><span class="op">mL にした</span></div>
+        <div class="out" id="cSteps" style="margin-top:12px"></div>
+      </div>
+    </div>
+    <div class="facts" style="margin-top:16px">
+      <div class="fact"><p><strong>モル濃度を求める</strong><span class="mono">mol/L ＝ mol ÷ L</span></p></div>
+      <div class="fact"><p><strong>溶質の mol を求める</strong><span class="mono">mol ＝ mol/L × L</span></p></div>
+      <div class="fact"><p><strong>水溶液の体積を求める</strong><span class="mono">L ＝ mol ÷ mol/L</span></p></div>
+    </div>
+    <p class="warn" style="margin-top:10px">mL は 1000 でわって L に直してから使う（250 mL ＝ 0.250 L）。</p>
+  </div>
+</section>
+
+<!-- 12 -->
+<section id="s12">
+  <div class="sec-head"><span class="step">12</span><h2>molドリルの攻略ガイド</h2></div>
+  <p class="note">ドリルの出題範囲ごとに、使う道と読むべき章をまとめました。わからない問題が出たら、この表から該当の章に戻りましょう。</p>
+  <div class="panel" style="overflow-x:auto">
+    <table class="guide">
+      <thead><tr><th>ドリルの出題範囲</th><th>使う道</th><th>読む章</th></tr></thead>
+      <tbody>
+        <tr><td>個数 ⇔ mol</td><td class="mono">× ÷ 6.0×10²³</td><td><a href="#s5">5</a>・<a href="#s9">9</a></td></tr>
+        <tr><td>質量 ⇔ mol</td><td class="mono">× ÷ モル質量</td><td><a href="#s3">3</a>・<a href="#s8">8</a></td></tr>
+        <tr><td>気体の体積 ⇔ mol</td><td class="mono">× ÷ 22.4</td><td><a href="#s4">4</a></td></tr>
+        <tr><td>2段階の変換</td><td>いったん mol に直してから目的の単位へ</td><td><a href="#s5">5</a>・<a href="#s6">6</a></td></tr>
+        <tr><td>分子の中の原子</td><td class="mono">分子の mol × 原子の数</td><td><a href="#s7">7</a></td></tr>
+        <tr><td>反応式と量</td><td>mol に直す → 係数の比 → 目的の単位</td><td><a href="#s10">10</a></td></tr>
+        <tr><td>モル濃度</td><td class="mono">mol ÷ L（mL は ÷1000）</td><td><a href="#s11">11</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="facts">
+    <div class="fact"><p><strong>答えは有効数字 2 けたで OK</strong>ドリルは正しい答えから ±2% 以内なら正解になります。</p></div>
+    <div class="fact"><p><strong>大きな数の入れ方</strong>1.5×10²³ なら、□ に 1.5、10 の右上に 23 を入れる（<a href="#s9">9 章</a>）。</p></div>
+    <div class="fact"><p><strong>原子量は問題の下に表示</strong>H=1, C=12 などは毎回表示されるので、それを使って <a href="#s8">8 章</a> の方法でモル質量を出す。</p></div>
+  </div>
+  <a class="drill-btn" id="drillLink" href="mol-drill.html" target="_blank" rel="noopener">molドリルで練習する →</a>
+</section>
+
 <footer>
   <div>作成にあたり参考にした解説（ダースのたとえ・mol中心の変換図・1円玉の例など）</div>
   <ul>
@@ -465,5 +603,130 @@ footer a{color:var(--mol)}
   calc();
 })();
 </script>
+<script>
+(function(){
+var $=function(id){return document.getElementById(id);};
+var NS="http://www.w3.org/2000/svg";
+function el(t,a,p){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+function tx(p,x,y,s,a){var t=el("text",Object.assign({x:x,y:y,"text-anchor":"middle"},a||{}),p);t.textContent=s;return t;}
+var AW={H:1,He:4,C:12,N:14,O:16,Na:23,Mg:24,Al:27,S:32,Cl:35.5,Ca:40,Fe:56,Cu:64,Zn:65};
+var COL={H:"#7FA7F5",C:"#56606F",O:"#E0534F",N:"#4A8FD8",Na:"#8C6BD8",Cl:"#3FAF6B",S:"#D9A21F",Ca:"#B07C4F",Zn:"#8A99A8",Mg:"#9ACD5A",Al:"#9AA3AE",Fe:"#A0522D",Cu:"#C8743A",He:"#E8A0C8"};
+function f2(x){return String(Math.round(x*100)/100);}
+
+/* ---- 8 molar mass ---- */
+var MS=[["H₂O",{H:2,O:1}],["CO₂",{C:1,O:2}],["NH₃",{N:1,H:3}],["CH₄",{C:1,H:4}],["C₃H₈",{C:3,H:8}],["HCl",{H:1,Cl:1}],["Cl₂",{Cl:2}],["H₂SO₄",{H:2,S:1,O:4}],["C₆H₁₂O₆",{C:6,H:12,O:6}],["NaCl",{Na:1,Cl:1},1],["NaOH",{Na:1,O:1,H:1},1],["CaCO₃",{Ca:1,C:1,O:3},1]];
+var mmS=$("mmSubs");
+MS.forEach(function(s,i){var b=document.createElement("button");b.type="button";b.className="chip";b.textContent=s[0];b.setAttribute("aria-pressed","false");b.addEventListener("click",function(){mm(i);});mmS.appendChild(b);});
+$("awt").innerHTML=Object.keys(AW).map(function(e){return '<span><i style="background:'+COL[e]+'"></i>'+e+' = '+AW[e]+'</span>';}).join("");
+function mm(i){
+  var s=MS[i],c=s[1],tot=0,parts=[],calc=[];
+  [].forEach.call(mmS.children,function(b,k){b.setAttribute("aria-pressed",k===i?"true":"false");});
+  Object.keys(c).forEach(function(e){tot+=AW[e]*c[e];parts.push(e+"×"+c[e]);calc.push(AW[e]+"×"+c[e]);});
+  var bl=$("mmBlocks");bl.innerHTML="";
+  Object.keys(c).forEach(function(e){for(var k=0;k<c[e];k++){var d=document.createElement("div");d.className="blk";d.style.background=COL[e];d.style.flex="0 0 "+(AW[e]/180*100)+"%";d.textContent=AW[e]>=10?e:"";d.title=e+" "+AW[e];bl.appendChild(d);}});
+  $("mmEq").innerHTML=s[0]+" ＝ "+parts.join(" ＋ ")+"<br>＝ "+calc.join(" ＋ ")+" ＝ <b>"+f2(tot)+"</b><br>→ 1 mol あたり <b>"+f2(tot)+" g</b>（モル質量 "+f2(tot)+" g/mol）";
+  $("mmNote").innerHTML=s[2]?"NaCl のようなイオンでできた物質には分子がないので、この数を「<b>式量</b>」と呼びます。計算のしかたは同じです。":"帯の長さは原子 1 個ずつの重さ（原子量）。全部つなげた長さが分子量です。";
+}
+mm(7);
+
+/* ---- 9 powers of ten ---- */
+var exMode="a";
+var EXA=[0.10,0.25,0.50,1.5,2.0,2.5];
+var EXB=[[3.0,23],[1.2,24],[9.0,22],[1.5,23],[3.0,24],[6.0,22]];
+function sup(n){return "10<sup>"+n+"</sup>";}
+function norm(a,e){var s=[];while(a>=10){a=a/10;e++;}while(a<1){a=a*10;e--;}return [Math.round(a*100)/100,e];}
+function fx(a){var s=String(Math.round(a*100)/100);return s.indexOf(".")<0?s+".0":s;}
+function exRender(v){
+  var st=[],res;
+  if(exMode==="a"){
+    var m=v,prod=Math.round(m*6*1000)/1000,n=norm(prod,23);
+    st.push(m+" mol × 6.0×"+sup(23));
+    st.push("前の数どうし：<b>"+m+" × 6.0 ＝ "+prod+"</b>　／　10 の部分はそのまま "+sup(23));
+    if(prod>=10||prod<1)st.push(prod+"×"+sup(23)+" は形を整える："+(prod>=10?"小数点を左へ 1 つ → 右上を ＋1":"小数点を右へ 1 つ → 右上を −1")+" → <b>"+fx(n[0])+"×"+sup(n[1])+"</b>");
+    else st.push("前の数が 1 以上 10 未満なのでそのまま → <b>"+fx(n[0])+"×"+sup(n[1])+"</b>");
+    res=n;
+  }else{
+    var a=v[0],e=v[1],q=Math.round(a/6*1000)/1000,ee=e-23,n2=norm(q,ee);
+    st.push(fx(a)+"×"+sup(e)+" 個 ÷ 6.0×"+sup(23));
+    st.push("前の数どうし：<b>"+fx(a)+" ÷ 6.0 ＝ "+q+"</b>　／　右上どうし：<b>"+e+" − 23 ＝ "+ee+"</b>");
+    var val=q*Math.pow(10,ee);
+    st.push(q+"×"+sup(ee)+" ＝ <b>"+(Math.round(val*1000)/1000)+" mol</b>"+(ee!==0?"（10"+"<sup>"+ee+"</sup> ＝ "+Math.pow(10,ee)+"）":""));
+    res=null;
+  }
+  $("exSteps").innerHTML=st.map(function(s){return "<li>"+s+"</li>";}).join("");
+  $("exMock").innerHTML=res?'ドリルでの入れ方：<span class="mbox">'+fx(res[0])+'</span> × 10<sup><span class="mbox sm">'+res[1]+'</span></sup> 個':'ドリルでの入れ方：答えがふつうの数なので、<span class="mbox">'+(Math.round(v[0]/6*Math.pow(10,v[1]-23)*1000)/1000)+'</span> mol とそのまま入れる';
+}
+function exBuild(){
+  $("exA").setAttribute("aria-pressed",exMode==="a");$("exB").setAttribute("aria-pressed",exMode==="b");
+  var list=exMode==="a"?EXA:EXB,box=$("exVals");box.innerHTML="";
+  list.forEach(function(v,i){var b=document.createElement("button");b.type="button";b.className="chip";b.innerHTML=exMode==="a"?v+" mol":fx(v[0])+"×"+sup(v[1])+" 個";b.setAttribute("aria-pressed",i===1?"true":"false");
+    b.addEventListener("click",function(){[].forEach.call(box.children,function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});exRender(v);});box.appendChild(b);});
+  exRender(list[1]);
+}
+$("exA").addEventListener("click",function(){exMode="a";exBuild();});$("exB").addEventListener("click",function(){exMode="b";exBuild();});
+exBuild();
+
+/* ---- 10 reactions ---- */
+var RX=[
+ {eq:"2H₂ + O₂ → 2H₂O",sp:[["H₂",2,{H:2}],["O₂",1,{O:2}],["H₂O",2,{H:2,O:1}]],n:2},
+ {eq:"CH₄ + 2O₂ → CO₂ + 2H₂O",sp:[["CH₄",1,{C:1,H:4}],["O₂",2,{O:2}],["CO₂",1,{C:1,O:2}],["H₂O",2,{H:2,O:1}]],n:2},
+ {eq:"N₂ + 3H₂ → 2NH₃",sp:[["N₂",1,{N:2}],["H₂",3,{H:2}],["NH₃",2,{N:1,H:3}]],n:2},
+ {eq:"2CO + O₂ → 2CO₂",sp:[["CO",2,{C:1,O:1}],["O₂",1,{O:2}],["CO₂",2,{C:1,O:2}]],n:2},
+ {eq:"Zn + 2HCl → ZnCl₂ + H₂",sp:[["Zn",1,{Zn:1}],["HCl",2,{H:1,Cl:1}],["ZnCl₂",1,{Zn:1,Cl:2}],["H₂",1,{H:2}]],n:2}
+];
+var rxI=0;
+var rxSel=$("rxSel");
+RX.forEach(function(r,i){var b=document.createElement("button");b.type="button";b.className="chip";b.textContent=r.eq;b.addEventListener("click",function(){rxI=i;rxBuild();});rxSel.appendChild(b);});
+function mol3(g,cx,cy,comp){ // draw small molecule cluster
+  var atoms=[];Object.keys(comp).forEach(function(e){for(var k=0;k<comp[e];k++)atoms.push(e);});
+  var n=atoms.length,r=n>3?7:9;
+  atoms.forEach(function(e,k){var a=k/n*Math.PI*2,d=n===1?0:(n===2?r*0.9:r*1.4);var x=cx+Math.cos(a)*d,y=cy+Math.sin(a)*d;
+    el("circle",{cx:x,cy:y,r:r,fill:COL[e],stroke:"var(--paper)","stroke-width":1.5},g);});
+}
+function rxBuild(){
+  var r=RX[rxI];[].forEach.call(rxSel.children,function(b,k){b.setAttribute("aria-pressed",k===rxI?"true":"false");});
+  var svg=$("rxFig");svg.innerHTML="";
+  var W=640,n=r.sp.length,slot=W/n,arrowAfter=r.eq.split("→")[0].split("+").length-1;
+  r.sp.forEach(function(s,i){
+    var cx=slot*(i+0.5),cnt=s[1];
+    for(var k=0;k<cnt;k++){var x=cx+(k-(cnt-1)/2)*48;mol3(svg,x,58,s[2]);}
+    tx(svg,cx,112,s[1]+" 個",{"font-family":"var(--mono)","font-size":15,"font-weight":600,fill:"var(--num)"});
+    tx(svg,cx,136,s[0],{"font-size":16,"font-weight":700,fill:"var(--ink)"});
+    tx(svg,cx,160,s[1]+" mol",{"font-family":"var(--mono)","font-size":15,"font-weight":600,fill:"var(--mol)"});
+    if(i<n-1)tx(svg,slot*(i+1),64,i===arrowAfter?"→":"＋",{"font-size":24,"font-weight":700,fill:"var(--ink2)"});
+  });
+  var sel=$("rxBase");sel.innerHTML=r.sp.map(function(s,i){return '<option value="'+i+'">'+s[0]+'</option>';}).join("");
+  rxCalc();
+}
+function rxCalc(){
+  var r=RX[rxI],b=+$("rxBase").value,k=+$("rxK").value,base=r.sp[b];
+  $("rxRow").innerHTML=r.sp.map(function(s,i){var m=k*s[1]/base[1];
+    return '<div class="rxc'+(i===b?' base':'')+'"><span class="f">'+s[0]+'</span><span class="pill p-mol">'+f2(m)+' mol</span><span class="op">'+(i===b?'基準':'× '+s[1]+'/'+base[1])+'</span></div>';}).join("");
+}
+$("rxBase").addEventListener("change",rxCalc);$("rxK").addEventListener("change",rxCalc);
+rxBuild();
+
+/* ---- 11 concentration ---- */
+function bk(){
+  var gs=$("cG").value,g=+gs,mL=+$("cV").value,mol=g/40,L=mL/1000,c=mol/L;
+  var svg=$("bk");svg.innerHTML="";
+  var x0=40,x1=180,yb=210,yt=30,H=yb-yt,lv=yb-H*(mL/500);
+  el("path",{d:"M"+x0+" "+yt+" L"+x0+" "+yb+" Q"+x0+" "+(yb+8)+" "+(x0+8)+" "+(yb+8)+" L"+(x1-8)+" "+(yb+8)+" Q"+x1+" "+(yb+8)+" "+x1+" "+yb+" L"+x1+" "+yt,fill:"none",stroke:"var(--ink2)","stroke-width":3},svg);
+  el("rect",{x:x0+2,y:lv,width:x1-x0-4,height:yb+6-lv,fill:"var(--vol-soft)"},svg);
+  el("line",{x1:x0,y1:lv,x2:x1,y2:lv,stroke:"var(--vol)","stroke-width":2},svg);
+  [100,200,300,400,500].forEach(function(m){var y=yb-H*m/500;el("line",{x1:x1-14,y1:y,x2:x1,y2:y,stroke:"var(--ink2)","stroke-width":1.5},svg);tx(svg,x1+22,y+4,m,{"font-size":11,fill:"var(--ink2)","font-family":"var(--mono)"});});
+  var dots=Math.round(mol*100),seed=3;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280;}
+  for(var i=0;i<dots;i++){el("circle",{cx:x0+10+rnd()*(x1-x0-20),cy:lv+8+rnd()*(yb-lv-8),r:3.2,fill:"var(--mass)"},svg);}
+  tx(svg,110,lv-8,mL+" mL",{"font-family":"var(--mono)","font-size":14,"font-weight":600,fill:"var(--vol)"});
+  tx(svg,110,236,"● = 溶けている NaOH（0.01 mol ずつ）",{"font-size":10,fill:"var(--ink2)"});
+  $("cSteps").innerHTML=
+   '<div class="flow"><span class="pill p-mass">'+gs+' g</span><span class="op">÷40 →</span><span class="pill p-mol">'+f2(mol)+' mol</span></div>'+
+   '<div class="flow"><span class="pill p-vol">'+mL+' mL</span><span class="op">÷1000 →</span><span class="pill p-vol">'+L+' L</span></div>'+
+   '<div class="flow"><span class="pill p-mol">'+f2(mol)+' mol</span><span class="op">÷ '+L+' L →</span><span class="pill p-conc">'+f2(c)+' mol/L</span></div>';
+}
+$("cG").addEventListener("change",bk);$("cV").addEventListener("change",bk);bk();
+})();
+</script>
+
 
 <a href="index.html" style="position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:9999;font:700 13px sans-serif;padding:8px 14px;border-radius:999px;background:#1f4e8c;color:#fff;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.2)">← 本棚へ</a></body></html>

@@ -334,7 +334,7 @@ const NOW=330,PAST=170,FUT=490,AY=110;
 function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);parent&&parent.appendChild(e);return e}
 function txt(p,x,y,s,a={}){const t=el('text',{x,y,'text-anchor':a.anchor||'middle','font-size':a.size||13,'font-weight':a.w||700,fill:a.fill||'var(--ink)','font-family':'"Zen Kaku Gothic New",sans-serif',...(a.cls?{class:a.cls}:{})},p);t.textContent=s;if(a.delay!=null)t.style.animationDelay=a.delay+'s';return t}
 function drawIn(path,delay){const L=path.getTotalLength();path.style.strokeDasharray=L;path.style.setProperty('--len',L);path.style.strokeDashoffset=reduce?0:L;path.classList.add('draw');path.style.animationDelay=(delay||0)+'s'}
-function wavePath(x1,x2,y,amp=7,per=22){let d=`M${x1} ${y}`;for(let x=x1;x<=x2;x+=2)d+=` L${x} ${y-amp*Math.sin((x-x1)/per*2*Math.PI)}`;return d}
+function wavePath(x1,x2,y,amp=7,per=22){per=(x2-x1)/Math.max(1,Math.round((x2-x1)/per));let d=`M${x1} ${y}`;for(let x=x1;x<=x2;x+=2)d+=` L${x} ${y-amp*Math.sin((x-x1)/per*2*Math.PI)}`;return d}
 /* spec: {ref, refLabel, parts:[...]} ; part types: dots, dot, wave, arrow, event */
 function TL(svg,spec){
   svg.innerHTML='';
@@ -356,7 +356,8 @@ function TL(svg,spec){
       if(p.label)txt(svg,p.x,AY-(p.ly||22),p.label,{fill:'var(--teal)',cls:'pop',delay,anchor:p.anchor})}
     if(p.t==='event'){const c=el('rect',{x:p.x-7,y:AY-7,width:14,height:14,fill:'var(--accent)',transform:`rotate(45 ${p.x} ${AY})`,class:'pop'},svg);c.style.animationDelay=delay+'s';
       if(p.label)txt(svg,p.x,AY-(p.ly||24),p.label,{fill:'var(--accent)',cls:'pop',delay,anchor:p.anchor})}
-    if(p.t==='wave'){const path=el('path',{d:wavePath(p.x1,p.x2,AY-(p.dy||0)),fill:'none',stroke:'var(--teal)','stroke-width':4,'stroke-linecap':'round','marker-end':p.head?`url(#${svg.id}-ah)`:''},svg);drawIn(path,delay);
+    if(p.t==='wave'){const wy=AY-(p.dy||0);const path=el('path',{d:wavePath(p.x1,p.x2,wy),fill:'none',stroke:'var(--teal)','stroke-width':4,'stroke-linecap':'round'},svg);drawIn(path,delay);
+      if(p.head){const h=el('polygon',{points:`${p.x2+14},${wy} ${p.x2},${wy-8} ${p.x2},${wy+8}`,fill:'var(--teal)',class:'pop'},svg);h.style.animationDelay=(delay+.8)+'s'}
       if(p.open){[p.x1-18,p.x2+6].forEach(x=>el('line',{x1:x,y1:AY,x2:x+12,y2:AY,stroke:'var(--teal)','stroke-width':3,'stroke-dasharray':'2 4'},svg))}
       if(p.label)txt(svg,(p.x1+p.x2)/2,AY-(p.ly||24),p.label,{fill:'var(--teal)',cls:'pop',delay})}
     if(p.t==='arrow'){const y=AY-(p.dy||0);const path=el('path',{d:`M${p.x1} ${y} L${p.x2} ${y}`,fill:'none',stroke:'var(--teal)','stroke-width':p.thin?2:5,'stroke-linecap':'round','stroke-dasharray':p.dash||'','marker-end':`url(#${svg.id}-ah)`},svg);
@@ -374,17 +375,17 @@ const T={
   {n:'過去形',f:'動詞の過去形（-ed）',en:'I <b>studied</b> English yesterday.',ja:'私は昨日、英語を勉強した。',core:'過去の一点のできごと。今とは切り離された話。',tl:{ref:PAST,refLabel:'昨日',parts:[{t:'dot',x:PAST,label:'勉強した'}]}},
   {n:'過去進行形',f:'was / were + -ing',en:'I <b>was studying</b> English when he called.',ja:'彼が電話してきたとき、私は英語を勉強していた。',core:'過去のある時点で「途中」だった動作。',tl:{ref:PAST,refLabel:'彼が電話した',parts:[{t:'wave',x1:PAST-55,x2:PAST+55,open:1,label:'勉強している途中'}]}},
   {n:'過去完了形',f:'had + 過去分詞',en:'I <b>had studied</b> English before I went to London.',ja:'ロンドンに行く前に、（それまでに）英語を勉強していた。',core:'過去の基準の時点「までに」完了・経験・継続していたこと。',tl:{ref:PAST+40,refLabel:'ロンドンへ行った',parts:[{t:'arrow',x1:60,x2:PAST+34,start:1,label:'had studied'}]}},
-  {n:'過去完了進行形',f:'had been + -ing',en:'I <b>had been studying</b> for two hours when he came home.',ja:'彼が帰宅したとき、私は 2 時間ずっと勉強し続けていた。',core:'過去の基準の時点までずっと続いていた動作。',tl:{ref:PAST+40,refLabel:'彼が帰宅した',parts:[{t:'wave',x1:60,x2:PAST+34,head:1,label:'2 時間ずっと'}]}}],
+  {n:'過去完了進行形',f:'had been + -ing',en:'I <b>had been studying</b> for two hours when he came home.',ja:'彼が帰宅したとき、私は 2 時間ずっと勉強し続けていた。',core:'過去の基準の時点までずっと続いていた動作。',tl:{ref:PAST+40,refLabel:'彼が帰宅した',parts:[{t:'wave',x1:60,x2:PAST+24,head:1,label:'2 時間ずっと'}]}}],
  '現在':[
   {n:'現在形',f:'動詞の原形（3 単現は -s）',en:'I <b>study</b> English every day.',ja:'私は毎日英語を勉強する。',core:'今この瞬間ではなく「いつものこと」。過去も今も未来も繰り返す習慣・事実。',tl:{ref:NOW,parts:[{t:'dots',label:'毎日くり返す'}]}},
   {n:'現在進行形',f:'am / is / are + -ing',en:'I <b>am studying</b> English now.',ja:'私は今、英語を勉強しているところだ。',core:'今まさに「途中」の動作。始まっていて、まだ終わっていない。',tl:{ref:NOW,parts:[{t:'wave',x1:NOW-55,x2:NOW+55,open:1,label:'今まさに途中'}]}},
   {n:'現在完了形',f:'have / has + 過去分詞',en:'I <b>have studied</b> English for three years.',ja:'私は 3 年間英語を勉強してきた。',core:'過去から「今」までをつなぐ。完了・結果／経験／継続の 3 用法。',tl:{ref:NOW,parts:[{t:'arrow',x1:150,x2:NOW-6,start:1,label:'3 年前から今まで'}]}},
-  {n:'現在完了進行形',f:'have / has been + -ing',en:'I <b>have been studying</b> since this morning.',ja:'私は今朝からずっと勉強し続けている。',core:'動作が今までずっと続いている（まだ続く感じ）。',tl:{ref:NOW,parts:[{t:'wave',x1:190,x2:NOW-6,head:1,label:'今朝からずっと'}]}}],
+  {n:'現在完了進行形',f:'have / has been + -ing',en:'I <b>have been studying</b> since this morning.',ja:'私は今朝からずっと勉強し続けている。',core:'動作が今までずっと続いている（まだ続く感じ）。',tl:{ref:NOW,parts:[{t:'wave',x1:190,x2:NOW-16,head:1,label:'今朝からずっと'}]}}],
  '未来':[
   {n:'未来形',f:'will + 動詞の原形',en:'I <b>will study</b> English tomorrow.',ja:'私は明日、英語を勉強するつもりだ。',core:'未来の一点のできごと・意志・予測。',tl:{ref:FUT,refLabel:'明日',parts:[{t:'dot',x:FUT,label:'勉強する'}]}},
   {n:'未来進行形',f:'will be + -ing',en:'I <b>will be studying</b> English at this time tomorrow.',ja:'明日の今ごろ、私は英語を勉強しているだろう。',core:'未来のある時点で「途中」になっている動作。',tl:{ref:FUT,refLabel:'明日の今ごろ',parts:[{t:'wave',x1:FUT-55,x2:FUT+55,open:1,label:'勉強している途中'}]}},
   {n:'未来完了形',f:'will have + 過去分詞',en:'I <b>will have finished</b> my homework by six.',ja:'6 時までには宿題を終えているだろう。',core:'未来の基準の時点「までに」完了・経験・継続していること。',tl:{ref:FUT,refLabel:'6 時',parts:[{t:'arrow',x1:NOW+12,x2:FUT-6,start:1,label:'6 時までに終える'}]}},
-  {n:'未来完了進行形',f:'will have been + -ing',en:'I <b>will have been studying</b> English for ten years next April.',ja:'来年の 4 月で、英語を 10 年間勉強し続けていることになる。',core:'未来の基準の時点までずっと続いている動作。',tl:{ref:FUT,refLabel:'来年の 4 月',parts:[{t:'wave',x1:120,x2:FUT-6,head:1,label:'10 年間ずっと'}]}}]
+  {n:'未来完了進行形',f:'will have been + -ing',en:'I <b>will have been studying</b> English for ten years next April.',ja:'来年の 4 月で、英語を 10 年間勉強し続けていることになる。',core:'未来の基準の時点までずっと続いている動作。',tl:{ref:FUT,refLabel:'来年の 4 月',parts:[{t:'wave',x1:120,x2:FUT-16,head:1,label:'10 年間ずっと'}]}}]
 };
 let sel1=['現在',2];
 function buildMap(){
