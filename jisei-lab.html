@@ -1,0 +1,531 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>時制ラボ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=JetBrains+Mono:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+:root{
+  --paper:#f4f7fb; --panel:#ffffff; --ink:#17223b; --muted:#5a6781; --line:#d6deea;
+  --grid:#e6ebf3; --axis:#8a96ad;
+  --accent:#5b3fb0; --accent-soft:rgba(91,63,176,.12);
+  --warm:#d9560f; --warm-soft:rgba(217,86,15,.14);
+  --teal:#0a8a78; --teal-soft:rgba(10,138,120,.14);
+  --chip:#efebfa;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --disp:"Dela Gothic One","Hiragino Sans","Yu Gothic",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#0e1422; --panel:#151d2f; --ink:#e6ebf5; --muted:#9ba7bf; --line:#27324a;
+    --grid:#1f2940; --axis:#5e6b88;
+    --accent:#a891f0; --accent-soft:rgba(168,145,240,.18);
+    --warm:#ff9152; --warm-soft:rgba(255,145,82,.16);
+    --teal:#3fcbb6; --teal-soft:rgba(63,203,182,.16);
+    --chip:#1d2740;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#0e1422; --panel:#151d2f; --ink:#e6ebf5; --muted:#9ba7bf; --line:#27324a;
+  --grid:#1f2940; --axis:#5e6b88;
+  --accent:#a891f0; --accent-soft:rgba(168,145,240,.18);
+  --warm:#ff9152; --warm-soft:rgba(255,145,82,.16);
+  --teal:#3fcbb6; --teal-soft:rgba(63,203,182,.16);
+  --chip:#1d2740;
+}
+*{box-sizing:border-box}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;
+  color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.8;
+}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:20px;padding-block:40px 96px}
+h1,h2,h3{text-wrap:balance;line-height:1.35;margin:0}
+p{margin:0}
+.top{display:grid;gap:14px;margin-bottom:28px}
+.eyebrow{font-size:.8rem;letter-spacing:.14em;color:var(--muted);font-weight:700}
+h1{font-family:var(--disp);font-weight:400;font-size:clamp(2.2rem,6vw,3.6rem);letter-spacing:.02em}
+h1 .th{color:var(--accent);font-family:Georgia,serif;font-style:italic}
+.lead{max-width:42em;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-weight:700;font-size:.92rem}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:22px;height:4px;border-radius:2px;display:inline-block}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+nav.toc a{font-size:.85rem;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);padding:4px 12px;border-radius:999px}
+nav.toc a:hover{border-color:var(--accent);color:var(--accent)}
+nav.toc b{font-family:var(--mono);color:var(--accent);margin-right:6px;font-weight:600}
+
+.ks{color:var(--warm)} .kc{color:var(--accent)} .kt{color:var(--teal)}
+section.lab{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;margin-top:28px;display:grid;gap:20px}
+.lab-h{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:baseline}
+.no{font-family:var(--mono);font-weight:600;color:var(--accent);grid-row:span 2}
+h2{font-family:var(--disp);font-weight:400;font-size:1.55rem}
+.gist{color:var(--muted);grid-column:2}
+.lab-body{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:780px){.lab-body{grid-template-columns:1fr}}
+.stage{margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.stage canvas{display:block;width:100%;aspect-ratio:4/3;max-width:100%}
+.stage canvas.drag{touch-action:none;cursor:grab}
+.stage figcaption{font-size:.8rem;color:var(--muted);padding:6px 12px;border-top:1px solid var(--line)}
+.side{display:grid;gap:16px}
+.eq{font-family:var(--mono);font-size:1.15rem;font-weight:600;padding:12px 14px;border-radius:10px;background:var(--chip);overflow-x:auto;display:grid;gap:6px}
+.eq .r{white-space:nowrap}
+.ctl{display:grid;gap:2px}
+.ctl .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label{font-weight:700}
+.ctl output{font-family:var(--mono);font-weight:600;color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:.88rem;font-weight:700;cursor:pointer;border-radius:8px;padding:6px 14px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+button.primary:hover{filter:brightness(1.08);color:var(--panel)}
+button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+button.s[aria-pressed="true"],button.s.primary{background:var(--warm);border-color:var(--warm)}
+button.t[aria-pressed="true"],button.t.primary{background:var(--teal);border-color:var(--teal)}
+button.s:not([aria-pressed="true"]):not(.primary){color:var(--warm)}
+button.c:not([aria-pressed="true"]):not(.primary){color:var(--accent)}
+button.t:not([aria-pressed="true"]):not(.primary){color:var(--teal)}
+button:disabled{opacity:.45;cursor:default;pointer-events:none}
+:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:.95rem;margin:0}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0;font-weight:700}
+.m{font-family:var(--mono)}
+.tip{border-left:4px solid var(--warm);padding:8px 0 8px 14px;font-size:.95rem}
+.tip b.k{display:block;font-size:.75rem;letter-spacing:.12em;color:var(--warm)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{font-size:.82rem;padding:3px 10px;border-radius:999px;background:var(--chip);color:var(--muted);transition:all .2s}
+.chips span.on{color:var(--panel);background:var(--accent)}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.8em;line-height:1.15;margin:0 .12em}
+.fr span:first-child{border-bottom:1.5px solid currentColor;padding:0 .15em}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.steps li{display:grid;gap:2px;padding:8px 12px;border-radius:8px;border:1px solid var(--line)}
+.steps li .f{font-family:var(--mono);font-weight:600;overflow-x:auto;white-space:nowrap}
+.steps li .n{font-size:.83rem;color:var(--muted)}
+.steps li.last{border-color:var(--accent);background:var(--accent-soft)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:center;white-space:nowrap}
+th{color:var(--muted);font-weight:700;font-size:.82rem}
+td{font-family:var(--mono);font-weight:600}
+td.h,th.h{text-align:left}
+col.on{background:var(--accent-soft)}
+.neg{color:var(--warm)}
+.flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;counter-reset:f}
+.flow li{counter-increment:f;padding:12px 14px;border-radius:10px;background:var(--chip);font-weight:700;display:grid;gap:2px}
+.flow li::before{content:"STEP " counter(f);font-family:var(--mono);font-size:.75rem;color:var(--accent);letter-spacing:.08em}
+.flow li small{font-weight:400;color:var(--muted);font-size:.85rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:8px;align-content:start}
+.card h3{font-size:1.05rem}
+.card ul{margin:0;padding-left:1.2em;display:grid;gap:4px;font-size:.95rem}
+.card .ng{font-size:.88rem;color:var(--warm);font-weight:700}
+.refs{font-size:.9rem;display:grid;gap:4px;margin:0;padding-left:1.2em}
+.refs a{color:var(--accent)}
+footer{margin-top:28px;color:var(--muted);font-size:.85rem}
+</style>
+
+<style>
+.en{font-family:"Lora",Georgia,serif;font-size:1.12rem;line-height:1.6}
+.en b{color:var(--teal)}
+.tl{display:block;width:100%;height:auto}
+.tl .draw{animation:dr .9s ease forwards}
+@keyframes dr{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+.tl .pop{animation:pp .5s ease both}
+@keyframes pp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.tl .draw,.tl .pop{animation:none}}
+.map{overflow-x:auto}
+.map table{min-width:560px}
+.map td{padding:4px}
+.map th{font-size:.85rem}
+.cell{width:100%;text-align:left;display:grid;gap:2px;padding:8px 10px;font-weight:500}
+.cell b{font-size:.92rem}
+.cell small{font-family:var(--mono);font-size:.75rem;color:var(--muted);font-weight:500}
+.cell[aria-pressed="true"] small{color:inherit;opacity:.85}
+.pill{display:inline-block;font-size:.78rem;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--chip);color:var(--accent)}
+.ok{color:var(--teal);font-weight:700}.ng{color:var(--warm);font-weight:700}
+.words{display:flex;flex-wrap:wrap;gap:8px}
+.words button.okb{border-color:var(--teal);color:var(--teal);background:var(--teal-soft)}
+.words button.ngb{border-color:var(--warm);color:var(--warm);background:var(--warm-soft)}
+.judge{min-height:3.2em;padding:10px 12px;border-radius:10px;background:var(--chip)}
+.qcard{border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px}
+.qcard .choices{display:flex;flex-wrap:wrap;gap:8px}
+.qcard .choices button.right{background:var(--teal);border-color:var(--teal);color:var(--panel)}
+.qcard .choices button.wrong{background:var(--warm);border-color:var(--warm);color:var(--panel)}
+.qcard .exp{font-size:.93rem;border-left:4px solid var(--teal);padding-left:12px}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.score{font-family:var(--mono);font-weight:600;color:var(--accent)}
+.memo{border:2px solid var(--accent);border-radius:12px;padding:16px 18px;display:grid;gap:8px;background:var(--accent-soft)}.memo-k{font-size:.75rem;font-weight:700;letter-spacing:.12em;color:var(--accent)}.memo-main{font-family:var(--disp);font-size:clamp(1.1rem,2.6vw,1.45rem);line-height:1.5}.memo-main b{color:var(--accent);font-weight:400}.memo-sub{font-size:.95rem}.memo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.memo-grid .pill{justify-self:start}.memo-grid>div{background:var(--panel);border-radius:10px;padding:10px 12px;display:grid;gap:6px}
+.lvl{font-size:.75rem;font-weight:700;letter-spacing:.08em;color:var(--muted)}
+</style>
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow">高校英語 ／ 英文法 第 1 章 時制</p>
+    <h1>時制ラボ <span class="th">tense</span></h1>
+    <p class="lead">英語の時制は「いつの話か（過去・現在・未来）」と「どんな形の動作か（点・途中・〜までずっと）」の組み合わせで 12 種類。時間の線（タイムライン）の図で、それぞれの意味を目で見て理解しましょう。</p>
+    <div class="legend" aria-label="図の見方"><span style="color:var(--warm)"><i style="background:var(--warm)"></i>今（NOW）</span><span style="color:var(--accent)"><i style="background:var(--accent)"></i>基準の時点</span><span style="color:var(--teal)"><i style="background:var(--teal)"></i>動作・状態</span></div>
+    <nav class="toc" aria-label="目次">
+      <a href="#s1"><b>1</b>12 時制マップ</a>
+      <a href="#s2"><b>2</b>現在形と進行形</a>
+      <a href="#s3"><b>3</b>現在完了</a>
+      <a href="#s4"><b>4</b>過去完了・未来完了</a>
+      <a href="#s5"><b>5</b>時・条件の副詞節</a>
+      <a href="#s6"><b>6</b>確認問題</a>
+      <a href="#s7"><b>7</b>解き方のポイント</a>
+    </nav>
+  </header>
+
+  <!-- 1 -->
+  <section class="lab" id="s1">
+    <div class="lab-h"><span class="no">01</span><h2>12 時制マップ</h2><p class="gist">表のマスを押すと、その時制のタイムラインと例文が出る。縦が「いつ」、横が「どんな形」。</p></div>
+    <div class="map"><table>
+      <thead><tr><th class="h"></th><th class="h">単純形<br><small>点・事実</small></th><th class="h">進行形<br><small>途中</small></th><th class="h">完了形<br><small>〜までに / 〜までずっと</small></th><th class="h">完了進行形<br><small>〜までずっとし続けて</small></th></tr></thead>
+      <tbody id="mapBody"></tbody></table></div>
+    <div class="lab-body">
+      <figure class="stage" style="padding:8px 4px"><svg class="tl" id="tl1" viewBox="0 0 600 170" role="img" aria-label="タイムライン"></svg></figure>
+      <div class="side">
+        <div><span class="pill" id="p1name"></span></div>
+        <p class="en" id="p1en"></p>
+        <p id="p1ja" style="color:var(--muted)"></p>
+        <dl class="facts" id="p1f"></dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="lab" id="s2">
+    <div class="lab-h"><span class="no">02</span><h2>現在形は「いつものこと」、進行形は「いまの途中」</h2><p class="gist">現在形は今この瞬間ではなく、過去から未来まで繰り返す「習慣・事実」。進行形は動作の「途中」。</p></div>
+    <div class="lab-body">
+      <figure class="stage" style="padding:8px 4px"><svg class="tl" id="tl2" viewBox="0 0 600 170" role="img" aria-label="現在形と進行形"></svg></figure>
+      <div class="side">
+        <div class="btns" role="group" aria-label="比べる"><button id="m2a" aria-pressed="true">現在形</button><button id="m2b" aria-pressed="false">現在進行形</button></div>
+        <p class="en" id="en2"></p>
+        <p class="tip" id="tip2"></p>
+      </div>
+    </div>
+    <div class="card"><h3>この動詞は進行形にできる？（状態動詞のチェック）</h3>
+      <p style="font-size:.92rem;color:var(--muted)">動詞を押してみよう。「状態」を表す動詞は、もともと続いている意味なので、ふつう進行形にしない。</p>
+      <div class="words" id="verbs"></div>
+      <div class="judge" id="vjudge">動詞を選ぶと、ここに判定が出ます。</div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="lab" id="s3">
+    <div class="lab-h"><span class="no">03</span><h2>現在完了：過去と今をつなぐ</h2><p class="gist">have / has + 過去分詞。「過去に起きたことが、今どうなっているか」を言う形。視点はいつも「今」。</p></div>
+    <div class="lab-body">
+      <figure class="stage" style="padding:8px 4px"><svg class="tl" id="tl3" viewBox="0 0 600 170" role="img" aria-label="現在完了"></svg></figure>
+      <div class="side">
+        <div class="btns" role="group" aria-label="用法"><button id="m3a" aria-pressed="true">完了・結果</button><button id="m3b" aria-pressed="false">経験</button><button id="m3c" aria-pressed="false">継続</button></div>
+        <p class="en" id="en3"></p>
+        <p id="ja3" style="color:var(--muted)"></p>
+        <dl class="facts" id="f3"></dl>
+      </div>
+    </div>
+    <div class="card"><h3>現在完了と一緒に使える？ 使えない？</h3>
+      <p style="font-size:.92rem;color:var(--muted)">語句を押してみよう。現在完了は「今」の話なので、<b>過去の一点をはっきり指す語</b>とは一緒に使えない（入試の超頻出ポイント）。</p>
+      <div class="words" id="pwords"></div>
+      <div class="judge" id="pjudge">語句を選ぶと、ここに判定が出ます。</div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="lab" id="s4">
+    <div class="lab-h"><span class="no">04</span><h2>過去完了・未来完了：「今」を別の時点にずらす</h2><p class="gist">現在完了の「今」を、過去のある時点や未来のある時点に動かしただけ。基準の時点（紫）がどこにあるかを見る。</p></div>
+    <div class="lab-body">
+      <figure class="stage" style="padding:8px 4px"><svg class="tl" id="tl4" viewBox="0 0 600 170" role="img" aria-label="過去完了と未来完了"></svg></figure>
+      <div class="side">
+        <div class="btns" role="group" aria-label="種類"><button id="m4a" aria-pressed="true">過去完了（大過去）</button><button id="m4b" aria-pressed="false">過去完了（継続）</button><button id="m4c" aria-pressed="false">未来完了</button></div>
+        <p class="en" id="en4"></p>
+        <p id="ja4" style="color:var(--muted)"></p>
+        <div class="btns"><button class="primary" id="play4">順番に再生 ▶</button></div>
+        <p class="tip" id="tip4"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="lab" id="s5">
+    <div class="lab-h"><span class="no">05</span><h2>時・条件の副詞節では、未来のことも現在形</h2><p class="gist">when / if / until / as soon as / by the time などが「〜するとき」「もし〜なら」の意味で文の飾り（副詞節）になるときは、will を使わない。</p></div>
+    <div class="memo">
+      <p class="memo-k">覚え方</p>
+      <p class="memo-main"><b>If</b>「<b>もし</b>」・<b>When</b>「<b>とき</b>」の副詞節は、未来のことでも<b>現在形</b></p>
+      <p class="memo-sub">反対に、if が「〜<b>かどうか</b>」、when が「<b>いつ</b>〜か」の意味なら名詞節なので、未来のことは <b>will</b> を使う。</p>
+      <div class="memo-grid">
+        <div><span class="pill">もし・とき（副詞節）</span><p class="en">If it <b>rains</b> tomorrow, …<br>When he <b>comes</b>, …</p></div>
+        <div><span class="pill" style="color:var(--warm)">かどうか・いつ（名詞節）</span><p class="en">I don't know if it <b style="color:var(--warm)">will rain</b>.<br>Tell me when he <b style="color:var(--warm)">will come</b>.</p></div>
+      </div>
+    </div>
+    <div class="cards" id="advq"></div>
+    <p class="tip"><b class="k">ここがポイント</b>同じ when / if でも、「いつ〜するか」「〜するかどうか」の意味で<b>動詞の目的語（名詞節）</b>になっているときは、未来のことなら will を使う。「飾り（副詞節）か、目的語（名詞節）か」を見分けるのがコツ。</p>
+  </section>
+
+  <!-- 6 -->
+  <section class="lab" id="s6">
+    <div class="lab-h"><span class="no">06</span><h2>確認問題</h2><p class="gist">基礎 → 入試レベルの順に並べています。選ぶとすぐに正解と理由が出ます。</p></div>
+    <div class="qhead"><span class="score" id="score"></span><button id="qreset">最初からやり直す</button></div>
+    <div class="cards" id="quiz"></div>
+  </section>
+
+  <!-- 7 -->
+  <section class="lab" id="s7">
+    <div class="lab-h"><span class="no">07</span><h2>問題を解くときのポイント</h2><p class="gist">空所の前後にある「時を表す語句」が、ほとんどの場合の決め手になる。</p></div>
+    <ol class="flow">
+      <li>時を表す語句を探す<small>yesterday / since / by / when など</small></li>
+      <li>基準の時点を決める<small>過去・今・未来のどこ？</small></li>
+      <li>動作の形を決める<small>点・途中・〜までずっと</small></li>
+      <li>例外ルールを確認<small>状態動詞・副詞節・過去の語</small></li>
+    </ol>
+    <div class="cards">
+      <div class="card"><h3>シグナルになる語句</h3><ul>
+        <li><b>過去形</b>：yesterday, ~ ago, last ~, in 2020, then, When did ~?</li>
+        <li><b>現在完了</b>：for ~, since ~, just, already, yet, ever, never, before, so far</li>
+        <li><b>過去完了</b>：by the time + 過去形, before + 過去形（それより前）</li>
+        <li><b>未来完了</b>：by + 未来の時点, by the time + 現在形</li></ul></div>
+      <div class="card"><h3>現在完了の 4 つの注意</h3><ul>
+        <li>過去の一点を表す語（yesterday, ago, When ~?）とは使えない</li>
+        <li>have been to = 行ったことがある（経験）、have gone to = 行ってしまった（今いない）</li>
+        <li>継続は、状態動詞なら現在完了、動作動詞なら現在完了進行形</li>
+        <li>since の後ろは過去の一点、for の後ろは期間</li></ul>
+        <p class="ng">ミス注意：When have you visited Kyoto? は × → When did you visit Kyoto?</p></div>
+      <div class="card"><h3>進行形にしない動詞</h3><ul>
+        <li>知覚・感情：know, believe, like, love, want, see, hear</li>
+        <li>所有・関係：have（持っている）, belong, own, resemble, contain</li>
+        <li>ただし意味が変わると進行形 OK：have lunch（食べる）、see him（会う予定）</li></ul></div>
+      <div class="card"><h3>時・条件の副詞節</h3><ul>
+        <li>when, if, until, before, after, as soon as, by the time, once など</li>
+        <li>覚え方：<b>If「もし」・When「とき」の副詞節は、未来のことでも現在形</b></li><li>未来のことでも<b>現在形</b>（完了なら<b>現在完了形</b>）</li>
+        <li>名詞節（いつ〜か・〜かどうか）なら will を使う</li></ul>
+        <p class="ng">ミス注意：I'll call you when I will get home. は ×</p></div>
+      <div class="card"><h3>現在形の「確定した未来」</h3><ul>
+        <li>時刻表・予定表で決まっていること：The train leaves at 7:30.</li>
+        <li>個人の予定は進行形でも：I'm meeting Ken tomorrow.</li></ul></div>
+      <div class="card"><h3>時制の一致（参考）</h3><ul>
+        <li>主節が過去 → that 節の中も過去に：He said that he <b>was</b> tired.</li>
+        <li>例外：不変の真理・今も変わらない習慣は現在形のまま</li></ul></div>
+    </div>
+    <div class="card"><h3>参考にした本・サイト・動画</h3>
+      <ul class="refs">
+        <li><a href="https://tb.sanseido-publ.co.jp/gakusan/h-english/yasu_eg.html" target="_blank" rel="noopener">安河内哲也『安河内の［はじめてわかる］英文法』（三省堂）</a>：時制を「時制 1（現在・過去・未来・進行形）」「時制 2（完了形）」の 2 講に分け、講義のあとに超基礎 → 入試の順で問題を解く構成。このサイトの章立てと確認問題の並べ方の参考にしました。</li>
+        <li><a href="https://note.com/teaching_english/n/n4c10299bd90e" target="_blank" rel="noopener">タナカケンスケ「完了形がよくわからない人へ ～現在完了形について～」</a>（過去形との使い分け、経験・継続のつまずき）</li>
+        <li><a href="https://note.com/teaching_english/n/n5ef79752b6e3" target="_blank" rel="noopener">タナカケンスケ「現在形と過去形について」</a></li>
+        <li><a href="https://eigonavi.jp/grammar/012/" target="_blank" rel="noopener">英語ナビ「完了時制とは？（図解）」</a></li>
+        <li><a href="https://benesse.jp/kyouiku/teikitest/kou/english/english/k00037.html" target="_blank" rel="noopener">ベネッセ 高校英語 定期テスト対策「〈時制〉の種類」</a></li>
+        <li><a href="https://juken-mikata.net/how-to/english/sequence-of-tenses.html" target="_blank" rel="noopener">受験のミカタ「英語の時制の一致とは？」</a></li>
+        <li><a href="https://www.kandagaigo.ac.jp/kuis/cms/wp-content/uploads/2020/07/7920bc9a91978b5637a317a7be2890c2.pdf" target="_blank" rel="noopener">神田外語大学「英検 2 級対策講座 第 1 回 時制」（PDF）</a>（進行形の一時性など）</li>
+        <li><a href="https://www.youtube.com/watch?v=zzmKoQQb6Xo" target="_blank" rel="noopener">YouTube：完了形とは【超わかる！高校英語】時制#5</a>、<a href="https://www.youtube.com/watch?v=B5d6Ae-uEqQ" target="_blank" rel="noopener">現在形とは【高校英語・英文法】時制#1</a></li>
+        <li><a href="https://www.youtube.com/watch?v=RG4uLrP8Dzw" target="_blank" rel="noopener">YouTube：【100分で完成】英語の時制【基礎英文法講座総集編②】</a></li>
+      </ul></div>
+  </section>
+
+  <footer>時制ラボ ／ 高校英語 英文法の学習用</footer>
+</div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NOW=330,PAST=170,FUT=490,AY=110;
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);parent&&parent.appendChild(e);return e}
+function txt(p,x,y,s,a={}){const t=el('text',{x,y,'text-anchor':a.anchor||'middle','font-size':a.size||13,'font-weight':a.w||700,fill:a.fill||'var(--ink)','font-family':'"Zen Kaku Gothic New",sans-serif',...(a.cls?{class:a.cls}:{})},p);t.textContent=s;if(a.delay!=null)t.style.animationDelay=a.delay+'s';return t}
+function drawIn(path,delay){const L=path.getTotalLength();path.style.strokeDasharray=L;path.style.setProperty('--len',L);path.style.strokeDashoffset=reduce?0:L;path.classList.add('draw');path.style.animationDelay=(delay||0)+'s'}
+function wavePath(x1,x2,y,amp=7,per=22){let d=`M${x1} ${y}`;for(let x=x1;x<=x2;x+=2)d+=` L${x} ${y-amp*Math.sin((x-x1)/per*2*Math.PI)}`;return d}
+/* spec: {ref, refLabel, parts:[...]} ; part types: dots, dot, wave, arrow, event */
+function TL(svg,spec){
+  svg.innerHTML='';
+  const defs=el('defs',{},svg);
+  const mk=el('marker',{id:svg.id+'-ah',viewBox:'0 0 10 10',refX:8,refY:5,markerWidth:16,markerHeight:16,markerUnits:'userSpaceOnUse',orient:'auto-start-reverse'},defs);el('path',{d:'M0 0 L10 5 L0 10 z',fill:'var(--teal)'},mk);
+  const mk2=el('marker',{id:svg.id+'-ax',viewBox:'0 0 10 10',refX:8,refY:5,markerWidth:14,markerHeight:14,markerUnits:'userSpaceOnUse',orient:'auto'},defs);el('path',{d:'M0 0 L10 5 L0 10 z',fill:'var(--axis)'},mk2);
+  el('line',{x1:20,y1:AY,x2:585,y2:AY,stroke:'var(--axis)','stroke-width':2,'marker-end':`url(#${svg.id}-ax)`},svg);
+  txt(svg,40,AY+30,'過去',{fill:'var(--muted)',w:500});txt(svg,560,AY+30,'未来',{fill:'var(--muted)',w:500});
+  el('line',{x1:NOW,y1:24,x2:NOW,y2:AY+14,stroke:'var(--warm)','stroke-width':2,'stroke-dasharray':'5 4'},svg);
+  txt(svg,NOW,AY+34,'今',{fill:'var(--warm)',size:15});
+  if(spec.ref!=null&&spec.ref!==NOW){el('line',{x1:spec.ref,y1:26,x2:spec.ref,y2:AY+14,stroke:'var(--accent)','stroke-width':2,'stroke-dasharray':'5 4'},svg);
+    txt(svg,spec.ref,16,spec.refLabel||'',{fill:'var(--accent)',cls:'pop'})}
+  let d=0;const step=spec.slow?0.9:0.25;
+  for(const p of spec.parts){
+    const delay=p.delay!=null?p.delay:d;d+=step;
+    if(p.t==='dots'){const xs=[];for(let x=45;x<=560;x+=43)xs.push(x);xs.forEach((x,i)=>{const c=el('circle',{cx:x,cy:AY,r:6,fill:'var(--teal)',class:'pop'},svg);c.style.animationDelay=(delay+i*.05)+'s'});
+      if(p.label)txt(svg,NOW,AY-22,p.label,{fill:'var(--teal)',cls:'pop',delay})}
+    if(p.t==='dot'){const c=el('circle',{cx:p.x,cy:AY,r:p.r||9,fill:p.hollow?'var(--panel)':'var(--teal)',stroke:'var(--teal)','stroke-width':3,class:'pop'},svg);c.style.animationDelay=delay+'s';
+      if(p.label)txt(svg,p.x,AY-(p.ly||22),p.label,{fill:'var(--teal)',cls:'pop',delay,anchor:p.anchor})}
+    if(p.t==='event'){const c=el('rect',{x:p.x-7,y:AY-7,width:14,height:14,fill:'var(--accent)',transform:`rotate(45 ${p.x} ${AY})`,class:'pop'},svg);c.style.animationDelay=delay+'s';
+      if(p.label)txt(svg,p.x,AY-(p.ly||24),p.label,{fill:'var(--accent)',cls:'pop',delay,anchor:p.anchor})}
+    if(p.t==='wave'){const path=el('path',{d:wavePath(p.x1,p.x2,AY-(p.dy||0)),fill:'none',stroke:'var(--teal)','stroke-width':4,'stroke-linecap':'round','marker-end':p.head?`url(#${svg.id}-ah)`:''},svg);drawIn(path,delay);
+      if(p.open){[p.x1-18,p.x2+6].forEach(x=>el('line',{x1:x,y1:AY,x2:x+12,y2:AY,stroke:'var(--teal)','stroke-width':3,'stroke-dasharray':'2 4'},svg))}
+      if(p.label)txt(svg,(p.x1+p.x2)/2,AY-(p.ly||24),p.label,{fill:'var(--teal)',cls:'pop',delay})}
+    if(p.t==='arrow'){const y=AY-(p.dy||0);const path=el('path',{d:`M${p.x1} ${y} L${p.x2} ${y}`,fill:'none',stroke:'var(--teal)','stroke-width':p.thin?2:5,'stroke-linecap':'round','stroke-dasharray':p.dash||'','marker-end':`url(#${svg.id}-ah)`},svg);
+      if(!p.dash)drawIn(path,delay);else{path.classList.add('pop');path.style.animationDelay=delay+'s'}
+      if(p.start){const c=el('circle',{cx:p.x1,cy:y,r:5,fill:'var(--panel)',stroke:'var(--teal)','stroke-width':3,class:'pop'},svg);c.style.animationDelay=delay+'s'}
+      if(p.label)txt(svg,(p.x1+p.x2)/2,y-(p.ly||14),p.label,{fill:'var(--teal)',cls:'pop',delay})}
+    if(p.t==='note'){txt(svg,p.x,p.y,p.label,{fill:p.fill||'var(--muted)',w:500,size:12,cls:'pop',delay})}
+  }
+}
+
+/* ---------- 1: map ---------- */
+const ROWS=['過去','現在','未来'],COLS=['単純形','進行形','完了形','完了進行形'];
+const T={
+ '過去':[
+  {n:'過去形',f:'動詞の過去形（-ed）',en:'I <b>studied</b> English yesterday.',ja:'私は昨日、英語を勉強した。',core:'過去の一点のできごと。今とは切り離された話。',tl:{ref:PAST,refLabel:'昨日',parts:[{t:'dot',x:PAST,label:'勉強した'}]}},
+  {n:'過去進行形',f:'was / were + -ing',en:'I <b>was studying</b> English when he called.',ja:'彼が電話してきたとき、私は英語を勉強していた。',core:'過去のある時点で「途中」だった動作。',tl:{ref:PAST,refLabel:'彼が電話した',parts:[{t:'wave',x1:PAST-55,x2:PAST+55,open:1,label:'勉強している途中'}]}},
+  {n:'過去完了形',f:'had + 過去分詞',en:'I <b>had studied</b> English before I went to London.',ja:'ロンドンに行く前に、（それまでに）英語を勉強していた。',core:'過去の基準の時点「までに」完了・経験・継続していたこと。',tl:{ref:PAST+40,refLabel:'ロンドンへ行った',parts:[{t:'arrow',x1:60,x2:PAST+34,start:1,label:'had studied'}]}},
+  {n:'過去完了進行形',f:'had been + -ing',en:'I <b>had been studying</b> for two hours when he came home.',ja:'彼が帰宅したとき、私は 2 時間ずっと勉強し続けていた。',core:'過去の基準の時点までずっと続いていた動作。',tl:{ref:PAST+40,refLabel:'彼が帰宅した',parts:[{t:'wave',x1:60,x2:PAST+34,head:1,label:'2 時間ずっと'}]}}],
+ '現在':[
+  {n:'現在形',f:'動詞の原形（3 単現は -s）',en:'I <b>study</b> English every day.',ja:'私は毎日英語を勉強する。',core:'今この瞬間ではなく「いつものこと」。過去も今も未来も繰り返す習慣・事実。',tl:{ref:NOW,parts:[{t:'dots',label:'毎日くり返す'}]}},
+  {n:'現在進行形',f:'am / is / are + -ing',en:'I <b>am studying</b> English now.',ja:'私は今、英語を勉強しているところだ。',core:'今まさに「途中」の動作。始まっていて、まだ終わっていない。',tl:{ref:NOW,parts:[{t:'wave',x1:NOW-55,x2:NOW+55,open:1,label:'今まさに途中'}]}},
+  {n:'現在完了形',f:'have / has + 過去分詞',en:'I <b>have studied</b> English for three years.',ja:'私は 3 年間英語を勉強してきた。',core:'過去から「今」までをつなぐ。完了・結果／経験／継続の 3 用法。',tl:{ref:NOW,parts:[{t:'arrow',x1:150,x2:NOW-6,start:1,label:'3 年前から今まで'}]}},
+  {n:'現在完了進行形',f:'have / has been + -ing',en:'I <b>have been studying</b> since this morning.',ja:'私は今朝からずっと勉強し続けている。',core:'動作が今までずっと続いている（まだ続く感じ）。',tl:{ref:NOW,parts:[{t:'wave',x1:190,x2:NOW-6,head:1,label:'今朝からずっと'}]}}],
+ '未来':[
+  {n:'未来形',f:'will + 動詞の原形',en:'I <b>will study</b> English tomorrow.',ja:'私は明日、英語を勉強するつもりだ。',core:'未来の一点のできごと・意志・予測。',tl:{ref:FUT,refLabel:'明日',parts:[{t:'dot',x:FUT,label:'勉強する'}]}},
+  {n:'未来進行形',f:'will be + -ing',en:'I <b>will be studying</b> English at this time tomorrow.',ja:'明日の今ごろ、私は英語を勉強しているだろう。',core:'未来のある時点で「途中」になっている動作。',tl:{ref:FUT,refLabel:'明日の今ごろ',parts:[{t:'wave',x1:FUT-55,x2:FUT+55,open:1,label:'勉強している途中'}]}},
+  {n:'未来完了形',f:'will have + 過去分詞',en:'I <b>will have finished</b> my homework by six.',ja:'6 時までには宿題を終えているだろう。',core:'未来の基準の時点「までに」完了・経験・継続していること。',tl:{ref:FUT,refLabel:'6 時',parts:[{t:'arrow',x1:NOW+12,x2:FUT-6,start:1,label:'6 時までに終える'}]}},
+  {n:'未来完了進行形',f:'will have been + -ing',en:'I <b>will have been studying</b> English for ten years next April.',ja:'来年の 4 月で、英語を 10 年間勉強し続けていることになる。',core:'未来の基準の時点までずっと続いている動作。',tl:{ref:FUT,refLabel:'来年の 4 月',parts:[{t:'wave',x1:120,x2:FUT-6,head:1,label:'10 年間ずっと'}]}}]
+};
+let sel1=['現在',2];
+function buildMap(){
+  $('mapBody').innerHTML=ROWS.map(r=>`<tr><th class="h">${r}</th>${T[r].map((c,i)=>`<td><button class="cell" data-r="${r}" data-c="${i}" aria-pressed="${sel1[0]===r&&sel1[1]===i}"><b>${c.n}</b><small>${c.f}</small></button></td>`).join('')}</tr>`).join('');
+}
+function up1(){
+  const c=T[sel1[0]][sel1[1]];buildMap();
+  $('p1name').textContent=c.n;$('p1en').innerHTML=c.en;$('p1ja').textContent=c.ja;
+  $('p1f').innerHTML=`<dt>形</dt><dd>${c.f}</dd><dt>イメージ</dt><dd style="font-weight:500">${c.core}</dd>`;
+  TL($('tl1'),c.tl);
+}
+$('mapBody').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;sel1=[b.dataset.r,+b.dataset.c];up1()});
+
+/* ---------- 2 ---------- */
+let m2='a';
+function up2(){
+  $('m2a').setAttribute('aria-pressed',m2==='a');$('m2b').setAttribute('aria-pressed',m2==='b');
+  if(m2==='a'){
+    TL($('tl2'),{ref:NOW,parts:[{t:'dots',label:'過去も今も未来もくり返す'}]});
+    $('en2').innerHTML='I <b>play</b> tennis every Sunday.<br><span style="font-size:.9em">Water <b>boils</b> at 100°C.　The train <b>leaves</b> at 7:30.</span>';
+    $('tip2').innerHTML='<b class="k">ここがポイント</b>現在形は「今この瞬間」ではなく<b>いつものこと</b>。習慣・変わらない事実・時刻表で決まった予定（確定した未来）に使う。「今やっている」なら進行形。';
+  }else{
+    TL($('tl2'),{ref:NOW,parts:[{t:'wave',x1:NOW-60,x2:NOW+60,open:1,label:'始まっていて、まだ終わっていない'}]});
+    $('en2').innerHTML='I <b>am playing</b> tennis now.<br><span style="font-size:.9em">He <b>is staying</b> at a hotel this week.（一時的）</span>';
+    $('tip2').innerHTML='<b class="k">ここがポイント</b>進行形は動作の<b>途中</b>。波線の両端が点線なのは「始まりと終わりが見えていない」ということ。今週だけ、などの<b>一時的な状態</b>にも使う。';
+  }
+}
+$('m2a').addEventListener('click',()=>{m2='a';up2()});$('m2b').addEventListener('click',()=>{m2='b';up2()});
+const VERBS=[
+ ['know',0,'know（知っている）は状態動詞。× I am knowing him. → ○ I know him.'],
+ ['like',0,'like（好きだ）は気持ちの状態。× I am liking it. → ○ I like it.'],
+ ['want',0,'want（ほしい）は状態動詞。○ I want a new bike.'],
+ ['believe',0,'believe（信じている）は状態動詞。'],
+ ['belong',0,'belong to（〜に所属している）は状態。○ This bag belongs to me.'],
+ ['resemble',0,'resemble（〜に似ている）は状態。○ She resembles her mother.'],
+ ['have（持っている）',0,'「持っている」の have は状態。× I am having a car.'],
+ ['have（食べる）',1,'「食べる・過ごす」の have は動作なので進行形 OK。○ I am having lunch now.'],
+ ['see（見える）',0,'「自然に目に入る」の see は状態。○ I can see Mt. Fuji.'],
+ ['see（会う）',1,'「会う」の see は動作・予定なので OK。○ I am seeing Ken tomorrow.'],
+ ['study',1,'study は動作動詞。○ I am studying now.'],
+ ['run',1,'run は動作動詞。○ He is running in the park.'],
+ ['read',1,'read は動作動詞。○ She is reading a book.'],
+];
+$('verbs').innerHTML=VERBS.map((v,i)=>`<button data-i="${i}">${v[0]}</button>`).join('');
+$('verbs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const v=VERBS[+b.dataset.i];
+  [...$('verbs').children].forEach(x=>x.classList.remove('okb','ngb'));b.classList.add(v[1]?'okb':'ngb');
+  $('vjudge').innerHTML=`<span class="${v[1]?'ok':'ng'}">${v[1]?'○ 進行形にできる':'× ふつう進行形にしない'}</span>　${v[2]}`});
+
+/* ---------- 3 ---------- */
+let m3='a';
+const U3={
+ a:{en:'I <b>have just finished</b> my homework.',ja:'ちょうど宿題を終えたところだ（→ 今は終わっている）。',
+    tl:{ref:NOW,parts:[{t:'arrow',x1:250,x2:NOW-6,start:1,label:'終えた'},{t:'note',x:NOW+70,y:AY-40,label:'今：終わった状態',fill:'var(--warm)'}]},
+    f:[['意味','〜したところだ／〜してしまった（結果が今に残る）'],['目印','just, already, yet（否定文・疑問文）'],['例','Have you finished yet? / I haven\'t finished yet.']]},
+ b:{en:'I <b>have visited</b> Kyoto three times.',ja:'私は京都を 3 回訪れたことがある。',
+    tl:{ref:NOW,parts:[{t:'arrow',x1:40,x2:NOW-6,thin:1,dash:'6 5',label:'生まれてから今までに',ly:44},{t:'dot',x:100,label:'1回目'},{t:'dot',x:180,label:'2回目'},{t:'dot',x:255,label:'3回目'}]},
+    f:[['意味','〜したことがある（今までの経験）'],['目印','ever, never, before, once, 〜 times'],['注意','have been to（行ったことがある）と have gone to（行ってしまった）の違い']]},
+ c:{en:'I <b>have lived</b> in Osaka since 2010.',ja:'私は 2010 年からずっと大阪に住んでいる。',
+    tl:{ref:NOW,parts:[{t:'arrow',x1:110,x2:NOW-6,start:1,label:'2010 年から今までずっと'},{t:'note',x:110,y:AY+22,label:'2010',fill:'var(--teal)'}]},
+    f:[['意味','ずっと〜している（今も続いている）'],['目印','for + 期間、since + 過去の一点、How long ~?'],['注意','状態動詞 → 現在完了、動作動詞 → 現在完了進行形（have been -ing）']]}};
+function up3(){['a','b','c'].forEach(k=>$('m3'+k).setAttribute('aria-pressed',k===m3));const u=U3[m3];
+  $('en3').innerHTML=u.en;$('ja3').textContent=u.ja;$('f3').innerHTML=u.f.map(([a,b])=>`<dt>${a}</dt><dd style="font-weight:500">${b}</dd>`).join('');TL($('tl3'),u.tl)}
+['a','b','c'].forEach(k=>$('m3'+k).addEventListener('click',()=>{m3=k;up3()}));
+const PW=[
+ ['since 2020',1,'「2020 年から今まで」という期間の始まりを表すので、継続で使える。'],
+ ['for three years',1,'「3 年間」という期間。今まで続いていることを表せる。'],
+ ['just',1,'「ちょうど〜したところ」。完了・結果の目印。'],
+ ['already',1,'「もう〜してしまった」。完了・結果の目印。'],
+ ['yet',1,'否定文で「まだ」、疑問文で「もう」。完了の目印。'],
+ ['ever / never',1,'「今までに」「一度も〜ない」。経験の目印。'],
+ ['before',1,'単独の before（以前に）は「今より前のどこか」なので経験で使える。'],
+ ['yesterday',0,'過去の一点をはっきり指すので ×。→ 過去形 I finished it yesterday.'],
+ ['three years ago',0,'〜 ago は過去の一点。→ 過去形。「3 年間」なら for three years。'],
+ ['last week',0,'last 〜 も過去の一点。→ 過去形。'],
+ ['in 2020',0,'単独の in 2020 は過去の一点なので ×。since 2020 なら ○。'],
+ ['When ~?',0,'When は「いつ」と一点を聞く語なので、現在完了とは使えない。過去のことなら When did you visit Kyoto?、未来のことなら When will you visit Kyoto? のように使う。'],
+ ['just now',0,'just now は「ついさっき」＝過去の一点。→ 過去形 I finished it just now.'],
+];
+$('pwords').innerHTML=PW.map((v,i)=>`<button data-i="${i}">${v[0]}</button>`).join('');
+$('pwords').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const v=PW[+b.dataset.i];
+  [...$('pwords').children].forEach(x=>x.classList.remove('okb','ngb'));b.classList.add(v[1]?'okb':'ngb');
+  $('pjudge').innerHTML=`<span class="${v[1]?'ok':'ng'}">${v[1]?'○ 使える':'× 使えない'}</span>　${v[2]}`});
+
+/* ---------- 4 ---------- */
+let m4='a';
+const U4={
+ a:{en:'When I got to the station, the train <b>had</b> already <b>left</b>.',ja:'駅に着いたとき、電車はもう出てしまっていた。',
+    tl:{ref:230,refLabel:'駅に着いた（過去）',slow:1,parts:[{t:'event',x:230,label:'got to',ly:26},{t:'dot',x:110,label:'電車が出た（もっと前）'},{t:'arrow',x1:118,x2:224,label:'had left',dy:0,ly:40}]},
+    tip:'過去の 2 つの出来事のうち、<b>先に起きた方</b>を had + 過去分詞（大過去）にする。ただし before / after で順番がはっきり分かるときは、過去形のままでもよい。'},
+ b:{en:'She <b>had lived</b> in Paris for ten years before she moved to London.',ja:'彼女はロンドンに引っ越す前、パリに 10 年間住んでいた。',
+    tl:{ref:250,refLabel:'ロンドンへ引っ越した',slow:1,parts:[{t:'event',x:250,label:'moved',ly:26},{t:'arrow',x1:60,x2:244,start:1,label:'10 年間ずっと（had lived）',ly:40}]},
+    tip:'過去の基準の時点<b>まで</b>続いていた状態は過去完了（継続）。現在完了の「今」が「過去のある時点」にずれただけ、と考える。'},
+ c:{en:'I <b>will have finished</b> my homework by six.',ja:'6 時までには宿題を終えているだろう。',
+    tl:{ref:480,refLabel:'6 時（未来）',slow:1,parts:[{t:'event',x:480,label:'by six',ly:26},{t:'arrow',x1:NOW+10,x2:440,start:1,label:'will have finished',ly:40}]},
+    tip:'<b>by 〜（〜までに）</b>が未来完了の目印。未来の基準の時点で「もう終わっている」状態を表す。'}};
+function up4(){['a','b','c'].forEach(k=>$('m4'+k).setAttribute('aria-pressed',k===m4));const u=U4[m4];
+  $('en4').innerHTML=u.en;$('ja4').textContent=u.ja;$('tip4').innerHTML='<b class="k">ここがポイント</b>'+u.tip;TL($('tl4'),u.tl)}
+['a','b','c'].forEach(k=>$('m4'+k).addEventListener('click',()=>{m4=k;up4()}));
+$('play4').addEventListener('click',up4);
+
+/* ---------- 5 ---------- */
+const ADV=[
+ ['I\'ll call you when I ( ___ ) home.',['get','will get'],0,'when 〜 は「〜するとき」という<b>時の副詞節</b>（call を飾る）。未来のことでも現在形。'],
+ ['If it ( ___ ) tomorrow, we\'ll stay home.',['rains','will rain'],0,'if 〜 は「もし〜なら」という<b>条件の副詞節</b>。未来でも現在形。'],
+ ['Please wait here until I ( ___ ) back.',['come','will come'],0,'until 〜（〜するまで）も時の副詞節。現在形。'],
+ ['As soon as I ( ___ ) my homework, I\'ll go out.',['have finished','will have finished'],0,'「終えたらすぐ」の完了の意味は、未来完了ではなく<b>現在完了</b>で表す。'],
+ ['I don\'t know when he ( ___ ) back.',['comes','will come'],1,'when 〜 は「<b>いつ</b>〜するか」で know の目的語（<b>名詞節</b>）。未来のことなので will を使う。'],
+ ['I wonder if it ( ___ ) tomorrow.',['rains','will rain'],1,'if 〜 は「〜<b>かどうか</b>」で wonder の目的語（<b>名詞節</b>）。未来のことなので will を使う。'],
+];
+$('advq').innerHTML=ADV.map((q,i)=>`<div class="qcard" data-i="${i}"><p class="en">${q[0]}</p><div class="choices">${q[1].map((c,j)=>`<button data-j="${j}">${c}</button>`).join('')}</div><p class="exp" hidden></p></div>`).join('');
+$('advq').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const card=b.closest('.qcard'),q=ADV[+card.dataset.i],j=+b.dataset.j;
+  [...card.querySelectorAll('.choices button')].forEach((x,k)=>{x.classList.remove('right','wrong');if(k===q[2])x.classList.add('right');else if(k===j)x.classList.add('wrong')});
+  const ex=card.querySelector('.exp');ex.hidden=false;ex.innerHTML=`<span class="${j===q[2]?'ok':'ng'}">${j===q[2]?'○ 正解':'× 正解は '+q[1][q[2]]}</span>　${q[3]}`});
+
+/* ---------- 6 quiz ---------- */
+const QZ=[
+ ['基礎','I ( ___ ) TV when the phone rang.',['watched','was watching','have watched','am watching'],1,'電話が鳴った「そのとき途中だった」動作 → 過去進行形。'],
+ ['基礎','This bag ( ___ ) to my brother.',['is belonging','belongs','was belonging','has belonging'],1,'belong は状態動詞なので進行形にしない。今のこと → 現在形。'],
+ ['基礎','When ( ___ ) you arrive in Tokyo?',['have','did','had','do'],1,'When（いつ）は一点を聞くので現在完了は使えない。ここは東京に着いた過去のことを聞いているので過去形 did。'],
+ ['基礎','The train ( ___ ) at 7:30 tomorrow morning.',['leaves','left','has left','had left'],0,'時刻表で決まっている予定（確定した未来）は現在形。'],
+ ['標準','I ( ___ ) him since I was a child.',['know','knew','have known','am knowing'],2,'since 〜（〜から今まで）→ 継続の現在完了。know は状態動詞なので完了進行形にしない。'],
+ ['標準','She ( ___ ) to Kyoto three times.',['has been','has gone','went','goes'],0,'three times（3 回）→ 経験。「行ったことがある」は have been to。has gone to は「行ってしまった」。'],
+ ['標準','I\'ll call you when I ( ___ ) home.',['will get','get','got','have got'],1,'時の副詞節の中は、未来のことでも現在形。'],
+ ['標準','I ( ___ ) this book by tomorrow.',['finish','will have finished','had finished','have finished'],1,'by tomorrow（明日までに）→ 未来の時点までの完了 → 未来完了。'],
+ ['入試','By the time we got to the station, the train ( ___ ).',['left','has left','had left','leaves'],2,'駅に着いた（過去）より前に出た → 大過去の had left。'],
+ ['入試','It ( ___ ) for three days when we arrived.',['has rained','had been raining','is raining','rains'],1,'到着した（過去）時点まで 3 日間降り続いていた → 過去完了進行形。'],
+ ['入試','I don\'t know if it ( ___ ) tomorrow.',['rains','will rain','rained','has rained'],1,'if 〜 は「〜かどうか」で know の目的語（名詞節）。未来のことなので will rain。'],
+];
+let score=0,answered=0;
+function buildQuiz(){score=0;answered=0;
+  $('quiz').innerHTML=QZ.map((q,i)=>`<div class="qcard" data-i="${i}"><span class="lvl">Q${i+1}　${q[0]}</span><p class="en">${q[1]}</p><div class="choices">${q[2].map((c,j)=>`<button data-j="${j}">${String.fromCharCode(97+j)}) ${c}</button>`).join('')}</div><p class="exp" hidden></p></div>`).join('');upScore()}
+function upScore(){$('score').textContent=`正解 ${score} / ${answered}（全 ${QZ.length} 問）`}
+$('quiz').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const card=b.closest('.qcard');if(card.dataset.done)return;card.dataset.done=1;
+  const q=QZ[+card.dataset.i],j=+b.dataset.j;answered++;if(j===q[3])score++;upScore();
+  [...card.querySelectorAll('.choices button')].forEach((x,k)=>{if(k===q[3])x.classList.add('right');else if(k===j)x.classList.add('wrong')});
+  const ex=card.querySelector('.exp');ex.hidden=false;ex.innerHTML=`<span class="${j===q[3]?'ok':'ng'}">${j===q[3]?'○ 正解':'× 正解は '+String.fromCharCode(97+q[3])+') '+q[2][q[3]]}</span>　${q[4]}`});
+$('qreset').addEventListener('click',buildQuiz);
+
+up1();up2();up3();up4();buildQuiz();
+})();
+
+</script>
+
+<a href="index.html" style="position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:9999;font:700 13px sans-serif;padding:8px 14px;border-radius:999px;background:#1f4e8c;color:#fff;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.2)">← 本棚へ</a></body></html>
