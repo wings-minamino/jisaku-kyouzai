@@ -129,6 +129,8 @@ col.on{background:var(--accent-soft)}
 .card .ng{font-size:.88rem;color:var(--warm);font-weight:700}
 .refs{font-size:.9rem;display:grid;gap:4px;margin:0;padding-left:1.2em}
 .refs a{color:var(--accent)}
+.stepnav{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.stepnav span{width:26px;height:26px;border-radius:50%;display:inline-grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:.8rem;background:var(--chip);color:var(--muted)}.stepnav span.on{background:var(--accent);color:var(--panel)}.stepnav b{margin-left:6px}
+.angles summary{cursor:pointer;font-weight:700;color:var(--muted);font-size:.9rem}.angles{display:grid;gap:8px}
 footer{margin-top:28px;color:var(--muted);font-size:.85rem}
 </style>
 
@@ -236,17 +238,20 @@ footer{margin-top:28px;color:var(--muted);font-size:.85rem}
 
   <!-- 6 -->
   <section class="lab" id="s6">
-    <div class="lab-h"><span class="no">06</span><h2>加法定理を図で確かめる</h2><p class="gist">斜辺 1 の三角形を角 α の三角形の上に積むと、高さが 2 つの部分に分かれる。</p></div>
+    <div class="lab-h"><span class="no">06</span><h2>加法定理を図で確かめる</h2><p class="gist">「次へ」を押して 5 ステップで進めよう。角 α + β の点 P の高さを、2 つの直角三角形に分けて求める。</p></div>
     <div class="lab-body">
       <figure class="stage"><canvas id="c6" aria-label="加法定理の図"></canvas></figure>
       <div class="side">
         <div class="btns" role="group" aria-label="公式"><button class="s" id="m6s" aria-pressed="true">sin(α + β)</button><button class="c" id="m6c" aria-pressed="false">cos(α + β)</button></div>
+        <div class="stepnav" id="st6"></div>
+        <p class="tip" id="tip6" style="border-left-color:var(--accent)"></p>
+        <div class="eq" id="eq6"></div>
+        <div class="btns"><button id="prev6">◀ 前へ</button><button class="primary" id="next6">次へ ▶</button></div>
+        <details class="angles"><summary>角 α・β を変えてみる</summary>
         <div class="ctl"><div class="row"><label for="al6">α</label><output id="o-al6"></output></div>
           <input type="range" id="al6" min="5" max="50" step="1" value="30"></div>
         <div class="ctl"><div class="row"><label for="be6">β</label><output id="o-be6"></output></div>
-          <input type="range" id="be6" min="5" max="40" step="1" value="25"></div>
-        <div class="eq" id="eq6"></div>
-        <p class="tip" id="tip6"></p>
+          <input type="range" id="be6" min="5" max="40" step="1" value="25"></div></details>
       </div>
     </div>
     <div class="cards">
@@ -255,6 +260,11 @@ footer{margin-top:28px;color:var(--muted);font-size:.85rem}
         <li class="m">cos(α ± β) = cos α cos β ∓ sin α sin β</li>
         <li class="m">tan(α ± β) = <span class="fr"><span>tan α ± tan β</span><span>1 ∓ tan α tan β</span></span></li></ul>
         <p class="ng">覚え方：sin は「サイコス・コスサイ」で符号そのまま、cos は「コスコス・サイサイ」で符号が逆</p></div>
+      <div class="card"><h3>使ってみよう：sin 75°</h3><ul>
+        <li class="m">sin 75° = sin(45° + 30°)</li>
+        <li class="m">= sin 45° cos 30° + cos 45° sin 30°</li>
+        <li class="m">= <span class="fr"><span>1</span><span>√2</span></span> · <span class="fr"><span>√3</span><span>2</span></span> + <span class="fr"><span>1</span><span>√2</span></span> · <span class="fr"><span>1</span><span>2</span></span> = <span class="fr"><span>√3 + 1</span><span>2√2</span></span> = <span class="fr"><span>√6 + √2</span><span>4</span></span></li></ul>
+        <p class="ng">知っている角（30°・45°・60°）の和や差に分けるのがコツ</p></div>
       <div class="card"><h3>2 倍角（β = α とおく）</h3><ul>
         <li class="m">sin 2α = 2 sin α cos α</li>
         <li class="m">cos 2α = cos²α − sin²α = 1 − 2sin²α = 2cos²α − 1</li>
@@ -597,51 +607,81 @@ $('k5').addEventListener('input',()=>{k5=+$('k5').value;up5()});
 $('q5').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;k5=+b.dataset.v;$('k5').value=k5;up5()});
 
 /* ---------- 6 加法定理 ---------- */
-let mode6='s';
-const L6=lab('c6',{x0:-0.2,x1:1.427,y0:-0.1,y1:1.12},p=>{
-  const c=p.col,al=+$('al6').value*R,be=+$('be6').value*R;
-  const A=[Math.cos(be)*Math.cos(al),Math.cos(be)*Math.sin(al)],P=[Math.cos(al+be),Math.sin(al+be)],H=[P[0],A[1]];
+let mode6='s',step6=1;const N6=5;
+const L6=lab('c6',{x0:-0.25,x1:1.51,y0:-0.2,y1:1.12},p=>{
+  const c=p.col,al=+$('al6').value*R,be=+$('be6').value*R,s=step6,S=mode6==='s';
+  const A=[Math.cos(be)*Math.cos(al),Math.cos(be)*Math.sin(al)],P=[Math.cos(al+be),Math.sin(al+be)],H=[P[0],A[1]],A0=[A[0],0],P0=[P[0],0];
+  const mono='700 13px "JetBrains Mono", monospace';
   p.grid(.1);p.axes();p.arc(0,0,p.S(),0,90,{color:c.line,width:1.2});
-  p.poly([[0,0],A,P],{fill:c.accentSoft});
-  p.line(0,0,...A,{color:c.ink,width:2});p.line(...A,...P,{color:c.ink,width:2});p.line(0,0,...P,{color:c.ink,width:3});
-  p.t(A[0]/2,A[1]/2,'cos β',{dx:10,dy:14,align:'left',font:'700 13px "JetBrains Mono", monospace'});
-  p.t((A[0]+P[0])/2,(A[1]+P[1])/2,'sin β',{dx:12,dy:-4,align:'left',font:'700 13px "JetBrains Mono", monospace'});
-  p.t(P[0]/2,P[1]/2,'1',{dx:-12,dy:-6,font:'700 14px "JetBrains Mono", monospace'});
-  // right angle at A
-  {const u=[Math.cos(al),Math.sin(al)],w=[-Math.sin(al),Math.cos(al)],s=12,c2=p.ctx,ax=p.X(A[0]),ay=p.Y(A[1]);c2.save();c2.strokeStyle=c.muted;c2.lineWidth=1.5;c2.beginPath();
-    c2.moveTo(ax-u[0]*s,ay+u[1]*s);c2.lineTo(ax-u[0]*s+w[0]*s,ay+u[1]*s-w[1]*s);c2.lineTo(ax+w[0]*s,ay-w[1]*s);c2.stroke();c2.restore()}
+  // angle-α ray
+  p.line(0,0,1.15*Math.cos(al),1.15*Math.sin(al),{color:c.muted,width:1.2,dash:[5,5]});
+  if(s>=4)p.poly([A,H,P],{fill:c.tealSoft});
+  if(s>=3)p.poly([[0,0],A0,A],{fill:S?c.warmSoft:c.accentSoft});
+  if(s>=2)p.poly([[0,0],A,P],{fill:'rgba(127,127,127,.08)'});
+  p.line(0,0,...P,{color:c.ink,width:3});
+  p.t(P[0]/2,P[1]/2,'1',{dx:-12,dy:-6,font:'700 15px "JetBrains Mono", monospace'});
   p.arc(0,0,34,0,al/R,{color:c.ink,width:1.5});p.t(0,0,'α',{dx:48*Math.cos(al/2),dy:-48*Math.sin(al/2),font:'italic 700 15px Georgia, serif'});
-  p.arc(0,0,58,al/R,(al+be)/R,{color:c.ink,width:1.5});p.t(0,0,'β',{dx:70*Math.cos(al+be/2),dy:-70*Math.sin(al+be/2),font:'italic 700 15px Georgia, serif'});
-  p.line(...A,...H,{color:c.muted,width:1.2,dash:[4,4]});
-  p.arc(P[0],P[1],26,-90,al/R-90,{color:c.warm,width:1.5});p.t(P[0],P[1],'α',{dx:36*Math.cos(-PI/2+al/2),dy:-36*Math.sin(-PI/2+al/2),color:c.warm,font:'italic 700 14px Georgia, serif'});
-  if(mode6==='s'){
-    p.line(A[0],0,A[0],A[1],{color:c.warm,width:5});p.line(H[0],H[1],P[0],P[1],{color:c.teal,width:5});
-    p.t(A[0],A[1]/2,'sin α cos β',{dx:8,align:'left',color:c.warm,font:'700 12px "JetBrains Mono", monospace'});
-    p.t(P[0],P[1],'cos α sin β',{dx:-16,dy:4,align:'right',color:c.teal,font:'700 12px "JetBrains Mono", monospace'});
-    p.line(P[0],0,P[0],H[1],{color:c.muted,width:1,dash:[3,4]});
-  }else{
-    p.line(0,0,A[0],0,{color:c.accent,width:5});p.line(P[0],0,A[0],0,{color:c.warm,width:9});
-    p.line(P[0],P[1],P[0],0,{color:c.muted,width:1,dash:[3,4]});p.line(A[0],A[1],A[0],0,{color:c.muted,width:1,dash:[3,4]});
-    p.line(H[0],H[1],A[0],A[1],{color:c.warm,width:4});
-    p.t(A[0]/2,0,'cos α cos β',{dy:16,color:c.accent,font:'700 12px "JetBrains Mono", monospace'});
-    p.t((H[0]+A[0])/2,H[1],'sin α sin β',{dy:-12,color:c.warm,font:'700 12px "JetBrains Mono", monospace'});
-    p.t(P[0],0,'cos(α+β)',{dy:-12,dx:-4,align:'right',color:c.ink,font:'700 12px "JetBrains Mono", monospace'});
+  p.arc(0,0,60,al/R,(al+be)/R,{color:c.ink,width:1.5});p.t(0,0,'β',{dx:72*Math.cos(al+be/2),dy:-72*Math.sin(al+be/2),font:'italic 700 15px Georgia, serif'});
+  if(s===1){
+    if(S){p.line(...P0,...P,{color:c.warm,width:5});p.t(P[0],P[1]/2,'sin(α+β) = ?',{dx:10,align:'left',color:c.warm,font:mono})}
+    else{p.line(0,0,...P0,{color:c.accent,width:5});p.line(...P,...P0,{color:c.muted,width:1,dash:[3,4]});p.t(P[0]/2,0,'cos(α+β) = ?',{dy:16,color:c.accent,font:mono})}
+  }
+  if(s>=2){
+    p.line(0,0,...A,{color:c.ink,width:2.5});p.line(...A,...P,{color:c.ink,width:2.5});
+    const u=[Math.cos(al),Math.sin(al)],w=[-Math.sin(al),Math.cos(al)],k=12,g=p.ctx,ax=p.X(A[0]),ay=p.Y(A[1]);
+    g.save();g.strokeStyle=c.muted;g.lineWidth=1.5;g.beginPath();g.moveTo(ax-u[0]*k,ay+u[1]*k);g.lineTo(ax-u[0]*k+w[0]*k,ay+u[1]*k-w[1]*k);g.lineTo(ax+w[0]*k,ay-w[1]*k);g.stroke();g.restore();
+    p.t(A[0]*.38,A[1]*.38,'cos β',{dx:14,dy:16,align:'left',font:mono,color:s===2?c.ink:c.muted});
+    p.t((A[0]+P[0])/2,(A[1]+P[1])/2,'sin β',{dx:14,dy:-2,align:'left',font:mono,color:s===2?c.ink:c.muted});
+    p.dot(...A,{r:4});p.t(...A,'A',{dx:14,dy:4,font:'italic 700 14px Georgia, serif'});
+  }
+  if(s>=3){
+    if(S){p.line(...A0,...A,{color:c.warm,width:5});p.t(A[0],A[1]/2,'sin α cos β',{dx:10,align:'left',color:c.warm,font:mono})}
+    else{p.line(0,0,...A0,{color:c.accent,width:5});p.line(...A,...A0,{color:c.muted,width:1,dash:[3,4]});if(s<5)p.t(A[0]/2,0,'cos α cos β',{dy:16,color:c.accent,font:mono})}
+  }
+  if(s>=4){
+    p.line(...A,...H,{color:c.muted,width:1.2,dash:[4,4]});
+    p.arc(P[0],P[1],26,-90,al/R-90,{color:c.teal,width:2});p.t(P[0],P[1],'α',{dx:38*Math.cos(-PI/2+al/2),dy:-38*Math.sin(-PI/2+al/2),color:c.teal,font:'italic 700 15px Georgia, serif'});
+    if(S){p.line(...H,...P,{color:c.teal,width:5});p.t(P[0],P[1],'cos α sin β',{dx:-16,dy:4,align:'right',color:c.teal,font:mono})}
+    else{p.line(...H,...A,{color:c.warm,width:5});p.t((H[0]+A[0])/2,H[1],'sin α sin β',{dy:-14,color:c.warm,font:mono})}
+  }
+  if(s===5){
+    if(S){p.line(...P0,P[0],A[1],{color:c.warm,width:7});p.line(P[0],A[1],...P,{color:c.teal,width:7});
+      p.t(P[0],0,'sin(α+β)',{dy:16,font:mono})}
+    else{p.line(0,-0.05,A[0],-0.05,{color:c.accent,width:6});p.t(A[0],-0.05,'cos α cos β',{dx:8,align:'left',color:c.accent,font:mono});
+      p.line(P[0],-0.1,A[0],-0.1,{color:c.warm,width:6});p.t(A[0],-0.1,'− sin α sin β',{dx:8,align:'left',color:c.warm,font:mono});
+      p.line(0,-0.15,P[0],-0.15,{color:c.ink,width:6});p.t(P[0],-0.15,'= cos(α+β)',{dx:8,align:'left',font:mono});
+      p.line(...P,P[0],-0.15,{color:c.muted,width:1,dash:[3,4]});p.line(...A,A[0],-0.1,{color:c.muted,width:1,dash:[3,4]})}
   }
   p.dot(...P,{r:5});p.t(...P,'P',{dx:10,dy:-10,font:'italic 700 15px Georgia, serif'});
 });
+const T6={
+ s:[['目標を決める','OP = 1 なので、点 P の<b>高さ</b>がそのまま sin(α + β)。この高さを、α と β だけの三角比で表したい。'],
+    ['補助線を引く','P から角 α の直線（点線）に垂線をおろし、足を A とする。三角形 OAP は<b>斜辺 1・角 β</b> の直角三角形なので、<b>OA = cos β</b>、<b>AP = sin β</b>。'],
+    ['下の三角形','斜辺 OA = cos β、角 α の直角三角形。高さ = 斜辺 × sin α = <span class="ks">sin α cos β</span>。'],
+    ['上の三角形','斜辺 AP = sin β の直角三角形。P のところの角も <b>α</b> になる（AP は点線に垂直、縦線は x 軸に垂直なので、α と同じ角度だけ傾く）。縦の長さ = 斜辺 × cos α = <span class="kt">cos α sin β</span>。'],
+    ['合わせる','P の高さ ＝ 下の高さ ＋ 上の縦。2 つを積み上げると sin(α + β) になる。']],
+ c:[['目標を決める','OP = 1 なので、点 P の<b>x 座標（横の位置）</b>がそのまま cos(α + β)。'],
+    ['補助線を引く','P から角 α の直線（点線）に垂線をおろし、足を A とする。三角形 OAP は<b>斜辺 1・角 β</b> の直角三角形なので、<b>OA = cos β</b>、<b>AP = sin β</b>。'],
+    ['下の三角形','斜辺 OA = cos β、角 α の直角三角形。横 = 斜辺 × cos α = <span class="kc">cos α cos β</span>（A の x 座標）。'],
+    ['上の三角形','斜辺 AP = sin β。P のところの角も <b>α</b>。A から P へは<b>左に戻る</b>ので、横の長さ = 斜辺 × sin α = <span class="ks">sin α sin β</span> だけ引く。'],
+    ['合わせる','P の x 座標 ＝ A の x 座標 − 左に戻った分。だから cos の加法定理は<b>マイナス</b>になる。']]};
 function up6(){
-  const a=+$('al6').value,b=+$('be6').value,A=a*R,B=b*R;$('o-al6').textContent=a+'°';$('o-be6').textContent=b+'°';
-  if(mode6==='s'){
-    $('eq6').innerHTML=`<span class="r">sin(α + β) = <span class="ks">sin α cos β</span> + <span class="kt">cos α sin β</span></span><span class="r">sin ${a+b}° ≒ <span class="ks">${f3(Math.sin(A)*Math.cos(B))}</span> + <span class="kt">${f3(Math.cos(A)*Math.sin(B))}</span> = ${f3(Math.sin(A+B))}</span>`;
-    $('tip6').innerHTML='<b class="k">図の読み方</b>P の高さ sin(α + β) は、下の段（斜辺 cos β の三角形の高さ = <span class="ks">sin α cos β</span>）と、上の段（斜辺 sin β の三角形の縦 = <span class="kt">cos α sin β</span>）の和。P のところにも角 α が現れるのがポイントです。';
-  }else{
-    $('eq6').innerHTML=`<span class="r">cos(α + β) = <span class="kc">cos α cos β</span> − <span class="ks">sin α sin β</span></span><span class="r">cos ${a+b}° ≒ <span class="kc">${f3(Math.cos(A)*Math.cos(B))}</span> − <span class="ks">${f3(Math.sin(A)*Math.sin(B))}</span> = ${f3(Math.cos(A+B))}</span>`;
-    $('tip6').innerHTML='<b class="k">図の読み方</b>P の x 座標 cos(α + β) は、A の x 座標（<span class="kc">cos α cos β</span>）から、上の段で左に戻った分（<span class="ks">sin α sin β</span>）を引いたもの。だから cos の加法定理はマイナスになります。';
-  }
+  const a=+$('al6').value,b=+$('be6').value,A=a*R,B=b*R,S=mode6==='s';$('o-al6').textContent=a+'°';$('o-be6').textContent=b+'°';
+  const[t,x]=T6[mode6][step6-1];
+  $('st6').innerHTML=Array.from({length:N6},(_,i)=>`<span class="${i+1===step6?'on':''}">${i+1}</span>`).join('')+`<b>${t}</b>`;
+  $('tip6').innerHTML=x;
+  const f=S?['sin(α + β) = ?','OA = cos β、 AP = sin β','sin(α + β) = <span class="ks">sin α cos β</span> + ？','sin(α + β) = <span class="ks">sin α cos β</span> + <span class="kt">cos α sin β</span>']
+           :['cos(α + β) = ?','OA = cos β、 AP = sin β','cos(α + β) = <span class="kc">cos α cos β</span> − ？','cos(α + β) = <span class="kc">cos α cos β</span> − <span class="ks">sin α sin β</span>'];
+  let h=`<span class="r">${f[Math.min(step6,4)-1]}</span>`;
+  if(step6===5)h=`<span class="r" style="font-size:1.1em">${f[3]}</span><span class="r" style="font-size:.9em">α = ${a}°、β = ${b}° で確かめ：${S?`<span class="ks">${f3(Math.sin(A)*Math.cos(B))}</span> + <span class="kt">${f3(Math.cos(A)*Math.sin(B))}</span> = ${f3(Math.sin(A+B))} = sin ${a+b}°`:`<span class="kc">${f3(Math.cos(A)*Math.cos(B))}</span> − <span class="ks">${f3(Math.sin(A)*Math.sin(B))}</span> = ${f3(Math.cos(A+B))} = cos ${a+b}°`}</span>`;
+  $('eq6').innerHTML=h;
+  $('prev6').disabled=step6===1;$('next6').disabled=step6===N6;
   L6.r();
 }
-function setM6(m){mode6=m;$('m6s').setAttribute('aria-pressed',m==='s');$('m6c').setAttribute('aria-pressed',m==='c');up6()}
+function setM6(m){mode6=m;step6=1;$('m6s').setAttribute('aria-pressed',m==='s');$('m6c').setAttribute('aria-pressed',m==='c');up6()}
 $('m6s').addEventListener('click',()=>setM6('s'));$('m6c').addEventListener('click',()=>setM6('c'));
+$('prev6').addEventListener('click',()=>{step6=Math.max(1,step6-1);up6()});
+$('next6').addEventListener('click',()=>{step6=Math.min(N6,step6+1);up6()});
 ['al6','be6'].forEach(id=>$(id).addEventListener('input',up6));
 
 /* ---------- 7 合成 ---------- */
