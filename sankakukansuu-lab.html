@@ -514,13 +514,13 @@ function drawCosV(p){
   ctx.lineWidth=1;ctx.strokeStyle=c.grid;ctx.beginPath();
   for(let i=1;i<=4;i++){const q=Math.round(p.Y(Yt(i*PI/2)))+.5;ctx.moveTo(p.X(-1.5),q);ctx.lineTo(p.X(1.5),q)}
   [-1,-.5,.5,1].forEach(x=>{const q=Math.round(p.X(x))+.5;ctx.moveTo(q,p.Y(G0));ctx.lineTo(q,p.Y(Yt(2*PI)+.15))});ctx.stroke();
-  p.line(-1.5,G0,1.5,G0,{color:c.axis,width:1.5});p.line(0,G0+.1,0,Yt(2*PI)-.25,{color:c.axis,width:1.5});
+  p.line(-1.5,G0,1.52,G0,{color:c.axis,width:1.5});arrowHead(p,1.6,G0,0,c.axis);p.line(0,G0+.1,0,Yt(2*PI)-.25,{color:c.axis,width:1.5});
   arrowHead(p,0,Yt(2*PI)-.25,-PI/2,c.axis);
   ctx.font='11px "JetBrains Mono", monospace';ctx.fillStyle=c.muted;ctx.textAlign='right';ctx.textBaseline='middle';
   for(let i=1;i<=4;i++)ctx.fillText(piFrac(i,2),p.X(-1.55)+28,p.Y(Yt(i*PI/2))-8);
   ctx.textAlign='center';ctx.textBaseline='bottom';[-1,1].forEach(x=>ctx.fillText(sf(x),p.X(x),p.Y(G0)-3));
   ctx.font='italic 14px Georgia, serif';ctx.fillStyle=c.ink;ctx.textAlign='left';ctx.textBaseline='middle';
-  ctx.fillText('θ',p.X(0)+8,p.Y(Yt(2*PI)-.2));ctx.textAlign='right';ctx.fillText('x = cos θ',p.X(1.62),p.Y(G0)+14);
+  ctx.fillText('θ',p.X(0)+8,p.Y(Yt(2*PI)-.2));ctx.textAlign='right';ctx.textBaseline='top';ctx.fillText('y',p.X(1.6),p.Y(G0)+6);
   // unit circle
   p.line(-1.3,0,1.3,0,{color:c.axis,width:1});p.line(0,-1.2,0,1.2,{color:c.axis,width:1});p.circle(0,0,1,{color:c.axis,width:2});
   p.arc(0,0,20,0,t/R,{color:c.ink,width:1.5});
@@ -561,7 +561,7 @@ function up3(){
   const info={s:[['周期','2π'],['値の範囲','−1 ≦ y ≦ 1'],['対称性','原点に関して対称（sin(−θ) = −sin θ）'],['0 になる θ','0, π, 2π, …']],
     c:[['周期','2π'],['値の範囲','−1 ≦ y ≦ 1'],['対称性','y 軸に関して対称（cos(−θ) = cos θ）'],['sin との関係','sin を左に '+FR('π',2)+' ずらした形']],
     t:[['周期','π（sin・cos の半分）'],['値の範囲','すべての実数'],['漸近線','θ = '+FR('π',2)+' + nπ（点線）'],['対称性','原点に関して対称']]}[mode3];
-  if(vert3())info.unshift(['縦向きの見方','cos θ は点 P の x 座標。θ を下向きにとると、P から真下に下ろした位置がそのままグラフの点になる']);
+  if(vert3())info.unshift(['縦向きの見方','cos θ は点 P の x 座標。横軸を y、縦軸を θ（下向き）にとると、P から真下に下ろした位置がそのまま y = cos θ の値になる']);
   $('or3').hidden=mode3!=='c';$('or3v').setAttribute('aria-pressed',orient3==='v');$('or3h').setAttribute('aria-pressed',orient3==='h');
   const cv=$('c3'),v=vert3();cv.classList.toggle('wide',!v);cv.classList.toggle('tall',v);$('th3m-wrap').hidden=!v;L3.p.v=v?V3V:V3H;
   $('f3').innerHTML=info.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('');
