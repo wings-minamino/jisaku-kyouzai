@@ -71,7 +71,8 @@ h2{font-family:var(--disp);font-weight:400;font-size:1.55rem}
 .stage canvas.wide{aspect-ratio:2/1}
 @media (max-width:600px){.stage canvas.wide{aspect-ratio:3/2}}
 .stage canvas.tall{aspect-ratio:68/133;width:min(100%,420px,calc((100vh - 150px) * 68 / 133));width:min(100%,420px,calc((100svh - 150px) * 68 / 133));margin:0 auto}
-.stage-ctl{display:flex;align-items:center;gap:10px;padding:6px 12px;border-top:1px solid var(--line)}
+.stage-ctl{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--line)}
+.stage-ctl input[type=range]{height:40px;touch-action:none}
 .stage-ctl label{font-weight:700;font-family:Georgia,serif;font-style:italic}
 .stage-ctl output{font-family:var(--mono);font-weight:600;color:var(--accent);white-space:nowrap;min-width:6.5em;text-align:right}
 .stage canvas.drag{touch-action:none;cursor:grab}
@@ -189,8 +190,8 @@ footer{margin-top:28px;color:var(--muted);font-size:.85rem}
   <!-- 3 -->
   <section class="lab" id="s3">
     <div class="lab-h"><span class="no">03</span><h2>y = sin θ、cos θ、tan θ のグラフ</h2><p class="gist">点 P が円を 1 周する間に、波が 1 つ描かれる。これが周期 2π の意味。</p></div>
-    <figure class="stage"><canvas id="c3" class="wide" aria-label="単位円とグラフ"></canvas>
-      <div class="stage-ctl" id="th3m-wrap" hidden><label for="th3m">θ</label><input type="range" id="th3m" min="0" max="360" step="1" value="150" aria-label="θ（図の下）"><output id="o-th3m"></output></div></figure>
+    <figure class="stage"><div class="stage-ctl" id="th3m-wrap" hidden><label for="th3m">θ</label><input type="range" id="th3m" min="0" max="360" step="1" value="150" aria-label="θ（図の上）"><output id="o-th3m"></output></div>
+      <canvas id="c3" class="wide" aria-label="単位円とグラフ"></canvas></figure>
     <div class="lab-body">
       <div class="side">
         <div class="btns" role="group" aria-label="関数"><button class="s" id="m3s" aria-pressed="true">y = sin θ</button><button class="c" id="m3c" aria-pressed="false">y = cos θ</button><button class="t" id="m3t" aria-pressed="false">y = tan θ</button></div>
