@@ -84,23 +84,23 @@ footer{font-size:12px;color:var(--sub)}
 </div>
 
 <script>
-// 教材データ：level（chugaku / koukou）、subject、理科は sub（生物・化学・物理）
+// 教材データ：level（chugaku / koukou）、subject、高校数学は sub（数Ⅰ・数A・数Ⅱ・数B・数C）、理科は sub（生物・化学・物理）
 const SITES = [
   {level:"chugaku", subject:"数学", title:"作図プリントメーカー", desc:"都立入試・大問1型の作図問題を自動で作り、解答つきA4プリントにする。", url:"sakuzu-print.html", date:"2026-09-28"},
   {level:"chugaku", subject:"数学", title:"中学数学 作図ノート", desc:"作図の手順を図で確認できるノート。", url:"sakuzu-note.html", date:"2026-09-27"},
   {level:"chugaku", subject:"数学", title:"動く点Pと三角形の面積", desc:"点Pの移動にあわせて三角形の面積がどう変わるかを見る教材。", url:"ugoku-ten-p.html", date:"2026-09-27"},
   {level:"koukou", subject:"英語", title:"時制ラボ", desc:"英文法「時制」。12 時制マップとタイムラインの図、状態動詞・現在完了のチェック、時・条件の副詞節、基礎〜入試の確認問題。", url:"jisei-lab.html", date:"2026-09-29"},
-  {level:"koukou", subject:"数学", title:"二次関数ラボ", desc:"数学Ⅰ「2次関数」。スライダーで動くグラフで、平行移動・平方完成・最大最小・判別式・2次不等式と解き方のポイントを学ぶ。", url:"nijikansuu-lab.html", date:"2026-09-28"},
-  {level:"koukou", subject:"数学", title:"三角比ラボ", desc:"数学Ⅰ「三角比」。動く直角三角形と単位円で、定義・鈍角への拡張・値から角を求める・相互関係・正弦定理・余弦定理・面積を学ぶ。", url:"sankakuhi-lab.html", date:"2026-09-28"},
-  {level:"koukou", subject:"数学", title:"三角関数ラボ", desc:"数学Ⅱ「三角関数」。回る単位円と動くグラフで、弧度法・一般角・グラフの変形・方程式と不等式・加法定理・合成を学ぶ。", url:"sankakukansuu-lab.html", date:"2026-09-28"},
-  {level:"koukou", subject:"数学", title:"数列ラボ", desc:"数学B「数列」。等差数列・等比数列・Σの計算を図と動きで学ぶ。", url:"suuretsu-lab.html", date:"2026-10-01"},
+  {level:"koukou", subject:"数学", sub:"数Ⅰ", title:"二次関数ラボ", desc:"数学Ⅰ「2次関数」。スライダーで動くグラフで、平行移動・平方完成・最大最小・判別式・2次不等式と解き方のポイントを学ぶ。", url:"nijikansuu-lab.html", date:"2026-09-28"},
+  {level:"koukou", subject:"数学", sub:"数Ⅰ", title:"三角比ラボ", desc:"数学Ⅰ「三角比」。動く直角三角形と単位円で、定義・鈍角への拡張・値から角を求める・相互関係・正弦定理・余弦定理・面積を学ぶ。", url:"sankakuhi-lab.html", date:"2026-09-28"},
+  {level:"koukou", subject:"数学", sub:"数Ⅱ", title:"三角関数ラボ", desc:"数学Ⅱ「三角関数」。回る単位円と動くグラフで、弧度法・一般角・グラフの変形・方程式と不等式・加法定理・合成を学ぶ。", url:"sankakukansuu-lab.html", date:"2026-09-28"},
+  {level:"koukou", subject:"数学", sub:"数B", title:"数列ラボ", desc:"数学B「数列」。等差数列・等比数列・Σの計算を図と動きで学ぶ。", url:"suuretsu-lab.html", date:"2026-10-01"},
   {level:"koukou", subject:"理科", sub:"化学", title:"図でわかるモル", desc:"物質量（mol）の考え方を図で整理。", url:"zu-de-wakaru-mol.html", date:"2026-09-27"},
   {level:"koukou", subject:"理科", sub:"化学", title:"molドリル", desc:"molの計算を練習するドリル。", url:"mol-drill.html", date:"2026-09-27"},
 ];
 
 const SUBJECTS = [
   {name:"英語", c:"--eng"},
-  {name:"数学", c:"--math"},
+  {name:"数学", c:"--math", subsByLevel:{koukou:["数Ⅰ","数A","数Ⅱ","数B","数C"]}},
   {name:"国語", c:"--jpn"},
   {name:"社会", c:"--soc"},
   {name:"理科", c:"--sci", subs:["生物","化学","物理"]},
@@ -123,10 +123,11 @@ function render(level){
   const lv = SITES.filter(s=>s.level===level);
   document.getElementById("panel").innerHTML = SUBJECTS.map(sj=>{
     const items = lv.filter(s=>s.subject===sj.name);
-    const body = sj.subs
-      ? `<div class="subs">${sj.subs.map(sb=>`<div class="subblock"><h3>${sb}</h3>${list(items.filter(s=>s.sub===sb))}</div>`).join("")}</div>`
+    const subs = sj.subsByLevel?.[level] || sj.subs;
+    const body = subs
+      ? `<div class="subs">${subs.map(sb=>`<div class="subblock"><h3>${sb}</h3>${list(items.filter(s=>s.sub===sb))}</div>`).join("")}</div>`
       : list(items);
-    return `<section class="subject${sj.subs?" wide":""}" style="--c:var(${sj.c})">
+    return `<section class="subject${subs?" wide":""}" style="--c:var(${sj.c})">
       <div class="shead"><h2>${sj.name}</h2><span class="num">${items.length} 件</span></div>${body}</section>`;
   }).join("");
   try{ localStorage.setItem("shelf-level", level); }catch(e){}
