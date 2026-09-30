@@ -1,0 +1,165 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>数列ラボ｜数学B</title><meta name="description" content="等差数列・等比数列・Σを動く図で学ぶ高校数学の教材。"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=JetBrains+Mono:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"><style>
+:root{
+  --paper:#f4f7fb; --panel:#ffffff; --ink:#17223b; --muted:#5a6781; --line:#d6deea;
+  --grid:#e6ebf3; --axis:#8a96ad;
+  --accent:#2458c6; --accent-soft:rgba(36,88,198,.12);
+  --warm:#d9560f; --warm-soft:rgba(217,86,15,.14);
+  --teal:#0a8a78; --teal-soft:rgba(10,138,120,.14);
+  --chip:#eaf0fa;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --disp:"Dela Gothic One","Hiragino Sans","Yu Gothic",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#0e1422; --panel:#151d2f; --ink:#e6ebf5; --muted:#9ba7bf; --line:#27324a;
+    --grid:#1f2940; --axis:#5e6b88;
+    --accent:#76a0ff; --accent-soft:rgba(118,160,255,.16);
+    --warm:#ff9152; --warm-soft:rgba(255,145,82,.16);
+    --teal:#3fcbb6; --teal-soft:rgba(63,203,182,.16);
+    --chip:#1d2740;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#0e1422; --panel:#151d2f; --ink:#e6ebf5; --muted:#9ba7bf; --line:#27324a;
+  --grid:#1f2940; --axis:#5e6b88;
+  --accent:#76a0ff; --accent-soft:rgba(118,160,255,.16);
+  --warm:#ff9152; --warm-soft:rgba(255,145,82,.16);
+  --teal:#3fcbb6; --teal-soft:rgba(63,203,182,.16);
+  --chip:#1d2740;
+}
+*{box-sizing:border-box}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;
+  color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.8;
+}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:20px;padding-block:40px 96px}
+h1,h2,h3{text-wrap:balance;line-height:1.35;margin:0}
+p{margin:0}
+.top{display:grid;gap:14px;margin-bottom:28px}
+.eyebrow{font-size:.8rem;letter-spacing:.14em;color:var(--muted);font-weight:700}
+h1{font-family:var(--disp);font-weight:400;font-size:clamp(2.2rem,6vw,3.6rem);letter-spacing:.02em}
+h1 .th{color:var(--accent);font-family:Georgia,serif;font-style:italic}
+.lead{max-width:42em;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-weight:700;font-size:.92rem}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:22px;height:4px;border-radius:2px;display:inline-block}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+nav.toc a{font-size:.85rem;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);padding:4px 12px;border-radius:999px}
+nav.toc a:hover{border-color:var(--accent);color:var(--accent)}
+nav.toc b{font-family:var(--mono);color:var(--accent);margin-right:6px;font-weight:600}
+
+.ks{color:var(--warm)} .kc{color:var(--accent)} .kt{color:var(--teal)}
+section.lab{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;margin-top:28px;display:grid;gap:20px}
+.lab-h{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:baseline}
+.no{font-family:var(--mono);font-weight:600;color:var(--accent);grid-row:span 2}
+h2{font-family:var(--disp);font-weight:400;font-size:1.55rem}
+.gist{color:var(--muted);grid-column:2}
+.lab-body{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:780px){.lab-body{grid-template-columns:1fr}}
+.stage{margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.stage canvas{display:block;width:100%;aspect-ratio:4/3;max-width:100%}
+.stage canvas.wide{aspect-ratio:2/1}
+@media (max-width:600px){.stage canvas.wide{aspect-ratio:3/2}}
+.stage canvas.drag{touch-action:none;cursor:grab}
+.stage figcaption{font-size:.8rem;color:var(--muted);padding:6px 12px;border-top:1px solid var(--line)}
+.side{display:grid;gap:16px}
+.eq{font-family:var(--mono);font-size:1.15rem;font-weight:600;padding:12px 14px;border-radius:10px;background:var(--chip);overflow-x:auto;display:block}.eq > div + div{margin-top:6px}
+.eq .r{white-space:normal;overflow-wrap:anywhere}
+.eq .r span{white-space:nowrap}
+.ctl{display:grid;gap:2px}
+.ctl .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label{font-weight:700}
+.ctl output{font-family:var(--mono);font-weight:600;color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:.88rem;font-weight:700;cursor:pointer;border-radius:8px;padding:6px 14px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+button.primary:hover{filter:brightness(1.08);color:var(--panel)}
+button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+button.s[aria-pressed="true"],button.s.primary{background:var(--warm);border-color:var(--warm)}
+button.t[aria-pressed="true"],button.t.primary{background:var(--teal);border-color:var(--teal)}
+button.s:not([aria-pressed="true"]):not(.primary){color:var(--warm)}
+button.c:not([aria-pressed="true"]):not(.primary){color:var(--accent)}
+button.t:not([aria-pressed="true"]):not(.primary){color:var(--teal)}
+button:disabled{opacity:.45;cursor:default;pointer-events:none}
+:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:.95rem;margin:0}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0;font-weight:700}
+.m{font-family:var(--mono)}
+.tip{border-left:4px solid var(--warm);padding:8px 0 8px 14px;font-size:.95rem}
+.tip b.k{display:block;font-size:.75rem;letter-spacing:.12em;color:var(--warm)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{font-size:.82rem;padding:3px 10px;border-radius:999px;background:var(--chip);color:var(--muted);transition:all .2s}
+.chips span.on{color:var(--panel);background:var(--accent)}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.8em;line-height:1.15;margin:0 .12em}
+.fr span:first-child{border-bottom:1.5px solid currentColor;padding:0 .15em}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.steps li{display:grid;gap:2px;padding:8px 12px;border-radius:8px;border:1px solid var(--line)}
+.steps li .f{font-family:var(--mono);font-weight:600;overflow-x:auto;white-space:nowrap}
+.steps li .n{font-size:.83rem;color:var(--muted)}
+.steps li.last{border-color:var(--accent);background:var(--accent-soft)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:center;white-space:nowrap}
+th{color:var(--muted);font-weight:700;font-size:.82rem}
+td{font-family:var(--mono);font-weight:600}
+td.h,th.h{text-align:left}
+col.on{background:var(--accent-soft)}
+.neg{color:var(--warm)}
+.flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;counter-reset:f}
+.flow li{counter-increment:f;padding:12px 14px;border-radius:10px;background:var(--chip);font-weight:700;display:grid;gap:2px}
+.flow li::before{content:"STEP " counter(f);font-family:var(--mono);font-size:.75rem;color:var(--accent);letter-spacing:.08em}
+.flow li small{font-weight:400;color:var(--muted);font-size:.85rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:8px;align-content:start}
+.card h3{font-size:1.05rem}
+.card ul{margin:0;padding-left:1.2em;display:grid;gap:4px;font-size:.95rem}
+.card .ng{font-size:.88rem;color:var(--warm);font-weight:700}
+.refs{font-size:.9rem;display:grid;gap:4px;margin:0;padding-left:1.2em}
+.refs a{color:var(--accent)}
+.stepnav{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.stepnav span{width:26px;height:26px;border-radius:50%;display:inline-grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:.8rem;background:var(--chip);color:var(--muted)}.stepnav span.on{background:var(--accent);color:var(--panel)}.stepnav b{margin-left:6px}
+.angles summary{cursor:pointer;font-weight:700;color:var(--muted);font-size:.9rem}.angles{display:grid;gap:8px}
+footer{margin-top:28px;color:var(--muted);font-size:.85rem}
+html{scroll-behavior:smooth}body{margin:0}.wrap{padding-top:28px}.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center}.tip{background:var(--warm-soft);padding:12px 16px;border-radius:0 8px 8px 0}.stage svg{display:block;width:100%;height:auto}.terms{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:8px}.term{text-align:center;border:1px solid var(--line);border-radius:8px;padding:8px 3px;background:var(--paper);min-width:0}.term small{display:block;color:var(--muted);font-size:12px}.term strong{font-family:var(--mono);overflow-wrap:anywhere}.term.selected{border:2px solid var(--warm);background:var(--warm-soft)}.term.blue{border-color:var(--accent);background:var(--accent-soft)}.term.green{border-color:var(--teal);background:var(--teal-soft)}.eq{font-size:1rem;overflow-wrap:anywhere}.eq>div{max-width:100%}.subtle{color:var(--muted);font-size:.88rem}.sigma{display:inline-grid;vertical-align:middle;text-align:center;line-height:1.1;margin:0 .2em}.sigma small{font-size:.65em}.sigma b{font-size:1.8em;font-weight:400}.quiz{display:grid;gap:12px;border-top:1px solid var(--line);padding-top:18px}.answers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.answers button{font-family:var(--mono);min-height:48px;padding:8px;overflow-wrap:anywhere}.feedback{background:var(--chip);border-radius:8px;padding:12px}.feedback:empty{display:none}.book{position:fixed;right:16px;bottom:16px;z-index:5;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--accent);text-decoration:none;font-weight:700;padding:10px 18px;box-shadow:0 4px 18px #0002}.formula-table td{white-space:normal;font-family:var(--sans);font-weight:400;text-align:left}.formula-table th{white-space:normal;text-align:left}.formula-table{table-layout:fixed}.formula-table th:first-child{width:26%}.lab-body>*{min-width:0}.cards{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}select{font:inherit;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px;width:100%}.cancel{opacity:.35;text-decoration:line-through}.pair-row{display:flex;align-items:stretch;gap:5px;margin:7px 0}.pair-row span{padding:7px 4px;border-radius:5px;text-align:center;flex:1;min-width:0;background:var(--warm-soft);font-family:var(--mono);font-size:.85rem}.pair-row.reverse span{background:var(--accent-soft)}.pair-label{font-weight:700;margin-top:8px}.proof{padding:16px}.refs li{margin-bottom:8px}a{color:var(--accent)}@media(max-width:600px){.wrap{padding:24px 12px 90px}section.lab{padding:18px 14px;margin-top:20px}.lab-h{gap:4px 10px}h2{font-size:1.25rem}.gist{grid-column:1/-1}.answers{grid-template-columns:1fr}.formula-table th,.formula-table td{padding:10px 5px;font-size:.85rem}.eq{padding:12px 10px}.pair-row{gap:3px}.pair-row span{font-size:.75rem}h1{font-size:2.4rem}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}</style></head><body><main class="wrap"><header class="top"><div class="toolbar"><p class="eyebrow">数学B ／ 数列</p><button id="theme" aria-label="配色を切り替える">ダークモード</button></div><h1>数列ラボ <span class="th">Σ</span></h1><p class="lead">足す？ 掛ける？ 並べて、動かして、規則を発見。一般項から和まで、式の意味を目で確かめよう。</p><div class="legend"><span class="ks">━ 等差：同じ数を足す</span><span class="kc">━ 等比：同じ数を掛ける</span><span class="kt">━ Σ：項を足し合わせる</span></div><nav class="toc" aria-label="目次"><a href="#s1"><b>01</b>等差数列</a><a href="#s2"><b>02</b>等差数列の和</a><a href="#s3"><b>03</b>等比数列</a><a href="#s4"><b>04</b>等比数列の和</a><a href="#s5"><b>05</b>Σの計算</a><a href="#s6"><b>06</b>確認問題</a><a href="#s7"><b>07</b>問題を解くときのポイント</a></nav></header><section class="lab" id="s1"><div class="lab-h"><span class="no">01</span><h2>等差数列</h2><p class="gist">第1項から第n項まで、足す回数は n − 1 回。</p></div><div class="lab-body"><div class="side"><figure class="stage"><svg id="ar-chart" viewBox="0 0 520 300" role="img" aria-label="等差数列の棒グラフ"></svg><figcaption>横軸：項番号 k ／ 縦軸：項の値 aₖ。棒の先端の差に注目。</figcaption></figure><div class="terms" id="ar-terms"></div></div><div class="side"><div class="ctl"><div class="row"><label for="a">初項 a</label><output id="o-a" for="a"></output></div><input id="a" type="range" min="-5" max="6" value="2"></div><div class="ctl"><div class="row"><label for="d">公差 d</label><output id="o-d" for="d"></output></div><input id="d" type="range" min="-3" max="4" value="3"></div><div class="ctl"><div class="row"><label for="n">注目する項 n</label><output id="o-n" for="n"></output></div><input id="n" type="range" min="1" max="8" value="5"></div><div class="eq" id="ar-eq" aria-live="polite"></div><p class="tip"><b class="k">ここがポイント</b>a<sub>n</sub> は「n 番目の値」。n 個の和ではありません。<b>初項にはまだ d を足していない</b>ので、一般項は a + (n − 1)d。</p></div></div></section><section class="lab" id="s2"><div class="lab-h"><span class="no">02</span><h2>等差数列の和</h2><p class="gist">逆順に並べたもう1列を足すと、どのペアも同じ値。</p></div><div class="lab-body"><figure class="stage"><div class="proof" id="pairs"></div><figcaption>オレンジの列と、逆順の青い列。2列分を最後に2で割る。</figcaption></figure><div class="side"><div class="ctl"><div class="row"><label for="sn">足す項数 n</label><output id="o-sn" for="sn"></output></div><input id="sn" type="range" min="2" max="8" value="5"></div><p class="subtle">初項 2、公差 3 の数列で実験。</p><button id="pair-toggle" aria-pressed="false">逆順の列を重ねる</button><div class="eq" id="sum-ar" aria-live="polite"></div><p class="tip"><b class="k">ここがポイント</b>ペアを作るために<b>同じ和を2回</b>使っています。n が奇数でも公式は同じ。S<sub>n</sub> = <span class="fr"><span>n(a + a<sub>n</sub>)</span><span>2</span></span>。</p></div></div></section><section class="lab" id="s3"><div class="lab-h"><span class="no">03</span><h2>等比数列</h2><p class="gist">掛ける数が一定。負の公比では、正と負を行き来する。</p></div><div class="lab-body"><div class="side"><figure class="stage"><svg id="ge-chart" viewBox="0 0 520 300" role="img" aria-label="等比数列の棒グラフ"></svg><figcaption>横軸：項番号 k ／ 縦軸：項の値 aₖ。縦軸の目盛りは値に合わせて変わります。</figcaption></figure><div id="ge-terms" class="terms"></div></div><div class="side"><div class="ctl"><div class="row"><label for="ga">初項 a</label><output id="o-ga" for="ga"></output></div><input id="ga" type="range" min="1" max="4" value="2"></div><label for="r"><b>公比 r</b></label><select id="r"><option value="2">2（2倍ずつ）</option><option value="3">3（3倍ずつ）</option><option value="0.5">0.5（半分ずつ）</option><option value="-2">−2（符号も交互）</option><option value="-1">−1（正負を往復）</option><option value="0">0（第2項から0）</option><option value="1">1（一定）</option></select><div class="ctl"><div class="row"><label for="gn">注目する項 n</label><output id="o-gn" for="gn"></output></div><input id="gn" type="range" min="1" max="7" value="4"></div><div class="eq" id="ge-eq" aria-live="polite"></div><p class="tip"><b class="k">ここがポイント</b>一般項は a<sub>n</sub> = ar<sup>n−1</sup>。指数も<b>n − 1</b>です。r = 0 の場合、第1項は a、第2項以降は 0 として考えます。</p></div></div></section><section class="lab" id="s4"><div class="lab-h"><span class="no">04</span><h2>等比数列の和</h2><p class="gist">公比を掛けた和を1つずらすと、途中の項が消える。</p></div><div class="lab-body"><figure class="stage"><div class="proof" id="geo-proof"></div><figcaption>初項 1、公比 2、4項の和を例にしています。</figcaption></figure><div class="side"><button id="cancel" aria-pressed="false">S と 2S を引く</button><div class="eq"><div>S<sub>n</sub> = a + ar + … + ar<sup>n−1</sup></div><div>rS<sub>n</sub> = ar + … + ar<sup>n</sup></div><div>(1 − r)S<sub>n</sub> = a(1 − r<sup>n</sup>)</div><div class="kc">S<sub>n</sub> = <span class="fr"><span>a(1 − r<sup>n</sup>)</span><span>1 − r</span></span>　(r ≠ 1)</div></div><div class="eq" id="sum-ge"></div><p class="tip"><b class="k">ここがポイント</b>上の公式は <b>r ≠ 1</b> のときだけ。r = 1 なら全項が a なので S<sub>n</sub> = na。03 の公比を 1 にして、確かめよう。</p></div></div></section><section class="lab" id="s5"><div class="lab-h"><span class="no">05</span><h2>Σの計算</h2><p class="gist">Σ は「指定された番号の項を、全部足す」という合図。</p></div><div class="lab-body"><div class="side"><figure class="stage"><svg id="sig-chart" viewBox="0 0 520 300" role="img" aria-label="シグマの各項の値"></svg><figcaption>横軸：k ／ 縦軸：各項の値。薄い棒は今回足さない項。</figcaption></figure><div id="sig-terms" class="terms"></div></div><div class="side"><label for="kind"><b>足し合わせる式</b></label><select id="kind"><option value="k">k</option><option value="sq">k²</option><option value="cube">k³</option><option value="linear">2k + 1</option><option value="constant">3（定数）</option></select><div class="ctl"><div class="row"><label for="start">開始番号 m</label><output id="o-start" for="start"></output></div><input id="start" type="range" min="1" max="8" value="1"></div><div class="ctl"><div class="row"><label for="end">終了番号 n</label><output id="o-end" for="end"></output></div><input id="end" type="range" min="1" max="8" value="5"></div><div class="btns"><button id="one">1項ずつ足す</button><button id="all">全部の和を見る</button></div><div class="eq" id="sig-eq" aria-live="polite"></div><p class="tip"><b class="k">ここがポイント</b>k は代入する番号。m から n までは<b>n − m + 1 個</b>です。開始番号を変えると、終了番号も必要に応じて調整されます。Σ3 は 3 ではなく「3 × 項数」。</p></div></div><div class="cards"><div class="card"><h3>基本公式（k = 1 から n）</h3><div class="eq"><div><span class="sigma"><small>n</small><b>Σ</b><small>k = 1</small></span>k = <span class="fr"><span>n(n + 1)</span><span>2</span></span></div><div><span class="sigma"><small>n</small><b>Σ</b><small>k = 1</small></span>k² = <span class="fr"><span>n(n + 1)(2n + 1)</span><span>6</span></span></div><div><span class="sigma"><small>n</small><b>Σ</b><small>k = 1</small></span>k³ = (<span class="fr"><span>n(n + 1)</span><span>2</span></span>)²</div></div></div><div class="card"><h3>式を分ける・不要な部分を引く</h3><p><span class="sigma"><small>n</small><b>Σ</b><small>k = 1</small></span>(2k + 1) = 2<span class="sigma"><small>n</small><b>Σ</b><small>k = 1</small></span>k + n</p><p><span class="sigma"><small>n</small><b>Σ</b><small>k = m</small></span>k² = <span class="sigma"><small>n</small><b>Σ</b><small>k = 1</small></span>k² − <span class="sigma"><small>m − 1</small><b>Σ</b><small>k = 1</small></span>k²</p><p class="subtle">m = 1 のとき、引く部分の和は 0。Σ の中の定数も項数分だけ足します。</p></div></div></section><section class="lab" id="s6"><div class="lab-h"><span class="no">06</span><h2>確認問題</h2><p class="gist">基礎 → 標準 → 入試。選ぶとすぐに、正解と理由が表示されます。</p></div><p class="subtle">入試レベルは、この教材のために作成したオリジナル問題です。</p><div id="quizzes"></div><p class="tip"><b class="k">ここがポイント</b>間違えたら、答えだけでなく<b>初項・公差／公比・項数</b>のどこを取り違えたかを確認。選び直して復習できます。</p></section><section class="lab" id="s7"><div class="lab-h"><span class="no">07</span><h2>問題を解くときのポイント</h2><p class="gist">規則を見抜く → 求めるものを決める → 条件を整理する。</p></div><ol class="flow"><li>最初の3項を書く<small>差が一定？ 比が一定？</small></li><li>「項」か「和」か確認<small>a<sub>n</sub> と S<sub>n</sub> を区別。</small></li><li>項数を数えて代入<small>m 番目から n 番目は n − m + 1 個。</small></li><li>小さい数で検算<small>n = 1、2 で式が合うか確かめる。</small></li></ol><h3>公式の使い分け表</h3><table class="formula-table"><thead><tr><th>見分け方・目的</th><th>使う公式</th><th>確認すること</th></tr></thead><tbody><tr><td>同じ数を足す</td><td>a<sub>n</sub> = a + (n − 1)d</td><td>差が一定か確認</td></tr><tr><td>等差の和</td><td>S<sub>n</sub> = <span class="fr"><span>n{2a + (n − 1)d}</span><span>2</span></span></td><td>初項・末項・項数を整理</td></tr><tr><td>同じ数を掛ける</td><td>a<sub>n</sub> = ar<sup>n−1</sup></td><td>前の項が0でないとき、比を確認</td></tr><tr><td>等比の和</td><td>S<sub>n</sub> = <span class="fr"><span>a(1 − r<sup>n</sup>)</span><span>1 − r</span></span></td><td>r ≠ 1。r = 1 なら na</td></tr><tr><td>Σ の計算</td><td>一次式・二次式などに分解</td><td>開始番号と終了番号に注意</td></tr></tbody></table><div class="cards"><div class="card"><h3>よくあるミス</h3><ul><li>a + nd と書く → 足す回数は n − 1。</li><li>和の公式の r<sup>n</sup> を r<sup>n−1</sup> にする → 一般項と混同しない。</li><li>Σ の定数を1回しか足さない → 項数を掛ける。</li><li>Σ の上の数字だけを項数にする → 開始番号も見る。</li></ul></div><div class="card"><h3>入試につながる考え方</h3><p>和 S<sub>n</sub> から項を求めるなら、隣どうしの差。</p><div class="eq"><div>a₁ = S₁</div><div><span style="display:inline-block;white-space:nowrap">a<sub>n</sub> = S<sub>n</sub> − S<sub>n−1</sub></span> <span style="display:inline-block;white-space:nowrap">（n ≧ 2）</span></div></div><p class="subtle">n = 1 は別に確認。差で出した式が初項にも使えるとは限りません。</p></div></div><p class="tip"><b class="k">ここがポイント</b>公式を選ぶ前に<b>「何を、何個、足すのか」</b>を短く書こう。規則が見えない数列に、等差・等比の公式を無理に当てはめないこと。</p><h3>参考にしたサイト・動画</h3><p class="subtle">公式の条件・説明の順序を調べ、図と確認問題は本教材用に作成しました。動画は公開されている紹介・対応教材も参照しています。</p><ul class="refs"><li><a href="https://manapedia.jp/text/1768" target="_blank" rel="noopener">マナペディア｜等差数列と等比数列のちがい</a> — 差と比の見分け方。</li><li><a href="https://hs-math.komaro.net/siguma2/" target="_blank" rel="noopener">ko-su-｜和の記号Σ・その2</a> — 和の公式、初項と項数の注意点。</li><li><a href="https://www.youtube.com/watch?v=7xcteFEd-F0" target="_blank" rel="noopener">YouTube｜とある男が授業をしてみた「数B−59 等差数列とその和③」</a> — 等差数列の和の復習用動画。</li><li><a href="https://19ch.tv/km/kmb/kmb68.html" target="_blank" rel="noopener">19ch｜葉一先生「数B−68 等比数列とその和④」動画・対応教材</a> — r = 1 の場合分けを確認。</li></ul></section><footer>数列ラボ ／ 数学B　•　各スライダーは矢印キーでも操作できます。<br>「本棚へ」は、このファイルと同じフォルダーの index.html を開きます。</footer></main><a class="book" href="index.html">← 本棚へ</a><script>'use strict';
+const $=id=>document.getElementById(id), val=id=>Number($(id).value), frac=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+function fmt(x){if(Number.isInteger(x))return String(x).replace('-','−');for(let d=2;d<=128;d*=2)if(Math.abs(x*d-Math.round(x*d))<1e-8)return frac(String(Math.round(x*d)).replace('-','−'),d);return String(x)}
+const par=x=>x<0?`(${fmt(x)})`:fmt(x);
+function chart(id,vs,color,active=vs.length,start=1){let lo=Math.min(0,...vs),hi=Math.max(0,...vs);if(lo===hi)hi=1;let span=hi-lo;lo-=span*.12;hi+=span*.18;let y=v=>250-(v-lo)/(hi-lo)*210;let zero=y(0);let w=422/vs.length;let s='';for(let i=0;i<=4;i++){let t=(Math.min(0,...vs)+(Math.max(0,...vs)-Math.min(0,...vs))*i/4);s+=`<line x1="65" y1="${y(t)}" x2="495" y2="${y(t)}" stroke="var(--line)"/><text x="56" y="${y(t)+5}" text-anchor="end" fill="var(--muted)" font-size="14">${Number(t.toFixed(2))}</text>`}vs.forEach((v,i)=>{let x=70+i*w;let yy=y(v);s+=`<rect x="${x+6}" y="${Math.min(yy,zero)}" width="${w-12}" height="${Math.max(2,Math.abs(yy-zero))}" rx="3" fill="var(--${color})" opacity="${i+1>=start&&i+1<=active?'.85':'.16'}"/><text x="${x+w/2}" y="280" text-anchor="middle" fill="var(--ink)" font-size="16">${i+1}</text>`});s+=`<line x1="65" y1="${zero}" x2="495" y2="${zero}" stroke="var(--axis)"/><text x="16" y="24" fill="var(--muted)" font-size="14">値</text><text x="497" y="281" fill="var(--muted)" font-size="14">k</text>`;$(id).innerHTML=s;}
+function terms(id,vs,cls,selected=0,start=1){$(id).innerHTML=vs.map((v,i)=>`<div class="term ${i+1>=start&&i+1<=selected?cls:''}"><small>第${i+1}項</small><strong>${fmt(v)}</strong></div>`).join('')}
+function outs(){document.querySelectorAll('input[type=range]').forEach(el=>$('o-'+el.id).textContent=el.value.replace('-','−'))}
+function arithmetic(){let a=val('a'),d=val('d'),n=val('n'),vs=Array.from({length:8},(_,i)=>a+i*d);chart('ar-chart',vs,'warm',n);terms('ar-terms',vs,'selected',n);$('ar-eq').innerHTML=`<div class="ks">a<sub>n</sub> = a + (n − 1)d</div><div>a<sub>${n}</sub> = ${fmt(a)} + ${n-1} × ${par(d)} = ${fmt(vs[n-1])}</div><div>公差 ${fmt(d)} を ${n-1} 回足す</div>`;}
+let pair=false;
+function pairs(){let n=val('sn'),vs=Array.from({length:n},(_,i)=>2+3*i),last=vs[n-1],sum=n*(2+last)/2;let row=arr=>arr.map(x=>`<span>${x}</span>`).join('');$('pairs').innerHTML=`<p class="pair-label ks">S：順番に並べる</p><div class="pair-row">${row(vs)}</div>${pair?`<p class="pair-label kc">S：逆順に並べる</p><div class="pair-row reverse">${row([...vs].reverse())}</div><p class="pair-label">↓ 同じ位置の項を足す</p><div class="pair-row">${row(vs.map(()=>2+last))}</div><p class="subtle">${2+last} が ${n} 組。これが 2S。</p>`:'<p class="subtle">「逆順の列を重ねる」を押して、ペアを作ろう。</p>'}`;$('sum-ar').innerHTML=`<div>S<sub>${n}</sub> = ${frac(`${n} × (2 + ${last})`,2)}</div><div class="ks">= ${sum}</div>`;}
+function geometric(){let a=val('ga'),r=val('r'),n=val('gn'),vs=Array.from({length:7},(_,i)=>a*r**i),sum=vs.slice(0,n).reduce((s,v)=>s+v,0);chart('ge-chart',vs,'accent',n);terms('ge-terms',vs,'blue',n);$('ge-eq').innerHTML=`<div class="kc">${r===0?'a₁ = a、第2項以降は0':'a<sub>n</sub> = ar<sup>n−1</sup>'}</div><div>a<sub>${n}</sub> = ${r===0?fmt(vs[n-1]):`${a} × ${par(r)}<sup>${n-1}</sup> = ${fmt(vs[n-1])}`}</div><div>公比 ${fmt(r)} を ${n-1} 回掛ける</div>`;$('sum-ge').innerHTML=`<div class="subtle">03 の設定：初項 ${a}、公比 ${fmt(r)}、${n} 項</div><div>S<sub>${n}</sub> = ${r===1?`${n} × ${a}`:frac(`${a} × {1 − ${par(r)}<sup>${n}</sup>}`,`1 − ${par(r)}`)} = ${fmt(sum)}</div>`;}
+let canceled=false;
+function proof(){$('geo-proof').innerHTML=`<p class="pair-label">S = <span>1</span> + <span class="${canceled?'cancel':''}">2 + 4 + 8</span></p><p class="pair-label">2S = <span class="${canceled?'cancel':''}">2 + 4 + 8</span> + <span>16</span></p><hr style="border:0;border-top:1px solid var(--line);margin:22px 0"><div class="eq">${canceled?'S − 2S = 1 − 16<br>−S = −15<br><strong class="kc">S = 15</strong>':'2・4・8 が共通。<br>ボタンで途中の項を消そう。'}</div>`;}
+let upto=null;
+const sigFn={k:k=>k,sq:k=>k*k,cube:k=>k**3,linear:k=>2*k+1,constant:k=>3}, sigLabel={k:'k',sq:'k²',cube:'k³',linear:'(2k + 1)',constant:'3'};
+function sigma(){let m=val('start'),n=val('end'),kind=$('kind').value,vs=Array.from({length:n},(_,i)=>sigFn[kind](i+1));let end=upto===null?n:Math.min(n,upto);chart('sig-chart',vs,'teal',end,m);terms('sig-terms',vs,'green',end,m);let selected=vs.slice(m-1,end),sum=selected.reduce((s,v)=>s+v,0);$('sig-eq').innerHTML=`<div class="kt"><span class="sigma"><small>${n}</small><b>Σ</b><small>k = ${m}</small></span>${sigLabel[kind]}</div><div>項数：${n} − ${m} + 1 = ${n-m+1}</div><div>${selected.length?selected.map(fmt).join(' + '):'まだ足していません'}${selected.length?' = '+fmt(sum):''}</div><div class="subtle">${end<n?`${selected.length} 項までの途中の和。あと ${n-end} 項。`:'全部の和です。'}</div>`;$('one').textContent=end>=n?'最初の1項から見る':'次の1項を足す';}
+const questions=[
+['基礎 01｜一般項','初項 3、公差 4 の等差数列。第6項は？',['23','27','24'],0,'a₆ = 3 + (6 − 1) × 4 = 23。公差を足す回数は5回です。'],
+['基礎 02｜等比数列','2, 6, 18, … の第5項は？',['54','162','486'],1,'初項2、公比3。a₅ = 2 × 3⁴ = 162。'],
+['標準 01｜等差数列の和','5, 8, 11, … の初項から第10項までの和は？',['185','370','170'],0,'末項は 5 + 9 × 3 = 32。S₁₀ = '+frac('10 × (5 + 32)',2)+' = 185。2で割ることを忘れずに。'],
+['標準 02｜公比が負','初項3、公比−2。初項から第4項までの和は？',['45','−15','15'],1,'3 − 6 + 12 − 24 = −15。公式でも '+frac('3{1 − (−2)⁴}','1 − (−2)')+' = −15。'],
+['標準 03｜Σの範囲','k = 3 から 7 まで、(2k + 1) を足すと？',['75','45','55'],2,'7 + 9 + 11 + 13 + 15 = 55。項数は 7 − 3 + 1 = 5。'],
+['入試 01｜条件から決める','等比数列で a₂ = 6、a₅ = 162。初項から第4項までの和は？',['80','120','54'],0,'a₅ = a₂r³ より r³ = 27、r = 3。初項 a = 2。2 + 6 + 18 + 54 = 80。'],
+['入試 02｜和から一般項','Sₙ = 2n² + 3n のとき、一般項 aₙ は？',['4n + 3','2n + 3','4n + 1'],2,'n ≧ 2 で Sₙ − Sₙ₋₁ = 2(2n − 1) + 3 = 4n + 1。n = 1 でも a₁ = S₁ = 5 で一致するので、すべての自然数 n で成り立ちます。'],
+['入試 03｜Σを分解','k = 1 から n まで、k(k + 1) を足した式は？',[frac('n(n + 1)(n + 2)',3),frac('n(n + 1)',2),'n(n + 1)'],0,'k(k + 1) = k² + k と分ける。'+frac('n(n + 1)(2n + 1)',6)+' + '+frac('n(n + 1)',2)+' = '+frac('n(n + 1)(n + 2)',3)+'。']
+];
+$('quizzes').innerHTML=questions.map((q,i)=>`<div class="quiz"><h3>${q[0]}</h3><p>${q[1]}</p><div class="answers" role="group" aria-label="${q[0]}の選択肢">${q[2].map((a,j)=>`<button data-q="${i}" data-a="${j}" aria-pressed="false">${a}</button>`).join('')}</div><div class="feedback" id="feedback-${i}" aria-live="polite"></div></div>`).join('');
+$('quizzes').addEventListener('click',e=>{let b=e.target.closest('button');if(!b)return;let i=+b.dataset.q,j=+b.dataset.a,q=questions[i];b.parentElement.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$('feedback-'+i).innerHTML=`<b>${j===q[3]?'正解！':'もう一度確認しよう。'} 正解：${q[2][q[3]]}</b><p>${q[4]}</p>`;});
+function update(){outs();arithmetic();pairs();geometric();proof();sigma()}
+document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',()=>{if(el.id==='start'&&val('start')>val('end'))$('end').value=$('start').value;if(el.id==='end'&&val('end')<val('start'))$('start').value=$('end').value;upto=null;update()}));
+$('one').onclick=()=>{let m=val('start'),n=val('end');upto=upto===null||upto>=n?m:upto+1;sigma()};$('all').onclick=()=>{upto=null;sigma()};
+$('pair-toggle').onclick=()=>{pair=!pair;$('pair-toggle').setAttribute('aria-pressed',pair);$('pair-toggle').textContent=pair?'逆順の列を隠す':'逆順の列を重ねる';pairs()};$('cancel').onclick=()=>{canceled=!canceled;$('cancel').setAttribute('aria-pressed',canceled);$('cancel').textContent=canceled?'元の2つの和に戻す':'S と 2S を引く';proof()};
+let dark=matchMedia('(prefers-color-scheme: dark)').matches;try{const saved=localStorage.getItem('suuretsu-theme');if(saved)dark=saved==='dark'}catch{}
+function theme(){document.documentElement.dataset.theme=dark?'dark':'light';$('theme').textContent=dark?'ライトモード':'ダークモード';$('theme').setAttribute('aria-pressed',String(dark))}
+$('theme').onclick=()=>{dark=!dark;theme();try{localStorage.setItem('suuretsu-theme',dark?'dark':'light')}catch{}};theme();update();
+</script></body></html>
