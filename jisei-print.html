@@ -1,0 +1,245 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>時制プリントメーカー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Lora:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --paper:#f4f3fa; --panel:#ffffff; --ink:#1b1d33; --muted:#5e6180; --line:#dcd9ec;
+  --accent:#5b3fb0; --accent-soft:rgba(91,63,176,.12); --warm:#d9560f; --chip:#efebfa;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;
+  --disp:"Dela Gothic One","Hiragino Sans",sans-serif;
+  --en:"Lora",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){color-scheme:dark;--paper:#12121e;--panel:#1b1b2c;--ink:#e8e7f5;--muted:#a3a3c2;--line:#2e2d47;--accent:#a891f0;--accent-soft:rgba(168,145,240,.18);--warm:#ff9152;--chip:#26243d}
+}
+:root[data-theme="dark"]{color-scheme:dark;--paper:#12121e;--panel:#1b1b2c;--ink:#e8e7f5;--muted:#a3a3c2;--line:#2e2d47;--accent:#a891f0;--accent-soft:rgba(168,145,240,.18);--warm:#ff9152;--chip:#26243d}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.7;padding-inline:16px;padding-block:28px 60px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:320px minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:860px){.wrap{grid-template-columns:1fr}}
+h1{font-family:var(--disp);font-weight:400;font-size:1.9rem;margin:0;line-height:1.3}
+.eyebrow{font-size:.78rem;letter-spacing:.14em;color:var(--muted);font-weight:700;margin:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:16px;position:sticky;top:12px}
+@media (max-width:860px){.panel{position:static}}
+.grp{display:grid;gap:6px}
+.grp>b{font-size:.82rem;color:var(--muted);letter-spacing:.06em}
+.checks{display:grid;gap:4px}
+.checks label{display:flex;gap:8px;align-items:center;font-size:.93rem;cursor:pointer}
+input[type=checkbox],input[type=radio]{accent-color:var(--accent);width:16px;height:16px}
+select,input[type=number]{font:inherit;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:4px 8px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;border-radius:9px;padding:8px 14px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button:disabled{opacity:.5;cursor:default}
+:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
+.note{font-size:.82rem;color:var(--muted)}
+.links a{color:var(--accent);font-size:.85rem}
+.previewbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.previewbar span{font-size:.88rem;color:var(--muted)}
+#zoomer{--z:1}
+.sheets{display:grid;gap:18px;justify-content:center}
+.frame{width:calc(794px * var(--z));height:calc(1123px * var(--z));overflow:hidden;box-shadow:0 2px 14px rgba(0,0,0,.12);border-radius:2px}
+.sheet{width:794px;height:1123px;background:#fff;color:#111;transform:scale(var(--z));transform-origin:0 0;padding:52px 60px 40px;font-family:"Zen Kaku Gothic New","Hiragino Sans",sans-serif;font-size:14.5px;line-height:1.65;position:relative}
+.sh-head{display:grid;grid-template-columns:1fr auto;gap:6px 16px;border-bottom:2.5px solid #111;padding-bottom:10px;margin-bottom:14px}
+.sh-title{font-family:"Dela Gothic One",sans-serif;font-size:24px;line-height:1.2}
+.sh-meta{font-size:12px;color:#444}
+.sh-name{display:flex;gap:18px;font-size:13px;align-items:flex-end}
+.sh-name span{border-bottom:1px solid #111;min-width:150px;display:inline-block;padding-bottom:2px}
+.sh-name span.sm{min-width:60px}
+.sec{font-weight:700;font-size:14px;margin:12px 0 6px;padding:3px 10px;background:#eee;border-left:5px solid #111}
+.q{display:grid;grid-template-columns:34px 1fr;gap:4px;margin:7px 0 9px;break-inside:avoid}
+.qn{font-weight:700}
+.en{font-family:"Lora",Georgia,serif;font-size:15.5px}
+.blank{display:inline-block;min-width:110px;border-bottom:1.2px solid #111;text-align:center;font-family:"Zen Kaku Gothic New",sans-serif;font-size:13px;color:#333}
+.choices{display:flex;flex-wrap:wrap;gap:4px 22px;font-family:"Lora",Georgia,serif;font-size:14.5px;margin-top:2px}
+.ul{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px;font-weight:600}
+.fix{font-size:13px;color:#333;margin-top:2px}
+.fix span{display:inline-block;min-width:220px;border-bottom:1px solid #111}
+.sh-foot{position:absolute;left:60px;right:60px;bottom:22px;display:flex;justify-content:space-between;font-size:11px;color:#666}
+.ans .q{margin:5px 0 7px}
+.ans .a{font-family:"Lora",Georgia,serif;font-weight:600}
+.ans .e{font-size:12.5px;color:#333}
+.lvl{font-size:10.5px;border:1px solid #777;border-radius:3px;padding:0 4px;margin-left:6px;color:#555;vertical-align:1px}
+@media print{
+  @page{size:A4;margin:0}
+  body{background:#fff;padding:0}
+  .panel,.previewbar,.top{display:none!important}
+  .wrap{display:block;max-width:none}
+  .sheets{gap:0}
+  .frame{width:210mm;height:297mm;box-shadow:none;border-radius:0;break-after:page}
+  .sheet{transform:none;width:210mm;height:297mm}
+}
+</style>
+
+<div class="wrap">
+  <aside class="panel" aria-label="設定">
+    <div class="top"><p class="eyebrow">高校英語 ／ 英文法 時制</p><h1>時制プリント<br>メーカー</h1></div>
+    <div class="grp"><b>出題範囲</b><div class="checks" id="cats"></div></div>
+    <div class="grp"><b>問題の形式</b><div class="checks" id="types"></div></div>
+    <div class="grp"><b>レベル</b>
+      <select id="level"><option value="1">基礎のみ</option><option value="2" selected>基礎＋標準</option><option value="3">基礎〜入試</option></select></div>
+    <div class="grp"><b>問題数</b>
+      <select id="count"><option>10</option><option selected>15</option><option>20</option><option>25</option></select></div>
+    <div class="grp"><b>プリント番号</b>
+      <div class="row"><input type="number" id="seed" min="1" max="9999" value="1" style="width:6em" aria-label="プリント番号"><button id="newp">別の問題にする</button></div>
+      <p class="note">同じ番号なら、いつでも同じプリントが作られます。</p></div>
+    <label class="row" style="font-size:.93rem"><input type="checkbox" id="withAns" checked> 解答・解説のページをつける</label>
+    <div class="grp">
+      <div class="row"><button class="primary" id="pdf">PDF をダウンロード</button><button id="print">印刷する</button></div>
+      <p class="note" id="printNote"></p>
+    </div>
+    <p class="links note">解説は「<a id="lessonLink" href="jisei-lab.html">時制ラボ</a>」で確認できます。</p>
+  </aside>
+  <main>
+    <div class="previewbar"><span id="summary"></span><span>プレビュー（A4）</span></div>
+    <div id="zoomer"><div class="sheets" id="sheets"></div></div>
+  </main>
+</div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const CATS=[["pres","現在形・現在進行形"],["past","過去形・過去進行形"],["perf","現在完了（進行形）"],["plu","過去完了（進行形）"],["fut","未来・未来完了"],["adv","時・条件の副詞節"]];
+const TYPES=[["mc","4 択"],["form","（ ）の動詞を適切な形に"],["err","誤りを見つけて直す"]];
+// s: ___ が空所, v: 原形, a: 正解, d: 誤答（d[0] は誤り訂正で使う）, l: 1基礎 2標準 3入試, e: 解説
+const B=[
+ ["pres","My father usually ___ to work by bike.","go","goes",["is going","went","has gone"],1,"usually（ふだん）→ 習慣は現在形。主語が 3 人称単数なので goes。"],
+ ["pres","Look! The children ___ in the park.","play","are playing",["play","played","have played"],1,"Look!（ほら）→ 今まさに途中の動作は現在進行形。"],
+ ["pres","Water ___ at 100°C.","boil","boils",["is boiling","boiled","has boiled"],1,"いつでも変わらない事実（不変の真理）は現在形。"],
+ ["pres","Be quiet! The baby ___ .","sleep","is sleeping",["sleeps","slept","has slept"],1,"「静かに！」→ 今眠っている途中なので現在進行形。"],
+ ["pres","This bag ___ to my sister.","belong","belongs",["is belonging","are belonging","belong"],2,"belong（所属している）は状態動詞なので進行形にしない。3 単現の -s。"],
+ ["pres","I ___ what you mean.","know","know",["am knowing","knows","have been knowing"],2,"know は状態動詞。進行形にしない。"],
+ ["pres","The next train ___ at 10:15 tonight.","leave","leaves",["left","has left","had left"],2,"時刻表で決まっている予定（確定した未来）は現在形。"],
+ ["pres","She ___ lunch with her friends right now.","have","is having",["has","had","has had"],3,"「食べる」の have は動作なので進行形にできる。right now → 現在進行形。"],
+ ["past","I ___ my grandmother last Sunday.","visit","visited",["have visited","visit","had visited"],1,"last Sunday（過去の一点）→ 過去形。現在完了は使えない。"],
+ ["past","When I called her, she ___ a bath.","take","was taking",["takes","took","has taken"],1,"電話したとき「途中だった」動作 → 過去進行形。"],
+ ["past","He ___ to Kyoto three years ago.","move","moved",["has moved","had moved","moves"],1,"~ ago は過去の一点 → 過去形。"],
+ ["past","What ___ you doing at eight last night?","be","were",["are","have been","did"],2,"昨夜 8 時に「何をしている途中だったか」→ 過去進行形 were ~ing。"],
+ ["past","When ___ you finish your homework?","do","did",["have","had","do"],2,"When（いつ）は一点を聞くので現在完了は使えない。終えたのは過去 → did。"],
+ ["past","While I ___ TV, the phone rang.","watch","was watching",["have watched","watched","watch"],2,"電話が鳴った間ずっと「見ている途中」→ 過去進行形。"],
+ ["past","I ___ him just now.","see","saw",["have seen","had seen","see"],3,"just now（ついさっき）は過去の一点 → 過去形。just だけなら現在完了。"],
+ ["past","It ___ heavily when I left home this morning.","rain","was raining",["has rained","rains","has been raining"],2,"家を出たとき「降っている途中」→ 過去進行形。"],
+ ["perf","I ___ in Tokyo since 2015.","live","have lived",["live","lived","am living"],1,"since 2015（2015 年から今まで）→ 継続の現在完了。"],
+ ["perf","She has just ___ her homework.","finish","finished",["finish","finishing","finishes"],1,"have / has の後ろは過去分詞。just → 完了の現在完了。"],
+ ["perf","I ___ Mt. Fuji twice so far.","climb","have climbed",["climb","am climbing","had climbed"],2,"so far（今までに）＋回数 → 経験の現在完了。"],
+ ["perf","We ___ each other for ten years.","know","have known",["know","are knowing","knew"],2,"for ten years（10 年間）→ 継続。know は状態動詞なので現在完了（進行形にしない）。"],
+ ["perf","I ___ my key, so I can't open the door.","lose","have lost",["lose","had lost","am losing"],2,"なくして「今も見つかっていない」→ 結果の現在完了。"],
+ ["perf","She ___ to Hawaii three times.","be","has been",["has gone","is","had gone"],2,"「行ったことがある」は have been to。has gone to は「行ってしまった（今いない）」。"],
+ ["perf","It ___ since last night.","rain","has been raining",["rains","is raining","rained"],3,"since last night（昨夜から今まで）＋動作動詞 rain → 現在完了進行形。"],
+ ["perf","My brother ___ to Canada. He isn't here now.","go","has gone",["goes","has been","had gone"],3,"「行ってしまって今ここにいない」→ has gone to。"],
+ ["plu","By the time I got to the station, the train ___ .","leave","had left",["has left","leaves","will have left"],2,"駅に着いた（過去）より前に出発 → 大過去の had + 過去分詞。"],
+ ["plu","I lost the watch my father ___ me.","give","had given",["has given","gives","will give"],2,"なくした（過去）より前にもらった → 過去完了。"],
+ ["plu","When we arrived, the party ___ already.","start","had started",["has started","starts","will start"],2,"到着した（過去）時点でもう始まっていた → 過去完了。"],
+ ["plu","She ___ in Paris for five years before she moved to London.","live","had lived",["has lived","lives","will have lived"],3,"引っ越した（過去）時点まで 5 年間続いた → 過去完了（継続）。"],
+ ["plu","He said that he ___ the movie before.","see","had seen",["has seen","sees","will have seen"],3,"said（過去）の時点より前の経験 → 過去完了（時制の一致）。"],
+ ["plu","They ___ for two hours when the bus finally came.","wait","had been waiting",["have been waiting","are waiting","wait"],3,"バスが来た（過去）時点まで 2 時間ずっと待っていた → 過去完了進行形。"],
+ ["fut","I ___ you tomorrow.","call","will call",["called","have called","had called"],1,"tomorrow（明日）→ 未来の will。"],
+ ["fut","My sister ___ 18 next year.","be","will be",["was","has been","had been"],1,"next year（来年）→ will be。"],
+ ["fut","The concert ___ at 7 p.m. tomorrow.","start","starts",["started","has started","had started"],2,"予定表で決まっている予定は現在形で未来を表せる。"],
+ ["fut","I ___ my homework by six o'clock.","finish","will have finished",["had finished","finish","finished"],2,"by six（6 時までに）→ 未来の時点までの完了 → 未来完了。"],
+ ["fut","This time tomorrow, we ___ over the Pacific.","fly","will be flying",["fly","flew","have flown"],3,"明日の今ごろ「飛んでいる途中」→ 未来進行形。"],
+ ["fut","By next month, I ___ here for ten years.","work","will have worked",["have worked","work","had worked"],3,"来月の時点まで 10 年間続く → 未来完了（継続）。"],
+ ["fut","If I visit Kyoto again, I ___ it three times.","visit","will have visited",["visit","have visited","had visited"],3,"もう一度行った時点で 3 回になる → 未来完了（経験）。"],
+ ["fut","By the time you come back, I ___ dinner.","cook","will have cooked",["cook","cooked","had cooked"],3,"あなたが戻る（未来）時点までに作り終えている → 未来完了。"],
+ ["adv","I'll call you when I ___ home.","get","get",["will get","got","had got"],1,"when ~（〜するとき）は時の副詞節 → 未来のことでも現在形。"],
+ ["adv","If it ___ tomorrow, we will stay home.","rain","rains",["will rain","rained","has rained"],1,"if ~（もし〜なら）は条件の副詞節 → 未来でも現在形。"],
+ ["adv","Wait here until I ___ back.","come","come",["will come","came","had come"],2,"until ~（〜するまで）も時の副詞節 → 現在形。"],
+ ["adv","If you ___ any questions, please ask me.","have","have",["will have","had","are having"],2,"条件の副詞節 → 現在形。"],
+ ["adv","As soon as I ___ my homework, I'll go out.","finish","finish",["will finish","finished","had finished"],2,"as soon as ~ も時の副詞節 → 現在形（have finished でもよい）。"],
+ ["adv","By the time you ___ , I will have finished dinner.","arrive","arrive",["will arrive","arrived","had arrived"],3,"by the time ~（〜するまでに）は時の副詞節 → 現在形。"],
+ ["adv","I don't know if he ___ tomorrow.","come","will come",["comes","came","has come"],3,"if ~ は「〜かどうか」で know の目的語（名詞節）→ 未来なら will。"],
+ ["adv","I wonder when he ___ .","arrive","will arrive",["had arrived","arrives","has arrived"],3,"when ~ は「いつ〜か」で wonder の目的語（名詞節）→ 未来なら will。"],
+].map(r=>({c:r[0],s:r[1],v:r[2],a:r[3],d:r[4],l:r[5],e:r[6]}));
+
+function rng(seed){let s=seed>>>0||1;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+function shuf(a,r){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const esc=s=>String(s).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]));
+const TSEC={mc:"次の英文の（　）に入る最も適切なものを、a〜d から 1 つ選びなさい。",form:"次の英文の（　）内の動詞を、適切な形に直して書きなさい（2 語以上になることもある）。",err:"次の英文の下線部には誤りがあります。正しい形に直しなさい。"};
+
+$("cats").innerHTML=CATS.map(([k,n])=>`<label><input type="checkbox" id="c_${k}" checked> ${n}</label>`).join("");
+$("types").innerHTML=TYPES.map(([k,n],i)=>`<label><input type="checkbox" id="t_${k}" ${i<2?"checked":""}> ${n}</label>`).join("");
+
+function build(){
+  const seed=Math.max(1,parseInt($("seed").value,10)||1),r=rng(seed*7919);
+  const cats=CATS.map(c=>c[0]).filter(k=>$("c_"+k).checked),types=TYPES.map(t=>t[0]).filter(k=>$("t_"+k).checked);
+  const lv=+$("level").value,n=+$("count").value;
+  let pool=B.filter(q=>cats.includes(q.c)&&q.l<=lv);
+  const sheets=$("sheets");
+  if(!cats.length||!types.length||!pool.length){sheets.innerHTML='<p class="note" style="padding:20px">出題範囲と問題の形式を 1 つ以上選んでください。</p>';$("summary").textContent="";return}
+  // pick n (repeat pool with reshuffle if short)
+  let picked=[];while(picked.length<n){picked=picked.concat(shuf(pool,r))}picked=picked.slice(0,n);
+  // assign types evenly, then group by type in TYPES order
+  const tq=types.map(()=>[]);picked.forEach((q,i)=>tq[i%types.length].push(q));
+  const items=[];types.forEach((t,ti)=>tq[ti].forEach(q=>{const it={t,q};if(t==="mc")it.ch=shuf([q.a,...q.d],r);items.push(it)}));
+  items.forEach((it,i)=>it.no=i+1);
+  const catNames=cats.map(k=>CATS.find(c=>c[0]===k)[1]).join("・");
+  const lvName=["","基礎","基礎＋標準","基礎〜入試"][lv];
+  // layout: units per page
+  const H={mc:64,form:42,err:60},SEC=44,CAP=1040,CAP1=920;
+  const pages=[];let cur=[],used=0,cap=CAP1,lastT=null;
+  items.forEach(it=>{const h=H[it.t]+(it.t!==lastT?SEC:0);if(used+h>cap&&cur.length){pages.push(cur);cur=[];used=0;cap=CAP;lastT=null}
+    const hh=H[it.t]+(it.t!==lastT?SEC:0);cur.push(it);used+=hh;lastT=it.t});
+  if(cur.length)pages.push(cur);
+  const withAns=$("withAns").checked;
+  const ansPages=[];if(withAns){let c2=[],u=0;items.forEach(it=>{const cp=ansPages.length?CAP:CAP1-30;if(u+56>cp&&c2.length){ansPages.push(c2);c2=[];u=0}c2.push(it);u+=56});if(c2.length)ansPages.push(c2)}
+  const total=pages.length+ansPages.length;
+  const head=(title,sub)=>`<div class="sh-head"><div><div class="sh-title">${title}</div><div class="sh-meta">${esc(sub)}</div></div><div class="sh-name"><div>　月　　日</div></div><div class="sh-name" style="grid-column:1/-1"><div>組 <span class="sm"></span></div><div>番 <span class="sm"></span></div><div>名前 <span></span></div><div style="margin-left:auto">得点 <span class="sm"></span>/ ${n}</div></div></div>`;
+  const foot=(i)=>`<div class="sh-foot"><span>時制プリント No.${seed}</span><span>${i} / ${total}</span></div>`;
+  const qHTML=it=>{const q=it.q;
+    if(it.t==="mc")return `<div class="q"><span class="qn">(${it.no})</span><div><div class="en">${esc(q.s).replace("___",'<span class="blank">　　　</span>')}</div><div class="choices">${it.ch.map((c,i)=>`<span>${"abcd"[i]}) ${esc(c)}</span>`).join("")}</div></div></div>`;
+    if(it.t==="form")return `<div class="q"><span class="qn">(${it.no})</span><div class="en">${esc(q.s).replace("___",`<span class="blank">（${esc(q.v)}）</span>`)}</div></div>`;
+    return `<div class="q"><span class="qn">(${it.no})</span><div><div class="en">${esc(q.s).replace("___",`<span class="ul">${esc(q.d[0])}</span>`)}</div><div class="fix">正しい形：<span></span></div></div></div>`;};
+  let html="",pi=0;
+  pages.forEach((pg,i)=>{pi++;let body="",lt=null;pg.forEach(it=>{if(it.t!==lt){body+=`<div class="sec">${TSEC[it.t]}</div>`;lt=it.t}body+=qHTML(it)});
+    html+=`<div class="frame"><div class="sheet">${i===0?head("時制 練習プリント",`範囲：${catNames}　／　レベル：${lvName}`):""}${body}${foot(pi)}</div></div>`});
+  ansPages.forEach((pg,i)=>{pi++;const body=pg.map(it=>{const q=it.q,ans=it.t==="mc"?`${"abcd"[it.ch.indexOf(q.a)]}) ${q.a}`:it.t==="err"?`${q.d[0]} → ${q.a}`:q.a;
+      return `<div class="q"><span class="qn">(${it.no})</span><div><span class="a">${esc(ans)}</span><span class="lvl">${["","基礎","標準","入試"][q.l]}</span><div class="e">${esc(q.e)}</div></div></div>`}).join("");
+    html+=`<div class="frame"><div class="sheet ans">${i===0?`<div class="sh-head"><div><div class="sh-title">解答・解説</div><div class="sh-meta">時制 練習プリント No.${seed}　／　範囲：${esc(catNames)}</div></div></div>`:""}${body}${foot(pi)}</div></div>`});
+  sheets.innerHTML=html;
+  $("summary").textContent=`No.${seed}　${n} 問　問題 ${pages.length} 枚${withAns?`＋解答 ${ansPages.length} 枚`:""}`;
+  zoom();
+}
+function zoom(){const w=$("zoomer").clientWidth||794;const z=Math.min(1,(w-4)/794);$("zoomer").style.setProperty("--z",z.toFixed(4))}
+new ResizeObserver(zoom).observe($("zoomer"));
+function store(k,v){try{localStorage.setItem("tprint_"+k,v)}catch(e){}}
+function load(k){try{return localStorage.getItem("tprint_"+k)}catch(e){return null}}
+function saveAll(){store("cats",CATS.map(c=>c[0]).filter(k=>$("c_"+k).checked).join(","));store("types",TYPES.map(t=>t[0]).filter(k=>$("t_"+k).checked).join(","));store("level",$("level").value);store("count",$("count").value);store("withAns",$("withAns").checked)}
+["cats","types"].forEach(id=>$(id).addEventListener("change",()=>{saveAll();build()}));
+["level","count","withAns","seed"].forEach(id=>$(id).addEventListener("change",()=>{saveAll();build()}));
+$("newp").addEventListener("click",()=>{$("seed").value=Math.floor(Math.random()*9000)+1;build()});
+// restore
+(()=>{const c=load("cats");if(c){const on=c.split(",");CATS.forEach(([k])=>$("c_"+k).checked=on.includes(k))}
+  const t=load("types");if(t){const on=t.split(",");TYPES.forEach(([k])=>$("t_"+k).checked=on.includes(k))}
+  const l=load("level");if(l)$("level").value=l;const n=load("count");if(n)$("count").value=n;const a=load("withAns");if(a!==null)$("withAns").checked=a==="true"})();
+// print (works only when opened directly, e.g. on the public site)
+let top=true;try{top=window.self===window.top}catch(e){top=false}
+if(top){$("print").addEventListener("click",()=>window.print())}else{$("print").hidden=true;$("printNote").textContent="印刷は公開サイトで開いたときに使えます。PDF はここから保存できます。"}
+let dl=null;try{if(window.claude&&window.claude.use)window.claude.use("downloads").then(d=>{dl=d}).catch(()=>{})}catch(e){}
+$("pdf").addEventListener("click",async()=>{
+  const b=$("pdf"),note=$("printNote"),old=b.textContent;
+  if(!window.html2canvas||!window.jspdf){note.textContent="PDF の準備に失敗しました。ページを再読み込みしてください。";return}
+  if(!top&&!dl){note.textContent="この画面ではダウンロードできません。公開サイトで開いてください。";return}
+  b.disabled=true;const z=$("zoomer"),zv=z.style.getPropertyValue("--z");z.style.setProperty("--z","1");
+  try{
+    try{await document.fonts.ready}catch(e){}
+    const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:"mm",format:"a4",compress:true});
+    const sh=[...document.querySelectorAll(".sheet")];
+    for(let i=0;i<sh.length;i++){b.textContent=`作成中… ${i+1}/${sh.length}`;
+      const cv=await html2canvas(sh[i],{scale:2.5,backgroundColor:"#ffffff",logging:false});
+      if(i)pdf.addPage();pdf.addImage(cv.toDataURL("image/jpeg",0.92),"JPEG",0,0,210,297)}
+    const blob=pdf.output("blob"),name=`時制プリント_No${$("seed").value}${$("withAns").checked?"_解答つき":""}.pdf`;
+    if(dl){try{await dl.save({filename:name,data:blob});note.textContent="PDF を保存しました。"}catch(e){note.textContent=e&&e.code==="declined"?"ダウンロードをキャンセルしました。":"ダウンロードできませんでした。"}}
+    else{const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);note.textContent="PDF をダウンロードしました。"}
+  }catch(e){note.textContent="PDF を作れませんでした。もう一度お試しください。"}
+  finally{z.style.setProperty("--z",zv||"1");zoom();b.disabled=false;b.textContent=old}
+});
+build();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(build);
+})();
+</script>
+
+<a class="backlink" href="index.html" style="position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:9999;font:700 13px sans-serif;padding:8px 14px;border-radius:999px;background:#1f4e8c;color:#fff;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.2)">← 本棚へ</a><style>@media print{.backlink{display:none!important}}</style></body></html>
