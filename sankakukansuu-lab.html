@@ -70,7 +70,10 @@ h2{font-family:var(--disp);font-weight:400;font-size:1.55rem}
 .stage canvas{display:block;width:100%;aspect-ratio:4/3;max-width:100%}
 .stage canvas.wide{aspect-ratio:2/1}
 @media (max-width:600px){.stage canvas.wide{aspect-ratio:3/2}}
-.stage canvas.tall{aspect-ratio:68/133;max-width:420px;margin:0 auto}
+.stage canvas.tall{aspect-ratio:68/133;width:min(100%,420px,calc((100vh - 150px) * 68 / 133));width:min(100%,420px,calc((100svh - 150px) * 68 / 133));margin:0 auto}
+.stage-ctl{display:flex;align-items:center;gap:10px;padding:6px 12px;border-top:1px solid var(--line)}
+.stage-ctl label{font-weight:700;font-family:Georgia,serif;font-style:italic}
+.stage-ctl output{font-family:var(--mono);font-weight:600;color:var(--accent);white-space:nowrap;min-width:6.5em;text-align:right}
 .stage canvas.drag{touch-action:none;cursor:grab}
 .stage figcaption{font-size:.8rem;color:var(--muted);padding:6px 12px;border-top:1px solid var(--line)}
 .side{display:grid;gap:16px}
@@ -186,7 +189,8 @@ footer{margin-top:28px;color:var(--muted);font-size:.85rem}
   <!-- 3 -->
   <section class="lab" id="s3">
     <div class="lab-h"><span class="no">03</span><h2>y = sin θ、cos θ、tan θ のグラフ</h2><p class="gist">点 P が円を 1 周する間に、波が 1 つ描かれる。これが周期 2π の意味。</p></div>
-    <figure class="stage"><canvas id="c3" class="wide" aria-label="単位円とグラフ"></canvas></figure>
+    <figure class="stage"><canvas id="c3" class="wide" aria-label="単位円とグラフ"></canvas>
+      <div class="stage-ctl" id="th3m-wrap" hidden><label for="th3m">θ</label><input type="range" id="th3m" min="0" max="360" step="1" value="150" aria-label="θ（図の下）"><output id="o-th3m"></output></div></figure>
     <div class="lab-body">
       <div class="side">
         <div class="btns" role="group" aria-label="関数"><button class="s" id="m3s" aria-pressed="true">y = sin θ</button><button class="c" id="m3c" aria-pressed="false">y = cos θ</button><button class="t" id="m3t" aria-pressed="false">y = tan θ</button></div>
@@ -552,13 +556,13 @@ const L3=lab('c3',V3H,p=>{
   p.t(CX,-1.25,'単位円',{color:c.muted,font:'500 12px "Zen Kaku Gothic New", sans-serif',dy:8});
 });
 function up3(){
-  const d=+$('th3').value,t=d*R;$('o-th3').innerHTML=d+'° = '+piH(t).replace('約 ','');
+  const d=+$('th3').value,t=d*R;$('o-th3').innerHTML=d+'° = '+piH(t).replace('約 ','');$('th3m').value=d;$('o-th3m').textContent=d+'°';
   const info={s:[['周期','2π'],['値の範囲','−1 ≦ y ≦ 1'],['対称性','原点に関して対称（sin(−θ) = −sin θ）'],['0 になる θ','0, π, 2π, …']],
     c:[['周期','2π'],['値の範囲','−1 ≦ y ≦ 1'],['対称性','y 軸に関して対称（cos(−θ) = cos θ）'],['sin との関係','sin を左に '+FR('π',2)+' ずらした形']],
     t:[['周期','π（sin・cos の半分）'],['値の範囲','すべての実数'],['漸近線','θ = '+FR('π',2)+' + nπ（点線）'],['対称性','原点に関して対称']]}[mode3];
   if(vert3())info.unshift(['縦向きの見方','cos θ は点 P の x 座標。θ を下向きにとると、P から真下に下ろした位置がそのままグラフの点になる']);
   $('or3').hidden=mode3!=='c';$('or3v').setAttribute('aria-pressed',orient3==='v');$('or3h').setAttribute('aria-pressed',orient3==='h');
-  const cv=$('c3'),v=vert3();cv.classList.toggle('wide',!v);cv.classList.toggle('tall',v);L3.p.v=v?V3V:V3H;
+  const cv=$('c3'),v=vert3();cv.classList.toggle('wide',!v);cv.classList.toggle('tall',v);$('th3m-wrap').hidden=!v;L3.p.v=v?V3V:V3H;
   $('f3').innerHTML=info.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('');
   L3.r();
 }
@@ -567,6 +571,7 @@ function setM3(m){mode3=m;['s','c','t'].forEach(x=>$('m3'+x).setAttribute('aria-
 ['s','c','t'].forEach(x=>$('m3'+x).addEventListener('click',()=>setM3(x)));
 $('or3v').addEventListener('click',()=>{orient3='v';up3()});$('or3h').addEventListener('click',()=>{orient3='h';up3()});
 $('th3').addEventListener('input',()=>{stop3();up3()});
+$('th3m').addEventListener('input',()=>{stop3();$('th3').value=$('th3m').value;up3()});
 $('play3').addEventListener('click',()=>{stop3();stop3=tween(6000,k=>{$('th3').value=Math.round(360*k);up3()})});
 
 /* ---------- 4 変形 ---------- */
