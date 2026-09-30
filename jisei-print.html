@@ -179,7 +179,7 @@ form.dans input{font-family:var(--en);font-size:1.05rem;border:2px solid var(--l
 (()=>{
 const $=id=>document.getElementById(id);
 const CATS=[["pres","現在形・現在進行形"],["past","過去形・過去進行形"],["perf","現在完了（進行形）"],["plu","過去完了（進行形）"],["fut","未来・未来完了"],["adv","時・条件の副詞節"]];
-const TYPES=[["mc","4 択"],["form","（ ）の動詞を適切な形に"],["err","誤りを見つけて直す"]];
+const TYPES=[["mc","4 択"],["form","（ ）の動詞を適切な形に"],["err","下線部の誤りを直す"]];
 // s: ___ が空所, v: 原形, a: 正解, d: 誤答（d[0] は誤り訂正で使う）, l: 1基礎 2標準 3入試, e: 解説
 const B=[
  ["pres","My father usually ___ to work by bike.","go","goes",["is going","went","has gone"],1,"usually（ふだん）→ 習慣は現在形。主語が 3 人称単数なので goes。"],
