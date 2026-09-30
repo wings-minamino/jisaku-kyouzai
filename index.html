@@ -43,15 +43,23 @@ h1{font-family:var(--f-disp);font-weight:900;font-size:clamp(28px,5vw,40px);line
 .tab[aria-selected="true"] .n{background:rgba(255,255,255,.2);color:var(--paper)}
 .tab:focus-visible,.site:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
-.subject{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:12px;border-top:5px solid var(--c)}
-.subject.wide{grid-column:1/-1}
-.shead{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}
+.subject{background:var(--paper);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;min-width:0}
+summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:12px;min-height:60px;padding:14px 18px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"＋";margin-left:auto;color:var(--sub);font-size:20px;flex:none}
+details[open]>summary::after{content:"−"}
+summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:8px}
+summary:hover{background:var(--bg);border-radius:8px}
 .shead h2{margin:0;font-family:var(--f-disp);font-weight:900;font-size:22px;color:var(--c);letter-spacing:.06em}
-.shead .num{font-family:var(--f-mono);font-size:12px;color:var(--sub)}
-.subs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-.subblock{display:flex;flex-direction:column;gap:8px;border-left:2px solid var(--line);padding-left:12px}
-.subblock h3{margin:0;font-family:var(--f-disp);font-weight:500;font-size:15px;letter-spacing:.08em;color:var(--ink)}
+.num{font-family:var(--f-mono);font-size:12px;color:var(--sub)}
+.subject-body{padding:0 18px 18px}
+.subs{display:grid;gap:8px}
+.subblock{border:1px solid var(--line);border-radius:8px;min-width:0}
+.subblock summary{min-height:48px;padding:10px 14px}
+.subblock h3{margin:0;font-family:var(--f-disp);font-weight:500;font-size:17px;color:var(--ink)}
+.course-body{padding:0 12px 12px}
+
 ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
 .site{display:flex;flex-direction:column;gap:2px;text-decoration:none;color:inherit;padding:10px 12px;border-radius:8px;background:var(--bg);border:1px solid transparent;transition:border-color .15s,transform .15s}
 .site:hover{border-color:var(--c);transform:translateY(-1px)}
@@ -68,7 +76,7 @@ footer{font-size:12px;color:var(--sub)}
   <header>
     <div>
       <h1>自作教材の本棚</h1>
-      <p class="lead">これまで作った勉強用サイトを、学校段階と教科ごとに並べています。</p>
+      <p class="lead">教科や科目をタップして、教材を選んでください。</p>
     </div>
     <div class="count" id="count"></div>
   </header>
@@ -125,10 +133,10 @@ function render(level){
     const items = lv.filter(s=>s.subject===sj.name);
     const subs = sj.subsByLevel?.[level] || sj.subs;
     const body = subs
-      ? `<div class="subs">${subs.map(sb=>`<div class="subblock"><h3>${sb}</h3>${list(items.filter(s=>s.sub===sb))}</div>`).join("")}</div>`
+      ? `<div class="subs">${subs.map(sb=>`<details class="subblock"><summary><h3>${sb}</h3><span class="num">${items.filter(s=>s.sub===sb).length} 件</span></summary><div class="course-body">${list(items.filter(s=>s.sub===sb))}</div></details>`).join("")}</div>`
       : list(items);
-    return `<section class="subject${subs?" wide":""}" style="--c:var(${sj.c})">
-      <div class="shead"><h2>${sj.name}</h2><span class="num">${items.length} 件</span></div>${body}</section>`;
+    return `<details class="subject" style="--c:var(${sj.c})">
+      <summary class="shead"><h2>${sj.name}</h2><span class="num">${items.length} 件</span></summary><div class="subject-body">${body}</div></details>`;
   }).join("");
   try{ localStorage.setItem("shelf-level", level); }catch(e){}
 }
