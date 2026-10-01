@@ -97,6 +97,47 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 .ex .j{font-size:.88rem;color:var(--muted)}
 .ex + .ex{margin-top:6px}
 
+/* 1 コアイメージ */
+.core{display:grid;grid-template-columns:132px minmax(0,1fr);gap:16px;align-items:center;background:var(--chip);border-radius:12px;padding:14px 16px}
+@media (max-width:420px){.core{grid-template-columns:96px minmax(0,1fr);gap:12px}}
+.core svg{width:100%;height:auto;display:block}
+.core .lbl{font-size:.75rem;font-weight:700;letter-spacing:.1em;color:var(--muted)}
+.core .img{font-size:1.15rem;font-weight:700;color:var(--accent)}
+.core .to{font-size:.92rem;display:grid;gap:2px;margin-top:4px}
+.core .to .ta{color:var(--blue);font-weight:700} .core .to .tb{color:var(--warm);font-weight:700}
+.ics{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.icd{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;stroke-dasharray:6 6}
+.icf{fill:var(--accent)} .icb{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.5}
+.icm{fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round}
+
+/* 2 推理ゲーム */
+.game{border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:12px}
+.game .gtabs{display:flex;flex-wrap:wrap;gap:6px}
+.game .gtabs button{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:4px 12px;font-size:.85rem;font-weight:700}
+.game .gtabs button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.clues{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.clues li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:baseline;font-size:.97rem}
+.clues li .n{font-family:var(--mono);font-size:.75rem;font-weight:600;color:var(--panel);background:var(--accent);border-radius:999px;padding:0 8px}
+.clues li.old{color:var(--muted)} .clues li.old .n{background:var(--muted)}
+.clues li .v{font-family:var(--en);font-weight:600;color:var(--accent);margin-left:6px}
+.gq{font-weight:700}
+.gopts{display:flex;flex-wrap:wrap;gap:8px}
+.gopts button{border:1.5px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 12px;font-family:var(--en);font-weight:600}
+.gopts button small{font-family:var(--sans);font-weight:500;color:var(--muted);margin-left:4px}
+.gopts button.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}
+.gopts button.wrong{border-color:var(--ng);background:color-mix(in srgb,var(--ng) 14%,transparent)}
+.gopts button:disabled{cursor:default}
+.gfb{border-radius:10px;padding:10px 14px;font-size:.95rem;display:grid;gap:4px;background:var(--chip)}
+.gfb .e{font-family:var(--en);font-size:1.1rem}
+.gfb b.ok{color:var(--ok)} .gfb b.ng{color:var(--ng)}
+.gnext{justify-self:start;border:0;background:var(--accent);color:var(--panel);border-radius:8px;padding:6px 16px;font-weight:700}
+
+/* 比較の表（need・used to と would） */
+.cmp table{min-width:0}
+.cmp td.ok{color:var(--ok);font-weight:700} .cmp td.ng{color:var(--ng);font-weight:700}
+.refs ul{margin:0;padding-left:1.2em;display:grid;gap:4px;font-size:.9rem}
+.refs a{color:var(--accent)}
+
 /* 2 確信度メーター */
 .meter{position:relative;padding-top:6px}
 .bar{height:14px;border-radius:7px;background:linear-gradient(90deg,var(--ng),var(--warm) 35%,var(--blue) 65%,var(--accent))}
@@ -210,8 +251,9 @@ footer{margin-top:36px;font-size:.82rem;color:var(--muted)}
   <!-- 1 -->
   <section class="lab" id="s1">
     <div class="lab-h"><span class="no">01</span><h2>助動詞には二つの顔がある</h2>
-      <p class="gist">左は「人に向けた気持ち」（義務・許可・能力・意志）、右は「事実の見積もり」（推量）。助動詞を選ぶと両方の例文が出ます。</p></div>
+      <p class="gist">どの助動詞にも、もとになる一つのイメージ（コアイメージ）があります。それを「人」に向けると義務・許可・能力・意志、「事実」に向けると推量になります。助動詞を選ぶと、イメージと両方の例文が出ます。</p></div>
     <div class="faces" id="faces" role="group" aria-label="助動詞を選ぶ"></div>
+    <div class="core" id="core" aria-live="polite"></div>
     <div class="split" id="faceBody"></div>
     <div class="note"><b>形のルール</b>：助動詞のあとは<b>必ず動詞の原形</b>。主語が he / she でも <span class="en">He can<u>s</u></span> とはならず、助動詞は二つ重ねられません（<span class="en">will can</span> ✕ → <span class="en">will be able to</span> ○）。疑問文は助動詞を主語の前に出し、否定文は助動詞の後ろに <span class="en">not</span> を置きます。</div>
   </section>
@@ -228,6 +270,13 @@ footer{margin-top:36px;font-size:.82rem;color:var(--muted)}
       </div>
     </div></div>
     <div class="readout" id="readout" aria-live="polite"></div>
+    <div class="game" id="game">
+      <h3>推理ゲーム：手がかりが増えると、確信度が上がる</h3>
+      <p style="font-size:.92rem;color:var(--muted)">手がかりを 1 つずつ読んで、いちばん合う助動詞を選んでください。根拠が弱いうちは may / might、決定的な根拠が出たら must、反対の決定的な根拠が出たら can't。現在の場面では、上のメーターも一緒に動きます。</p>
+      <div class="gtabs" id="gtabs" role="group" aria-label="場面を選ぶ"></div>
+      <ul class="clues" id="clues"></ul>
+      <div id="gplay"></div>
+    </div>
     <div class="note">パーセントは目安です。大事なのは順番で、<b>must（〜にちがいない）</b>と<b>can't（〜のはずがない）</b>が両端、<b>may / might / could（〜かもしれない）</b>が真ん中あたりにきます。「〜にちがいない」の否定は <span class="en">must not</span> ではなく <span class="en">can't</span> です。</div>
   </section>
 
@@ -259,6 +308,19 @@ footer{margin-top:36px;font-size:.82rem;color:var(--muted)}
       </div>
       <p style="font-size:.92rem;color:var(--muted)">must not は「する」の扉を閉じる（禁止）。don't have to は両方の扉が開いたまま（する・しないは自由）。don't have to = <span class="en">don't need to</span> = <span class="en">need not</span>。</p>
     </div>
+    <div class="card">
+      <h3>need の二つの顔：助動詞の need と、動詞の need to</h3>
+      <div class="tbl cmp"><table>
+        <thead><tr><th></th><th>助動詞 need</th><th>動詞 need to</th></tr></thead>
+        <tbody>
+          <tr><td>肯定文</td><td class="ng">使わない</td><td><span class="e">You <b class="m">need to</b> come.</span></td></tr>
+          <tr><td>否定文</td><td><span class="e">You <b class="m">need not</b> (needn't) come.</span></td><td><span class="e">You <b class="m">don't need to</b> come.</span></td></tr>
+          <tr><td>疑問文</td><td><span class="e"><b class="m">Need</b> I come?</span></td><td><span class="e"><b class="m">Do</b> I <b class="m">need to</b> come?</span></td></tr>
+          <tr><td>過去</td><td class="ng">過去形はない</td><td><span class="e">I <b class="m">needed to</b> come.</span></td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:.92rem;color:var(--muted)">助動詞の need は<b>否定文と疑問文だけ</b>。後ろは原形で、主語が he でも needs にならない（<span class="en">He need not come.</span>）。<span class="en">Must I come?</span> に「その必要はない」と答えるときは <span class="en">No, you needn't.</span>（<span class="en">don't have to</span>）。<span class="en">No, you must not.</span> だと「来てはいけない」になってしまう。</p>
+    </div>
   </section>
 
   <!-- 4 -->
@@ -273,6 +335,7 @@ footer{margin-top:36px;font-size:.82rem;color:var(--muted)}
       <div class="pt now"><i></i>今（話し手の判断）</div>
     </div>
     <div class="result" id="pastOut" aria-live="polite"></div>
+    <div class="warn"><b>ひっかけ</b>：have のあとは<b>過去分詞</b>。過去形と形がちがう動詞がよく狙われます。<br><span class="en">must have <s>went</s> → must have <b>gone</b></span>　<span class="en">should have <s>took</s> → should have <b>taken</b></span>　<span class="en">may have <s>mistook</s> → may have <b>mistaken</b></span><br>また、主語が he でも助動詞のあとは原形の have（<span class="en">must <s>has</s> → must <b>have</b></span>）。</div>
     <div class="tbl"><table>
       <thead><tr><th>形</th><th>意味</th><th>種類</th></tr></thead>
       <tbody id="pastTbl"></tbody>
@@ -283,6 +346,18 @@ footer{margin-top:36px;font-size:.82rem;color:var(--muted)}
   <section class="lab" id="s5">
     <div class="lab-h"><span class="no">05</span><h2>助動詞を使った慣用表現</h2>
       <p class="gist">見出しを押すと、例文と注意点が開きます。熟語として丸ごと覚えるものです。</p></div>
+    <div class="card">
+      <h3>used to と would：どちらも「以前は〜した」だけど</h3>
+      <div class="tbl cmp"><table>
+        <thead><tr><th></th><th>used to 原形</th><th>would (often) 原形</th></tr></thead>
+        <tbody>
+          <tr><td>過去の動作の習慣</td><td class="ok">○</td><td class="ok">○</td></tr>
+          <tr><td>過去の状態（be, live, have など）</td><td class="ok">○ <span class="en">There used to be a park here.</span></td><td class="ng">✕ <span class="en"><s>There would be</s></span></td></tr>
+          <tr><td>ふくみ</td><td>「今はちがう」</td><td>昔をなつかしむ。often / sometimes と一緒に使うことが多い</td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:.92rem;color:var(--muted)">迷ったら「後ろが状態か動作か」を見る。状態なら used to だけ。<span class="en">be used to -ing</span>（〜に慣れている）とは別物。</p>
+    </div>
     <div class="idioms" id="idioms"></div>
   </section>
 
@@ -349,6 +424,14 @@ footer{margin-top:36px;font-size:.82rem;color:var(--muted)}
         <li><span class="en">be used to -ing</span>（〜に慣れている）と区別する</li>
       </ul></div>
     </div>
+    <div class="card refs"><h3>参考にしたサイト・動画</h3><ul>
+      <li><a href="https://spice-of-englishgrammar.com/modal-core-images/" target="_blank" rel="noopener">スパイス・オブ・英文法「英語の助動詞のコアイメージで意味・用法を掴む」</a>・<a href="https://ipa-mania.com/auxiliary-verb-basic/" target="_blank" rel="noopener">「基本的な助動詞5つはイメージとイラストで覚えよう」</a>（1 章のコアイメージ）</li>
+      <li><a href="https://english-lab-japan.com/archives/10531" target="_blank" rel="noopener">「推量を表す助動詞の順番は？」</a>・<a href="https://manabitimes.jp/english/2358" target="_blank" rel="noopener">高校生向け受験応援メディア「英語の助動詞とは」</a>（2 章の確信度の並び）</li>
+      <li><a href="https://www.teach-this.com/parts-of-speech/modal-verbs-speculation-deduction" target="_blank" rel="noopener">Teach-This「Modal Verbs of Deduction and Speculation」</a>・<a href="https://teachinggamesefl.com/2016/05/23/past-modals-unfolding-mysteries/" target="_blank" rel="noopener">「Past modals: Unfolding mysteries」</a>（2 章の推理ゲーム：手がかりを 1 つずつ出す活動）</li>
+      <li><a href="https://learnenglish.britishcouncil.org/free-resources/grammar/b1-b2/modals-deductions-about-past" target="_blank" rel="noopener">British Council「Modals: deductions about the past」</a>（4 章）</li>
+      <li><a href="https://www.enavi.info/gra/jodoushi-8.html" target="_blank" rel="noopener">「need, dare｜高校英語の助動詞」</a>・<a href="https://www.enavi.info/gra/jodoushi-6.html" target="_blank" rel="noopener">「used to と would｜高校英語の助動詞」</a>（3 章・5 章の比較表）</li>
+      <li><a href="https://www.try-it.jp/chapters-4497/lessons-4526/" target="_blank" rel="noopener">映像授業 Try IT「助動詞＋have＋過去分詞は過去への気持ち」</a>、<a href="https://www.youtube.com/watch?v=rkFWyDxIbCo" target="_blank" rel="noopener">YouTube「よくわかる高校英語 助動詞」</a></li>
+    </ul><p style="font-size:.85rem;color:var(--muted)">内容と例文はこのページ独自に作成しています。</p></div>
   </section>
 
   <footer>助動詞ラボ ／ 高校英語 英文法の学習用</footer>
@@ -390,6 +473,25 @@ function showFace(k){
   $('faceBody').innerHTML=`<div class="side a"><span class="tag">人に向けた気持ち：${f.a.t}</span>${ex(f.a.ex)}</div><div class="side b"><span class="tag">事実の見積もり：${f.b.t}</span>${ex(f.b.ex)}</div>`;
 }
 $('faces').addEventListener('click',e=>{const b=e.target.closest('.face');if(b)showFace(b.dataset.k)});
+const CORE={
+  must:{img:"これしかない、と強く押される",a:"人に向けると → しなければならない（ほかに道がない）",b:"事実に向けると → ちがいない（そうとしか考えられない）",
+    svg:'<rect x="28" y="58" width="64" height="24" rx="3" class="icb"/><path class="ics" d="M40 6V40M60 6V40M80 6V40"/><path class="icf" d="M33 36h14l-7 12zM53 36h14l-7 12zM73 36h14l-7 12z"/>'},
+  may:{img:"扉が開いている（上から許されている）",a:"人に向けると → してもよい（許可の扉が開いている）",b:"事実に向けると → かもしれない（その可能性にも扉が開いている）",
+    svg:'<rect x="44" y="8" width="44" height="74" rx="2" class="ics"/><path class="icb" d="M44 8L22 16V90L44 82Z"/><path class="ics" d="M54 48H108"/><path class="icf" d="M104 41l12 7-12 7z"/>'},
+  can:{img:"いつでも出せる力がある",a:"人に向けると → できる・してもよい",b:"事実に向けると → ありうる（can't は「ありえない＝はずがない」）",
+    svg:'<path class="icb" d="M66 4L36 50H58L48 88L86 36H64L74 4Z"/>'},
+  should:{img:"本来たどるべき正しい道筋",a:"人に向けると → すべきだ（筋道どおりに行動する）",b:"事実に向けると → はずだ（筋道どおりならそうなる）",
+    svg:'<path class="icm" d="M18 88L50 12M102 88L70 12"/><path class="icd" d="M60 86V30"/><path class="icf" d="M53 32l7-12 7 12z"/><path class="ics" d="M60 18V4"/><path class="icf" d="M61 4h18l-5 5 5 5H61z"/>'},
+  will:{img:"意志と見通しの矢印が先へ向かう",a:"人に向けると → するつもり（意志）・してくれる？",b:"事実に向けると → だろう（見通し）",
+    svg:'<circle cx="92" cy="46" r="24" class="ics"/><circle cx="92" cy="46" r="13" class="ics"/><circle cx="92" cy="46" r="4" class="icf"/><path class="ics" d="M8 46H78"/><path class="icf" d="M74 39l12 7-12 7z"/>'},
+  would:{img:"will を一歩うしろに引いた形（過去・控えめ）",a:"人に向けると → よく〜したものだ（過去）・丁寧な依頼",b:"事実に向けると → たぶん〜だろう（will より控えめ）",
+    svg:'<circle cx="92" cy="46" r="24" class="icm"/><circle cx="92" cy="46" r="13" class="icm"/><path class="icd" d="M8 46H62"/><path class="icf" d="M58 39l12 7-12 7z"/>'},
+  shall:{img:"自分の気持ちより大きな「決まり」",a:"人に向けると → 〜しましょうか（相手の意向をうかがう）",b:"文書では → 〜するものとする（規則・契約）",
+    svg:'<rect x="30" y="6" width="60" height="80" rx="4" class="icb"/><path class="icm" d="M40 24H80M40 36H80M40 48H80M40 60H66"/><circle cx="76" cy="72" r="8" class="icf"/>'}
+};
+const _showFace=showFace;
+showFace=function(k){_showFace(k);const c=CORE[k];
+  $('core').innerHTML=`<svg viewBox="0 0 120 92" aria-hidden="true">${c.svg}</svg><div><div class="lbl">${k} のコアイメージ</div><div class="img">${c.img}</div><div class="to"><span><span class="ta">●</span> ${c.a}</span><span><span class="tb">●</span> ${c.b}</span></div></div>`;};
 showFace('must');
 
 /* ---------- 2 確信度メーター ---------- */
@@ -411,6 +513,44 @@ function showPin(i){
 }
 $('pins').addEventListener('click',e=>{const b=e.target.closest('.pin');if(b)showPin(+b.dataset.i)});
 showPin(6);
+
+/* ---------- 2 推理ゲーム ---------- */
+const GAME=[
+  {t:"彼は医者？",q:"彼は医者",past:false,steps:[
+    {c:"彼の部屋に白衣がかかっている。",a:"may",e:"He may be a doctor.",w:"白衣は理科の先生や薬剤師も着る。ほかの可能性が残るので「かもしれない」。"},
+    {c:"机の上には医学の専門書と聴診器もある。",a:"may",e:"He might be a doctor.",w:"かなり怪しいが、家族の物という可能性もまだ残る。まだ言い切れない。"},
+    {c:"壁に、彼の名前が入った医師免許が飾ってある。",a:"must",e:"He must be a doctor.",w:"決定的な根拠。ほかに考えようがないので「ちがいない」。"}]},
+  {t:"彼女は今パリにいる？",q:"彼女は今パリにいる",past:false,steps:[
+    {c:"彼女は今週、海外旅行に行くと言っていた。",a:"may",e:"She may be in Paris now.",w:"行き先が分からない。パリの可能性もある、という程度。"},
+    {c:"今朝、彼女がエッフェル塔の前で撮った写真を送ってきた。",a:"must",e:"She must be in Paris now.",w:"今朝パリにいた強い根拠がある →「ちがいない」。"},
+    {c:"ところが 10 分前、駅で彼女を見かけた。写真は去年のものだった。",a:"cant",e:"She can't be in Paris now.",w:"今ここにいるのを見たので、パリにいるはずがない。must の反対は can't（must not ではない）。"}]},
+  {t:"昨夜、雨が降った？（過去）",q:"昨夜、雨が降った",past:true,steps:[
+    {c:"昨日の夕方、空が曇っていた。",a:"may",e:"It may have rained last night.",w:"曇っていただけでは分からない →「降ったかもしれない」。過去のことなので may have + 過去分詞。"},
+    {c:"朝起きると、道がぬれていて水たまりがある。",a:"must",e:"It must have rained last night.",w:"今見えている強い根拠から過去を推量 → must have + 過去分詞。"},
+    {c:"でも、ぬれているのは家の前だけ。ほかの道はすっかり乾いていて、隣の人がホースで水をまいていた。",a:"cant",e:"It can't have rained last night.",w:"雨ならどの道もぬれるはず。降ったはずがない → can't have + 過去分詞。"}]}
+];
+const GOPT=[["cant","can't","はずがない"],["may","may / might","かもしれない"],["must","must","ちがいない"]];
+const PINOF={cant:0,may:3,must:6};
+const g={sc:0,st:0,pick:null};
+$('gtabs').innerHTML=GAME.map((x,i)=>`<button data-i="${i}" aria-pressed="false">${x.t}</button>`).join('');
+$('gtabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;g.sc=+b.dataset.i;g.st=0;g.pick=null;renderGame()});
+function renderGame(){
+  const sc=GAME[g.sc];
+  document.querySelectorAll('#gtabs button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.i===g.sc));
+  $('clues').innerHTML=sc.steps.slice(0,g.st+1).map((s,i)=>{const done=i<g.st;
+    return `<li class="${done?'old':''}"><span class="n">手がかり ${i+1}</span><span>${s.c}${done?`<span class="v">${s.e}</span>`:''}</span></li>`}).join('');
+  const s=sc.steps[g.st],last=g.st===sc.steps.length-1,hv=sc.past?' have':'';
+  let h=`<p class="gq">ここまでの手がかりで「${sc.q}」と、どれくらい言える？</p><div class="gopts">${GOPT.map(o=>{
+    let cls='';if(g.pick){if(o[0]===s.a)cls='right';else if(o[0]===g.pick)cls='wrong';}
+    return `<button data-k="${o[0]}" class="${cls}" ${g.pick?'disabled':''}>${o[1]}${hv}<small>${o[2]}</small></button>`}).join('')}</div>`;
+  if(g.pick){const ok=g.pick===s.a;
+    h+=`<div class="gfb"><span><b class="${ok?'ok':'ng'}">${ok?'正解':'おしい'}</b>　${s.w}</span><span class="e">${s.e}</span></div>`+
+      `<button class="gnext" id="gnext">${last?(g.sc<GAME.length-1?'次の場面へ':'最初の場面へ'):'次の手がかりを見る'}</button>`;}
+  $('gplay').innerHTML=h;
+  $('gplay').querySelectorAll('.gopts button').forEach(b=>b.addEventListener('click',()=>{if(g.pick)return;g.pick=b.dataset.k;if(!sc.past)showPin(PINOF[s.a]);renderGame()}));
+  const nx=$('gnext');if(nx)nx.addEventListener('click',()=>{if(last){g.sc=(g.sc+1)%GAME.length;g.st=0}else g.st++;g.pick=null;renderGame()});
+}
+renderGame();
 
 /* ---------- 3 must not / don't have to ---------- */
 const NEG={
@@ -473,13 +613,15 @@ const QZ=[
   ["標準","I ( ) have left my umbrella on the train. I can't find it anywhere.",["must","can't","should","need"],0,"どこにもない → 電車に置き忘れたにちがいない。must have + p.p.。"],
   ["標準","You ( ) have told me earlier. I could have helped you.",["should","must","can't","may"],0,"「もっと早く言ってくれればよかったのに」＝ should have + p.p.（しなかったことへの非難）。"],
   ["標準","There ( ) be a big tree in front of the school, but it was cut down.",["used to","would","should","must"],0,"過去の状態で今はちがう → used to。would は状態には使えない。"],
+  ["標準","You ( ) not hurry. We still have plenty of time.",["need","must","would","had"],0,"時間はたっぷりある → 急ぐ必要はない。need not（助動詞の need は否定文・疑問文で使う）。must not だと「急いではいけない」になる。"],
   ["入試","You had better ( ) out tonight. It's going to snow.",["not go","don't go","not to go","go not"],0,"had better の否定は had better not 原形。"],
   ["入試","I would rather stay home ( ) go out in this rain.",["than","to","from","but"],0,"would rather A than B（B するより A したい）。A・B とも原形。"],
   ["入試","The teacher insisted that he ( ) the report again.",["rewrite","rewrote","rewrites","had rewritten"],0,"要求の insist + that S (should) 原形。主語が he で過去の文でも原形。"],
   ["入試","I couldn't help ( ) when I watched the movie.",["crying","cry","to cry","cried"],0,"cannot help -ing（〜せずにはいられない）。"],
   ["入試","You may ( ) be proud of your son. He passed the difficult exam.",["well","as well","good","better"],0,"may well＝〜するのももっともだ。難関に合格したので誇りに思うのも当然。"],
   ["入試","You needn't ( ) a taxi. The station was just around the corner.",["have taken","take","taken","to take"],0,"駅はすぐそこだった（過去）のにタクシーに乗った → needn't have + p.p.（〜する必要はなかったのに）。"],
-  ["入試","You cannot be ( ) careful when you cross this street.",["too","very","so","much"],0,"cannot ... too 〜＝いくら〜してもしすぎることはない。"]
+  ["入試","You cannot be ( ) careful when you cross this street.",["too","very","so","much"],0,"cannot ... too 〜＝いくら〜してもしすぎることはない。"],
+  ["入試","I must have ( ) the wrong train. This isn't Tokyo Station.",["taken","took","take","taking"],0,"助動詞 + have のあとは過去分詞。take - took - taken。過去形 took を選ばせるひっかけに注意。"]
 ];
 const ans={};let filter='all';
 // 選択肢の並び順を問題ごとにシャッフル（正解の位置がいつも a にならないように）
