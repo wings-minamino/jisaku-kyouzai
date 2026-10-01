@@ -1,0 +1,506 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>助動詞ラボ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=JetBrains+Mono:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* 方眼紙の地に、章ごとの白いパネルを縦に並べる（時制ラボと同じシリーズの見た目） */
+:root{
+  --paper:#f4f7f8; --panel:#ffffff; --ink:#152330; --muted:#566676; --line:#d4dfe4;
+  --grid:#e4ecef;
+  --accent:#0b6b6f; --accent-soft:rgba(11,107,111,.11);
+  --warm:#c2410c; --warm-soft:rgba(194,65,12,.12);
+  --blue:#2f5fb3; --blue-soft:rgba(47,95,179,.12);
+  --chip:#e8f2f2;
+  --ok:#14804a; --ng:#c0352b;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --disp:"Dela Gothic One","Hiragino Sans","Yu Gothic",sans-serif;
+  --en:"Lora",Georgia,serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#0d1619; --panel:#142126; --ink:#e4eef0; --muted:#98abb2; --line:#263a41;
+    --grid:#1b2a2f;
+    --accent:#4fc8c4; --accent-soft:rgba(79,200,196,.15);
+    --warm:#ff8f5a; --warm-soft:rgba(255,143,90,.15);
+    --blue:#86a9f0; --blue-soft:rgba(134,169,240,.15);
+    --chip:#1a2d33;
+    --ok:#4cc985; --ng:#ff7b6e;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#0d1619; --panel:#142126; --ink:#e4eef0; --muted:#98abb2; --line:#263a41;
+  --grid:#1b2a2f;
+  --accent:#4fc8c4; --accent-soft:rgba(79,200,196,.15);
+  --warm:#ff8f5a; --warm-soft:rgba(255,143,90,.15);
+  --blue:#86a9f0; --blue-soft:rgba(134,169,240,.15);
+  --chip:#1a2d33;
+  --ok:#4cc985; --ng:#ff7b6e;
+}
+*{box-sizing:border-box}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;
+  color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.8;
+}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:16px;padding-block:40px 96px}
+h1,h2,h3{text-wrap:balance;line-height:1.35;margin:0}
+p{margin:0}
+.en{font-family:var(--en)}
+b.m,.m{color:var(--accent);font-weight:700}
+.top{display:grid;gap:14px;margin-bottom:28px}
+.eyebrow{font-size:.8rem;letter-spacing:.14em;color:var(--muted);font-weight:700}
+h1{font-family:var(--disp);font-weight:400;font-size:clamp(2.2rem,6vw,3.6rem);letter-spacing:.02em}
+h1 .th{color:var(--accent);font-family:var(--en);font-style:italic;font-weight:600}
+.lead{max-width:42em;color:var(--muted)}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+nav.toc a{font-size:.85rem;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);padding:4px 12px;border-radius:999px}
+nav.toc a:hover{border-color:var(--accent);color:var(--accent)}
+nav.toc b{font-family:var(--mono);color:var(--accent);margin-right:6px;font-weight:600}
+
+section.lab{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;margin-top:28px;display:grid;gap:20px;min-width:0}
+@media (max-width:520px){section.lab{padding:18px 16px}}
+.lab-h{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:baseline}
+.no{font-family:var(--mono);font-weight:600;color:var(--accent);grid-row:span 2}
+h2{font-family:var(--disp);font-weight:400;font-size:1.5rem}
+h3{font-size:1.05rem;font-weight:700}
+.gist{color:var(--muted);grid-column:2}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:780px){.two{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:10px;min-width:0}
+.note{background:var(--chip);border-radius:10px;padding:12px 14px;font-size:.95rem}
+.note b{color:var(--accent)}
+.warn{background:var(--warm-soft);border-radius:10px;padding:12px 14px;font-size:.95rem}
+.warn b{color:var(--warm)}
+button{font:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* 1 二つの顔 */
+.faces{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.face{border:2px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);padding:12px 10px;text-align:left;display:grid;gap:2px}
+.face .w{font-family:var(--en);font-weight:600;font-size:1.4rem}
+.face .k{font-size:.8rem;color:var(--muted)}
+.face[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+@media (max-width:620px){.split{grid-template-columns:1fr}}
+.side{border-radius:10px;padding:14px;display:grid;gap:8px;align-content:start}
+.side.a{background:var(--blue-soft)}
+.side.b{background:var(--warm-soft)}
+.side .tag{font-size:.78rem;font-weight:700;letter-spacing:.08em}
+.side.a .tag{color:var(--blue)} .side.b .tag{color:var(--warm)}
+.ex{display:grid;gap:0}
+.ex .e{font-family:var(--en);font-size:1.05rem}
+.ex .j{font-size:.88rem;color:var(--muted)}
+.ex + .ex{margin-top:6px}
+
+/* 2 確信度メーター */
+.meter{position:relative;padding-top:6px}
+.bar{height:14px;border-radius:7px;background:linear-gradient(90deg,var(--ng),var(--warm) 35%,var(--blue) 65%,var(--accent))}
+.ticks{position:relative;height:30px;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.ticks span{position:absolute;top:4px;transform:translateX(-50%)}
+.pins{position:relative;height:96px;margin-top:-4px}
+.pin{position:absolute;transform:translateX(-50%);border:1.5px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:2px 8px;font-family:var(--en);font-weight:600;font-size:.95rem;white-space:nowrap}
+.pin[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+.pin.r1{top:0}.pin.r2{top:34px}.pin.r3{top:64px}
+.readout{display:grid;gap:4px;border-left:4px solid var(--accent);padding:6px 0 6px 14px}
+.readout .e{font-family:var(--en);font-size:1.35rem}
+.readout .j{font-size:1rem}
+.readout .s{font-size:.88rem;color:var(--muted)}
+.scroller{overflow-x:auto}
+.scroller .inner{min-width:560px;padding-inline:30px}
+
+/* 表 */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.95rem}
+th,td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+tr:last-child td{border-bottom:0}
+thead th{background:var(--chip);font-size:.82rem;letter-spacing:.06em;color:var(--muted)}
+td .e{font-family:var(--en)}
+td.w{font-family:var(--en);font-weight:600;color:var(--accent);white-space:nowrap}
+
+/* 3 must not / don't have to */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;gap:3px;background:var(--panel);flex-wrap:wrap}
+.seg button{border:0;background:transparent;color:var(--muted);padding:6px 14px;border-radius:999px;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--panel)}
+.doors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.door{border:2px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:6px;text-align:center;transition:opacity .2s,border-color .2s}
+.door .big{font-size:1.7rem;font-weight:700}
+.door.ok .big{color:var(--ok)} .door.ng .big{color:var(--ng)}
+.door.off{opacity:.35}
+.door.on{border-color:var(--accent)}
+.door .lbl{font-size:.88rem;color:var(--muted)}
+
+/* 4 過去への推量 */
+.picker{display:flex;flex-wrap:wrap;gap:8px}
+.picker button{border:1.5px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 12px;font-family:var(--en);font-weight:600}
+.picker button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.timeline{position:relative;height:84px;margin-top:4px}
+.timeline .line{position:absolute;left:0;right:0;top:46px;height:2px;background:var(--muted)}
+.timeline .pt{position:absolute;top:36px;transform:translateX(-50%);display:grid;justify-items:center;gap:6px;font-size:.8rem;color:var(--muted);font-weight:700}
+.timeline .pt i{width:18px;height:18px;border-radius:50%;display:block}
+.timeline .past{left:22%} .timeline .now{left:78%}
+.timeline .past i{background:var(--warm)} .timeline .now i{background:var(--accent)}
+.timeline .arc{position:absolute;left:22%;width:56%;top:4px;height:42px;border:2px dashed var(--accent);border-bottom:0;border-radius:50% 50% 0 0/100% 100% 0 0}
+.timeline .arcl{position:absolute;left:50%;top:-6px;transform:translateX(-50%);background:var(--panel);padding:0 8px;font-size:.78rem;color:var(--accent);font-weight:700;white-space:nowrap}
+.result{display:grid;gap:6px;border:1px solid var(--line);border-radius:10px;padding:14px}
+.result .e{font-family:var(--en);font-size:1.25rem}
+.result .e u{text-decoration:none;color:var(--accent);font-weight:600}
+.result .j{font-size:1.02rem}
+.result .s{font-size:.9rem;color:var(--muted)}
+
+/* 5 慣用表現 */
+.idioms{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+details.idm{border:1px solid var(--line);border-radius:10px;padding:0 14px;background:var(--panel)}
+details.idm summary{cursor:pointer;padding:12px 0;display:flex;justify-content:space-between;gap:10px;align-items:baseline;list-style:none}
+details.idm summary::-webkit-details-marker{display:none}
+details.idm summary .e{font-family:var(--en);font-weight:600;font-size:1.08rem}
+details.idm summary .j{font-size:.88rem;color:var(--muted);text-align:right}
+details.idm[open]{border-color:var(--accent)}
+details.idm .body{padding-bottom:14px;display:grid;gap:8px;font-size:.95rem}
+
+/* 6 クイズ */
+.qhead{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.filters button{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:4px 12px;font-size:.85rem;font-weight:700}
+.filters button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.score{font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums}
+#qreset{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:4px 12px;font-size:.85rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px}
+.qcard{border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px;align-content:start}
+.qcard .lvl{font-family:var(--mono);font-size:.75rem;color:var(--muted);font-weight:600}
+.qcard .lvl b{color:var(--accent)}
+.qcard .q{font-family:var(--en);font-size:1.06rem;line-height:1.6}
+.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.choices button{border:1.5px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 10px;text-align:left;font-family:var(--en)}
+.choices button:hover:not(:disabled){border-color:var(--accent)}
+.choices button.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}
+.choices button.wrong{border-color:var(--ng);background:color-mix(in srgb,var(--ng) 14%,transparent)}
+.choices button:disabled{cursor:default}
+.exp{font-size:.92rem;border-top:1px dashed var(--line);padding-top:8px}
+.exp b.ok{color:var(--ok)} .exp b.ng{color:var(--ng)}
+
+/* 7 ポイント */
+.points{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.points ul{margin:0;padding-left:1.2em;display:grid;gap:4px;font-size:.95rem}
+footer{margin-top:36px;font-size:.82rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow">高校英語 ／ 英文法</p>
+    <h1>助動詞ラボ <span class="th">can / may / must</span></h1>
+    <p class="lead">助動詞は「動詞に話し手の気持ちを足すことば」です。一つの助動詞が〈義務・許可・能力〉と〈推量〉の二つの意味をもつことをおさえると、ほとんどの問題が整理できます。ボタンを押して、意味の違いを確かめながら読んでください。</p>
+    <nav class="toc" aria-label="目次">
+      <a href="#s1"><b>1</b>二つの顔</a>
+      <a href="#s2"><b>2</b>確信度メーター</a>
+      <a href="#s3"><b>3</b>言い換えと否定</a>
+      <a href="#s4"><b>4</b>助動詞 + have + 過去分詞</a>
+      <a href="#s5"><b>5</b>慣用表現</a>
+      <a href="#s6"><b>6</b>should の特別な用法</a>
+      <a href="#s7"><b>7</b>確認問題</a>
+      <a href="#s8"><b>8</b>解くときのポイント</a>
+    </nav>
+  </header>
+
+  <!-- 1 -->
+  <section class="lab" id="s1">
+    <div class="lab-h"><span class="no">01</span><h2>助動詞には二つの顔がある</h2>
+      <p class="gist">左は「人に向けた気持ち」（義務・許可・能力・意志）、右は「事実の見積もり」（推量）。助動詞を選ぶと両方の例文が出ます。</p></div>
+    <div class="faces" id="faces" role="group" aria-label="助動詞を選ぶ"></div>
+    <div class="split" id="faceBody"></div>
+    <div class="note"><b>形のルール</b>：助動詞のあとは<b>必ず動詞の原形</b>。主語が he / she でも <span class="en">He can<u>s</u></span> とはならず、助動詞は二つ重ねられません（<span class="en">will can</span> ✕ → <span class="en">will be able to</span> ○）。疑問文は助動詞を主語の前に出し、否定文は助動詞の後ろに <span class="en">not</span> を置きます。</div>
+  </section>
+
+  <!-- 2 -->
+  <section class="lab" id="s2">
+    <div class="lab-h"><span class="no">02</span><h2>確信度メーター：推量の強さを並べる</h2>
+      <p class="gist">「彼は医者だ」をどれくらい確信して言っているか。助動詞を押すと、例文と訳し方が変わります。</p></div>
+    <div class="scroller"><div class="inner">
+      <div class="meter">
+        <div class="bar" aria-hidden="true"></div>
+        <div class="ticks" aria-hidden="true"><span style="left:0%">0%</span><span style="left:50%">50%</span><span style="left:100%">100%</span></div>
+        <div class="pins" id="pins" role="group" aria-label="推量の助動詞"></div>
+      </div>
+    </div></div>
+    <div class="readout" id="readout" aria-live="polite"></div>
+    <div class="note">パーセントは目安です。大事なのは順番で、<b>must（〜にちがいない）</b>と<b>can't（〜のはずがない）</b>が両端、<b>may / might / could（〜かもしれない）</b>が真ん中あたりにきます。「〜にちがいない」の否定は <span class="en">must not</span> ではなく <span class="en">can't</span> です。</div>
+  </section>
+
+  <!-- 3 -->
+  <section class="lab" id="s3">
+    <div class="lab-h"><span class="no">03</span><h2>言い換えと、否定で意味が変わる助動詞</h2>
+      <p class="gist">助動詞は二つ重ねられないので、未来や完了と組み合わせるときは言い換えの形を使います。</p></div>
+    <div class="tbl"><table>
+      <thead><tr><th>助動詞</th><th>言い換え</th><th>使う場面の例</th></tr></thead>
+      <tbody>
+        <tr><td class="w">can</td><td class="e">be able to</td><td><span class="e">I <b class="m">will be able to</b> swim next year.</span><br>来年は泳げるようになるだろう。</td></tr>
+        <tr><td class="w">must</td><td class="e">have to</td><td><span class="e">I <b class="m">had to</b> wait for an hour.</span><br>1時間待たなければならなかった。（must に過去形はない）</td></tr>
+        <tr><td class="w">will</td><td class="e">be going to</td><td><span class="e">It<b class="m">'s going to</b> rain. Look at those clouds.</span><br>雨が降りそうだ。（いま見えている根拠がある）</td></tr>
+        <tr><td class="w">should</td><td class="e">ought to</td><td><span class="e">You <b class="m">ought to</b> see a doctor.</span><br>医者に診てもらうべきだ。否定は ought not to。</td></tr>
+        <tr><td class="w">could</td><td class="e">was able to</td><td><span class="e">I <b class="m">was able to</b> catch the last train.</span><br>（その一回は）終電に間に合った。一回の実際の成功には could でなく was able to を使う。</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="card">
+      <h3>must not と don't have to は別物</h3>
+      <div class="seg" role="group" aria-label="表現を選ぶ">
+        <button id="b-mn" aria-pressed="true">must not</button>
+        <button id="b-dh" aria-pressed="false">don't have to</button>
+      </div>
+      <div class="result" id="negOut" aria-live="polite"></div>
+      <div class="doors">
+        <div class="door ok" id="dOk"><span class="big">する</span><span class="lbl" id="dOkL"></span></div>
+        <div class="door ng" id="dNg"><span class="big">しない</span><span class="lbl" id="dNgL"></span></div>
+      </div>
+      <p style="font-size:.92rem;color:var(--muted)">must not は「する」の扉を閉じる（禁止）。don't have to は両方の扉が開いたまま（する・しないは自由）。don't have to = <span class="en">don't need to</span> = <span class="en">need not</span>。</p>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="lab" id="s4">
+    <div class="lab-h"><span class="no">04</span><h2>助動詞 + have + 過去分詞：今から過去を見る</h2>
+      <p class="gist">判断しているのは「今」、判断の対象は「過去」。この形は入試で最もよく問われます。</p></div>
+    <div class="picker" id="pastPick" role="group" aria-label="形を選ぶ"></div>
+    <div class="timeline" aria-hidden="true">
+      <div class="line"></div>
+      <div class="arc"><span class="arcl" id="arcl">今から過去を推量</span></div>
+      <div class="pt past"><i></i>過去のできごと</div>
+      <div class="pt now"><i></i>今（話し手の判断）</div>
+    </div>
+    <div class="result" id="pastOut" aria-live="polite"></div>
+    <div class="tbl"><table>
+      <thead><tr><th>形</th><th>意味</th><th>種類</th></tr></thead>
+      <tbody id="pastTbl"></tbody>
+    </table></div>
+  </section>
+
+  <!-- 5 -->
+  <section class="lab" id="s5">
+    <div class="lab-h"><span class="no">05</span><h2>助動詞を使った慣用表現</h2>
+      <p class="gist">見出しを押すと、例文と注意点が開きます。熟語として丸ごと覚えるものです。</p></div>
+    <div class="idioms" id="idioms"></div>
+  </section>
+
+  <!-- 6 -->
+  <section class="lab" id="s6">
+    <div class="lab-h"><span class="no">06</span><h2>should の特別な用法</h2>
+      <p class="gist">「〜すべき」と訳さない should。that 節の中で動詞の形が問われます。</p></div>
+    <div class="two">
+      <div class="card">
+        <h3>① 提案・要求・命令の動詞 + that S (should) 原形</h3>
+        <div class="ex"><span class="e">The doctor suggested that he <b class="m">(should) stop</b> smoking.</span><span class="j">医者は彼にたばこをやめるよう提案した。</span></div>
+        <div class="ex"><span class="e">She insisted that the meeting <b class="m">be</b> put off.</span><span class="j">彼女は会議を延期するよう強く求めた。</span></div>
+        <p style="font-size:.92rem">この種類の動詞：<span class="en">suggest, propose, insist, demand, require, request, recommend, order</span></p>
+        <div class="warn"><b>ひっかけ</b>：主語が he でも過去の文でも、should を省くと<b>原形</b>のまま（<span class="en">stops / stopped</span> ✕）。ただし insist / suggest が「事実を主張・示唆する」意味のときは普通の時制になります。<br><span class="en">He insisted that he <b>was</b> innocent.</span>（自分は無実だと言い張った）</div>
+      </div>
+      <div class="card">
+        <h3>② It is + 判断・感情の形容詞 + that S should 原形</h3>
+        <div class="ex"><span class="e">It is <b class="m">necessary</b> that everyone <b class="m">(should) attend</b> the meeting.</span><span class="j">全員が会議に出席する必要がある。</span></div>
+        <div class="ex"><span class="e">It is <b class="m">strange</b> that he <b class="m">should say</b> such a thing.</span><span class="j">彼がそんなことを言うなんて妙だ。</span></div>
+        <p style="font-size:.92rem">必要・重要：<span class="en">necessary, essential, important</span>（should を省いて原形も可）<br>感情・驚き：<span class="en">strange, surprising, natural, a pity</span>（「〜するなんて」）</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="lab" id="s7">
+    <div class="lab-h"><span class="no">07</span><h2>確認問題</h2>
+      <p class="gist">基礎 → 標準 → 入試の順に並んでいます。選ぶとすぐに正誤と解説が出ます。</p></div>
+    <div class="qhead">
+      <div class="filters" id="qfil" role="group" aria-label="レベルで絞り込む">
+        <button data-f="all" aria-pressed="true">すべて</button>
+        <button data-f="基礎" aria-pressed="false">基礎</button>
+        <button data-f="標準" aria-pressed="false">標準</button>
+        <button data-f="入試" aria-pressed="false">入試</button>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center"><span class="score" id="score"></span><button id="qreset">最初からやり直す</button></div>
+    </div>
+    <div class="cards" id="quiz"></div>
+  </section>
+
+  <!-- 8 -->
+  <section class="lab" id="s8">
+    <div class="lab-h"><span class="no">08</span><h2>問題を解くときのポイント</h2>
+      <p class="gist">空所の前後で何を見ればよいかのまとめです。</p></div>
+    <div class="points">
+      <div class="card"><h3>推量か、義務か</h3><ul>
+        <li>主語が人で、後ろが動作 → 義務・許可・能力のことが多い</li>
+        <li><span class="en">be</span> 動詞や状態の動詞が続く → 推量のことが多い（<span class="en">must be</span>, <span class="en">can't be</span>）</li>
+        <li>前後に「根拠」の文があれば推量。根拠が強ければ must / can't</li>
+      </ul></div>
+      <div class="card"><h3>否定の組み合わせ</h3><ul>
+        <li>〜にちがいない ⇔ 〜のはずがない：<span class="en">must</span> ⇔ <span class="en">can't</span></li>
+        <li>禁止：<span class="en">must not</span> ／ 不要：<span class="en">don't have to, need not</span></li>
+        <li><span class="en">had better not</span> 原形（not の位置に注意）</li>
+      </ul></div>
+      <div class="card"><h3>have + 過去分詞を見たら</h3><ul>
+        <li>過去を示す語（<span class="en">yesterday, last night</span>）があるのに助動詞 → have + p.p.</li>
+        <li>「〜したのに（しなかった）」の後悔・非難 → <span class="en">should have</span></li>
+        <li>「しなくてよかったのに（した）」→ <span class="en">needn't have</span></li>
+      </ul></div>
+      <div class="card"><h3>used to と would</h3><ul>
+        <li><span class="en">used to</span>：過去の習慣と状態。「今はちがう」含み</li>
+        <li><span class="en">would</span>：過去の動作の習慣だけ。状態（be, live）には使わない</li>
+        <li><span class="en">be used to -ing</span>（〜に慣れている）と区別する</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <footer>助動詞ラボ ／ 高校英語 英文法の学習用</footer>
+</div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+
+/* ---------- 1 二つの顔 ---------- */
+const FACES={
+  can:{k:"能力・許可 ／ 可能性",
+    a:{t:"能力・許可",ex:[["She <b>can</b> speak three languages.","彼女は3か国語を話せる。"],["<b>Can</b> I use your pen?","ペンを使ってもいい？"]]},
+    b:{t:"可能性（否定・疑問で多い）",ex:[["That story <b>can't</b> be true.","その話が本当のはずがない。"],["<b>Can</b> it be true?","いったい本当だろうか。"]]}},
+  may:{k:"許可 ／ 推量",
+    a:{t:"許可",ex:[["You <b>may</b> go home now.","もう帰ってよろしい。"],["<b>May</b> I come in?","入ってもよろしいですか。"]]},
+    b:{t:"推量（50% くらい）",ex:[["He <b>may</b> be at home.","彼は家にいるかもしれない。"],["It <b>may not</b> rain tomorrow.","明日は雨が降らないかもしれない。"]]}},
+  must:{k:"義務 ／ 強い推量",
+    a:{t:"義務・禁止",ex:[["You <b>must</b> wear a seat belt.","シートベルトを締めなければならない。"],["You <b>must not</b> park here.","ここに駐車してはいけない。"]]},
+    b:{t:"強い推量",ex:[["She <b>must</b> be tired after the long trip.","長旅のあとで疲れているにちがいない。"],["You <b>must</b> be joking.","冗談でしょう。"]]}},
+  should:{k:"義務・助言 ／ 当然の推量",
+    a:{t:"義務・助言",ex:[["You <b>should</b> apologize to her.","彼女に謝るべきだ。"],["You <b>shouldn't</b> stay up so late.","そんなに夜ふかしすべきではない。"]]},
+    b:{t:"当然の推量（〜のはず）",ex:[["The package <b>should</b> arrive tomorrow.","荷物は明日着くはずだ。"],["He left at noon, so he <b>should</b> be home by now.","昼に出たので、もう家にいるはずだ。"]]}},
+  will:{k:"意志・依頼 ／ 推量",
+    a:{t:"意志・依頼",ex:[["I <b>will</b> call you tonight.","今夜電話するよ。（その場で決めた意志）"],["<b>Will</b> you open the door?","ドアを開けてくれますか。"]]},
+    b:{t:"推量（未来・現在）",ex:[["It <b>will</b> be sunny tomorrow.","明日は晴れるだろう。"],["That <b>will</b> be the mailman.","（チャイムを聞いて）郵便屋さんだろう。"]]}},
+  would:{k:"過去の習慣・丁寧 ／ 推量",
+    a:{t:"過去の習慣・丁寧な依頼",ex:[["He <b>would</b> often go fishing.","彼はよく釣りに行ったものだ。"],["<b>Would</b> you help me?","手伝っていただけますか。"]]},
+    b:{t:"控えめな推量",ex:[["That <b>would</b> be his sister.","あれはたぶん彼のお姉さんでしょう。"],["I <b>would</b> say it's too expensive.","高すぎると思いますね。"]]}},
+  shall:{k:"申し出・提案",
+    a:{t:"申し出・提案（疑問文）",ex:[["<b>Shall</b> I carry your bag?","かばんをお持ちしましょうか。"],["<b>Shall</b> we dance?","踊りましょうか。"]]},
+    b:{t:"規則・契約文（参考）",ex:[["The tenant <b>shall</b> pay the rent by the 5th.","借主は5日までに家賃を支払うものとする。"]]}}
+};
+const fk=Object.keys(FACES);
+$('faces').innerHTML=fk.map(k=>`<button class="face" data-k="${k}" aria-pressed="false"><span class="w">${k}</span><span class="k">${FACES[k].k}</span></button>`).join('');
+function showFace(k){
+  document.querySelectorAll('.face').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+  const f=FACES[k],ex=a=>a.map(x=>`<div class="ex"><span class="e">${x[0]}</span><span class="j">${x[1]}</span></div>`).join('');
+  $('faceBody').innerHTML=`<div class="side a"><span class="tag">人に向けた気持ち：${f.a.t}</span>${ex(f.a.ex)}</div><div class="side b"><span class="tag">事実の見積もり：${f.b.t}</span>${ex(f.b.ex)}</div>`;
+}
+$('faces').addEventListener('click',e=>{const b=e.target.closest('.face');if(b)showFace(b.dataset.k)});
+showFace('must');
+
+/* ---------- 2 確信度メーター ---------- */
+const PINS=[
+  {w:"can't be",p:2,r:1,e:"He <b>can't</b> be a doctor.",j:"彼が医者のはずがない。",s:"ほぼ0%。must の否定（〜にちがいない の反対）はこれ。couldn't be も同じ意味でやや控えめ。"},
+  {w:"might be",p:30,r:2,e:"He <b>might</b> be a doctor.",j:"ひょっとすると医者かもしれない。",s:"may より弱い推量。might は「過去」の意味ではない。"},
+  {w:"could be",p:36,r:3,e:"He <b>could</b> be a doctor.",j:"医者ということもありうる。",s:"肯定文の could は「可能性がある」。might とほぼ同じ強さ。"},
+  {w:"may be",p:50,r:1,e:"He <b>may</b> be a doctor.",j:"医者かもしれない。",s:"五分五分。may not be なら「医者ではないかもしれない」。"},
+  {w:"should be",p:75,r:2,e:"He <b>should</b> be a doctor by now.",j:"今ごろはもう医者になっているはずだ。",s:"筋道から考えて「当然そうなるはず」。ought to be も同じ。"},
+  {w:"will be",p:86,r:3,e:"He <b>will</b> be a doctor.",j:"（話を聞く限り）医者だろう。",s:"現在のことにも使える自信のある推量。"},
+  {w:"must be",p:95,r:1,e:"He <b>must</b> be a doctor.",j:"彼は医者にちがいない。",s:"根拠があって強く確信している。否定は can't be。"},
+  {w:"is",p:100,r:2,e:"He <b>is</b> a doctor.",j:"彼は医者だ。",s:"助動詞なし＝事実として言い切る。"}
+];
+$('pins').innerHTML=PINS.map((p,i)=>`<button class="pin r${p.r}" style="left:${p.p}%" data-i="${i}" aria-pressed="false">${p.w}</button>`).join('');
+function showPin(i){
+  document.querySelectorAll('.pin').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.i===i));
+  const p=PINS[i];
+  $('readout').innerHTML=`<span class="e">${p.e.replace(/<b>/g,'<b class="m">')}</span><span class="j">${p.j}</span><span class="s">確信度の目安 ${p.p}% ／ ${p.s}</span>`;
+}
+$('pins').addEventListener('click',e=>{const b=e.target.closest('.pin');if(b)showPin(+b.dataset.i)});
+showPin(6);
+
+/* ---------- 3 must not / don't have to ---------- */
+const NEG={
+  mn:{e:"You <u>must not</u> use your phone during the test.",j:"テスト中は携帯電話を使ってはいけない。",s:"禁止。「しない」しか選べない。",ok:"閉じている（禁止）",ng:"これだけ",on:"ng"},
+  dh:{e:"You <u>don't have to</u> bring your lunch tomorrow.",j:"明日は弁当を持ってこなくてもよい。",s:"不必要。持ってきてもよいし、持ってこなくてもよい。",ok:"してもよい",ng:"しなくてもよい",on:"both"}
+};
+function showNeg(k){
+  $('b-mn').setAttribute('aria-pressed',k==='mn');$('b-dh').setAttribute('aria-pressed',k==='dh');
+  const n=NEG[k];
+  $('negOut').innerHTML=`<span class="e">${n.e}</span><span class="j">${n.j}</span><span class="s">${n.s}</span>`;
+  $('dOkL').textContent=n.ok;$('dNgL').textContent=n.ng;
+  $('dOk').className='door ok '+(n.on==='ng'?'off':'on');
+  $('dNg').className='door ng on';
+}
+$('b-mn').onclick=()=>showNeg('mn');$('b-dh').onclick=()=>showNeg('dh');
+showNeg('mn');
+
+/* ---------- 4 助動詞 + have + p.p. ---------- */
+const PAST=[
+  {w:"must have",m:"〜したにちがいない",t:"推量",e:"The road is wet. It <u>must have rained</u> last night.",j:"道がぬれている。昨夜雨が降ったにちがいない。",s:"今見えている根拠（道がぬれている）から、過去を強く推量。"},
+  {w:"can't have",m:"〜したはずがない",t:"推量",e:"She <u>can't have said</u> such a thing.",j:"彼女がそんなことを言ったはずがない。",s:"must have の反対。couldn't have も同じ。"},
+  {w:"may have",m:"〜したかもしれない",t:"推量",e:"I <u>may have left</u> my key at school.",j:"学校に鍵を置いてきたかもしれない。",s:"might have なら、さらに自信が弱い。"},
+  {w:"should have",m:"〜すべきだったのに（しなかった）",t:"後悔・非難",e:"I <u>should have studied</u> harder.",j:"もっと勉強しておけばよかった。",s:"実際はしなかった。ought to have も同じ。shouldn't have なら「〜すべきではなかったのに（した）」。"},
+  {w:"needn't have",m:"〜する必要はなかったのに（した）",t:"後悔",e:"You <u>needn't have brought</u> an umbrella. It's sunny.",j:"傘を持ってくる必要はなかったのに。晴れているよ。",s:"実際は持ってきた。didn't need to bring は「持ってくる必要がなかった（持ってきたかは不明）」。"},
+  {w:"could have",m:"〜できたのに（しなかった）／〜したかもしれない",t:"可能性",e:"You <u>could have won</u> the game.",j:"君は試合に勝てたのに。",s:"文脈によって「〜した可能性がある」の意味にもなる。"}
+];
+$('pastPick').innerHTML=PAST.map((p,i)=>`<button data-i="${i}" aria-pressed="false">${p.w} + p.p.</button>`).join('');
+$('pastTbl').innerHTML=PAST.map(p=>`<tr><td class="w">${p.w} + p.p.</td><td>${p.m}</td><td>${p.t}</td></tr>`).join('');
+function showPast(i){
+  document.querySelectorAll('#pastPick button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.i===i));
+  const p=PAST[i];
+  $('arcl').textContent=p.t==='推量'?'今から過去を推量':(p.t==='可能性'?'今から過去の可能性を見る':'今から過去を振り返る');
+  $('pastOut').innerHTML=`<span class="e">${p.e}</span><span class="j">${p.j}</span><span class="s">${p.m} ／ ${p.s}</span>`;
+}
+$('pastPick').addEventListener('click',e=>{const b=e.target.closest('button');if(b)showPast(+b.dataset.i)});
+showPast(0);
+
+/* ---------- 5 慣用表現 ---------- */
+const IDM=[
+  ["had better 原形","〜したほうがいい（強い忠告）","You <b>had better</b> leave now, or you'll miss the bus.","否定は had better <b>not</b> 原形。目上の人に使うと命令的に聞こえるので注意。"],
+  ["would rather A than B","B するより A したい","I <b>would rather</b> walk <b>than</b> take a crowded train.","A も B も原形。否定は would rather not 原形。"],
+  ["used to 原形","以前は〜した／〜だった","There <b>used to</b> be a bookstore here.","今はちがう、という含み。状態にも使える。be used to -ing（〜に慣れている）と区別する。"],
+  ["would (often) 原形","よく〜したものだ","When I was a child, I <b>would often</b> play in this park.","過去の動作の習慣だけ。状態（be, live, have）には使わない。"],
+  ["may well 原形","〜するのももっともだ／たぶん〜だろう","You <b>may well</b> be angry with him.","「君が彼に怒るのも当然だ」。"],
+  ["may as well 原形","〜してもいいだろう（〜したほうがましだ）","The bus has gone. We <b>may as well</b> walk.","might as well A as B なら「B するくらいなら A するほうがましだ」。"],
+  ["cannot help -ing","〜せずにはいられない","I <b>couldn't help laughing</b> at his joke.","= cannot but 原形 = cannot help but 原形。"],
+  ["cannot ... too ~","いくら〜しても〜しすぎることはない","You <b>cannot</b> be <b>too</b> careful when you drive.","「どんなに注意してもしすぎることはない」＝十分注意せよ。"],
+  ["would like to 原形","〜したい（want to の丁寧な形）","I <b>would like to</b> ask you a question.","Would you like to 〜? は「〜しませんか」の誘い。"]
+];
+$('idioms').innerHTML=IDM.map(d=>`<details class="idm"><summary><span class="e">${d[0]}</span><span class="j">${d[1]}</span></summary><div class="body"><span class="en">${d[2].replace(/<b>/g,'<b class="m">')}</span><span>${d[3]}</span></div></details>`).join('');
+
+/* ---------- 7 確認問題 ---------- */
+const QZ=[
+  ["基礎","You ( ) not smoke here. It's against the rules.",["must","need","have","would"],0,"規則で禁止されているので must not（〜してはいけない）。"],
+  ["基礎","( ) I open the window? — Yes, please.",["Shall","Must","Will","Should"],0,"Shall I 〜? は「〜しましょうか」という申し出。答え方 Yes, please. が手がかり。"],
+  ["基礎","You don't ( ) to come tomorrow. It's a holiday.",["must","have","should","can"],1,"don't have to＝〜しなくてよい。休日なので来る必要がない。"],
+  ["基礎","She ( ) speak French when she was five.",["could","can","must","should"],0,"when she was five（過去）なので can の過去形 could。過去の能力。"],
+  ["標準","He ( ) be tired. He has been working since this morning.",["must","can't","mustn't","shall"],0,"朝からずっと働いている、という根拠から「疲れているにちがいない」。"],
+  ["標準","She ( ) be in Paris now. I saw her at the station ten minutes ago.",["must","can't","should","will"],1,"10分前に駅で見たので、今パリにいるはずがない → can't。"],
+  ["標準","I ( ) have left my umbrella on the train. I can't find it anywhere.",["must","can't","should","need"],0,"どこにもない → 電車に置き忘れたにちがいない。must have + p.p.。"],
+  ["標準","You ( ) have told me earlier. I could have helped you.",["should","must","can't","may"],0,"「もっと早く言ってくれればよかったのに」＝ should have + p.p.（しなかったことへの非難）。"],
+  ["標準","There ( ) be a big tree in front of the school, but it was cut down.",["used to","would","should","must"],0,"過去の状態で今はちがう → used to。would は状態には使えない。"],
+  ["入試","You had better ( ) out tonight. It's going to snow.",["not go","don't go","not to go","go not"],0,"had better の否定は had better not 原形。"],
+  ["入試","I would rather stay home ( ) go out in this rain.",["than","to","from","but"],0,"would rather A than B（B するより A したい）。A・B とも原形。"],
+  ["入試","The teacher insisted that he ( ) the report again.",["rewrite","rewrote","rewrites","had rewritten"],0,"要求の insist + that S (should) 原形。主語が he で過去の文でも原形。"],
+  ["入試","I couldn't help ( ) when I watched the movie.",["crying","cry","to cry","cried"],0,"cannot help -ing（〜せずにはいられない）。"],
+  ["入試","You may ( ) be proud of your son. He passed the difficult exam.",["well","as well","good","better"],0,"may well＝〜するのももっともだ。難関に合格したので誇りに思うのも当然。"],
+  ["入試","You needn't ( ) a taxi. The station was just around the corner.",["have taken","take","taken","to take"],0,"駅はすぐそこだった（過去）のにタクシーに乗った → needn't have + p.p.（〜する必要はなかったのに）。"],
+  ["入試","You cannot be ( ) careful when you cross this street.",["too","very","so","much"],0,"cannot ... too 〜＝いくら〜してもしすぎることはない。"]
+];
+const ans={};let filter='all';
+function renderQuiz(){
+  $('quiz').innerHTML=QZ.map((q,i)=>{
+    if(filter!=='all'&&q[0]!==filter)return '';
+    const a=ans[i];
+    return `<div class="qcard" data-i="${i}"><span class="lvl"><b>Q${i+1}</b>　${q[0]}</span><p class="q">${q[1]}</p><div class="choices">${q[2].map((c,j)=>{
+      let cls='';if(a!=null){if(j===q[3])cls='right';else if(j===a)cls='wrong';}
+      return `<button data-j="${j}" class="${cls}" ${a!=null?'disabled':''}>${String.fromCharCode(97+j)}) ${c}</button>`}).join('')}</div>${a!=null?`<p class="exp"><b class="${a===q[3]?'ok':'ng'}">${a===q[3]?'正解':'不正解'}</b>　答え：${q[2][q[3]]}。${q[4]}</p>`:''}</div>`}).join('');
+  upScore();
+}
+function upScore(){
+  const ids=QZ.map((q,i)=>i).filter(i=>filter==='all'||QZ[i][0]===filter);
+  const done=ids.filter(i=>ans[i]!=null),ok=done.filter(i=>ans[i]===QZ[i][3]);
+  $('score').textContent=`${ok.length} / ${done.length} 正解（全 ${ids.length} 問）`;
+}
+$('quiz').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;const i=+b.closest('.qcard').dataset.i;ans[i]=+b.dataset.j;renderQuiz()});
+$('qfil').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;filter=b.dataset.f;document.querySelectorAll('#qfil button').forEach(x=>x.setAttribute('aria-pressed',x===b));renderQuiz()});
+$('qreset').onclick=()=>{for(const k in ans)delete ans[k];renderQuiz()};
+renderQuiz();
+})();
+</script>
+
+<a class="backlink" href="index.html" style="position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:9999;font:700 13px sans-serif;padding:8px 14px;border-radius:999px;background:#1f4e8c;color:#fff;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.2)">← 本棚へ</a><style>@media print{.backlink{display:none!important}}</style></body></html>
